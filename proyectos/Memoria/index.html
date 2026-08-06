@@ -19,13 +19,8 @@
     <!-- Botón Volver -->
     <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Portafolio</a>
 
-    <!-- Círculos de fondo para el efecto Glassmorphism -->
-    <div class="circle circle-1"></div>
-    <div class="circle circle-2"></div>
-    <div class="circle circle-3"></div>
-
     <!-- ================= PANTALLA DE MENÚ ================= -->
-    <div id="menu-screen" class="menu-container frosted">
+    <div id="menu-screen" class="menu-container">
         <header class="menu-header">
             <h1>Configurar Partida</h1>
             <p>Elige tu reto y demuestra tu memoria.</p>
@@ -69,13 +64,17 @@
                     </label>
                 </div>
             </div>
+            <!-- Récords -->
+            <div id="high-score-display" class="high-score-box hidden">
+                <p>🏆 Récord en esta dificultad: <span id="best-score-text">--</span></p>
+            </div>
         </div>
 
         <button id="start-btn" class="btn-primary btn-large">¡Jugar Ahora!</button>
     </div>
 
     <!-- ================= PANTALLA DE JUEGO ================= -->
-    <div id="game-screen" class="game-container frosted hidden">
+    <div id="game-screen" class="game-container hidden">
         <header class="game-header">
             <div class="header-top">
                 <button id="back-to-menu-btn" class="btn-text"><i class="ph ph-caret-left"></i> Volver al Menú</button>
@@ -103,7 +102,7 @@
 
     <!-- Modal de Victoria -->
     <div id="win-modal" class="modal hidden">
-        <div class="modal-content frosted">
+        <div class="modal-content">
             <h2>¡Mente Brillante! 🏆</h2>
             <p>Has encontrado todas las parejas.</p>
             <div class="modal-stats">
