@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Gastos</title>
+    <title>Gestor de Gastos Avanzado</title>
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="bg-glow"></div>
@@ -19,58 +21,91 @@
     <div class="container">
         <header>
             <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Volver al Portafolio</a>
-            <h1>Gestor de Gastos</h1>
+            <h1>Gestor de Finanzas</h1>
         </header>
 
-        <div class="dashboard">
-            <div class="balance-card">
-                <h3>Balance Total</h3>
-                <h2 id="balance">$0.00</h2>
-            </div>
-            <div class="summary-cards">
-                <div class="card income">
-                    <h4>Ingresos <i class="ph ph-trend-up"></i></h4>
-                    <p id="money-plus" class="money plus">+$0.00</p>
+        <!-- Contenedor Principal (Gráfico a la izquierda, Contenido a la derecha en Desktop) -->
+        <div class="app-layout">
+            
+            <!-- Columna Izquierda: Gráfico y Resumen -->
+            <div class="sidebar">
+                <div class="balance-card">
+                    <h3>Balance Total</h3>
+                    <h2 id="balance">$0.00</h2>
                 </div>
-                <div class="card expense">
-                    <h4>Gastos <i class="ph ph-trend-down"></i></h4>
-                    <p id="money-minus" class="money minus">-$0.00</p>
+
+                <div class="chart-container">
+                    <canvas id="financeChart"></canvas>
+                </div>
+
+                <div class="summary-cards">
+                    <div class="card income">
+                        <h4>Ingresos <i class="ph ph-trend-up"></i></h4>
+                        <p id="money-plus" class="money plus">+$0.00</p>
+                    </div>
+                    <div class="card expense">
+                        <h4>Gastos <i class="ph ph-trend-down"></i></h4>
+                        <p id="money-minus" class="money minus">-$0.00</p>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="app-content">
-            <section class="add-transaction">
-                <h3>Nueva Transacción</h3>
-                <form id="form">
-                    <div class="form-control">
-                        <label for="text">Descripción</label>
-                        <input type="text" id="text" placeholder="Ej. Sueldo, Supermercado..." autocomplete="off">
-                    </div>
-                    <div class="form-control">
-                        <label for="amount">Monto</label>
-                        <input type="number" id="amount" placeholder="Ingrese el monto..." step="0.01">
-                    </div>
-                    <div class="form-control">
-                        <label for="type">Tipo</label>
-                        <select id="type">
-                            <option value="income">Ingreso (+)</option>
-                            <option value="expense">Gasto (-)</option>
-                        </select>
-                    </div>
-                    <button class="btn">Agregar Transacción</button>
-                    <p id="error-msg" class="error-msg"></p>
-                </form>
-            </section>
+            <!-- Columna Derecha: Formulario e Historial -->
+            <div class="main-content">
+                <section class="add-transaction">
+                    <h3>Nueva Transacción</h3>
+                    <form id="form">
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="text">Descripción</label>
+                                <input type="text" id="text" placeholder="Ej. Sueldo, Supermercado..." autocomplete="off">
+                            </div>
+                            <div class="form-control">
+                                <label for="amount">Monto</label>
+                                <input type="number" id="amount" placeholder="0.00" step="0.01">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-control">
+                                <label for="type">Tipo</label>
+                                <select id="type">
+                                    <option value="income">Ingreso (+)</option>
+                                    <option value="expense" selected>Gasto (-)</option>
+                                </select>
+                            </div>
+                            <div class="form-control">
+                                <label for="category">Categoría</label>
+                                <select id="category">
+                                    <option value="food">Comida 🍔</option>
+                                    <option value="transport">Transporte 🚌</option>
+                                    <option value="salary">Sueldo 💰</option>
+                                    <option value="shopping">Compras 🛍️</option>
+                                    <option value="bills">Servicios 📄</option>
+                                    <option value="other">Otro 📌</option>
+                                </select>
+                            </div>
+                        </div>
 
-            <section class="history">
-                <h3>Historial</h3>
-                <ul id="list" class="list">
-                    <!-- Las transacciones se insertarán aquí dinámicamente -->
-                </ul>
-            </section>
+                        <button class="btn">Agregar Transacción <i class="ph ph-plus-circle"></i></button>
+                    </form>
+                </section>
+
+                <section class="history">
+                    <div class="history-header">
+                        <h3>Historial</h3>
+                        <span id="transaction-count" class="badge">0</span>
+                    </div>
+                    <ul id="list" class="list">
+                        <!-- Las transacciones se insertarán aquí dinámicamente -->
+                    </ul>
+                </section>
+            </div>
         </div>
     </div>
+
+    <!-- Contenedor para Notificaciones Toast -->
+    <div id="toast-container" class="toast-container"></div>
 
     <script src="script.js"></script>
 </body>
