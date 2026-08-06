@@ -1,20 +1,23 @@
 const searchBtn = document.getElementById('search-btn');
 const cityInput = document.getElementById('city-input');
-const weatherCard = document.getElementById('weather-card');
-const errorCard = document.getElementById('error-card');
-const loader = document.getElementById('loader');
+const weatherWidget = document.getElementById('weather-widget');
+const statusContainer = document.getElementById('status-container');
+const statusMsg = document.getElementById('status-msg');
 
-// DOM Elements inside weather card
+// DOM Elements
 const cityNameEl = document.getElementById('city-name');
 const weatherDescEl = document.getElementById('weather-desc');
 const temperatureEl = document.getElementById('temperature');
+const tempMinEl = document.getElementById('temp-min');
+const tempMaxEl = document.getElementById('temp-max');
+const feelsLikeEl = document.getElementById('feels-like');
 const humidityEl = document.getElementById('humidity');
 const windEl = document.getElementById('wind');
 const weatherIconEl = document.getElementById('weather-icon');
 const recommendationTextEl = document.getElementById('recommendation-text');
-const secondaryGlow = document.querySelector('.bg-glow.secondary');
+const body = document.body;
 
-// WMO Weather interpretation codes (Open-Meteo)
+// Mapa de Clima WMO
 const weatherMap = {
     0: { desc: 'Despejado', icon: 'ph-sun', type: 'sunny' },
     1: { desc: 'Mayormente Despejado', icon: 'ph-sun-dim', type: 'sunny' },
@@ -39,7 +42,6 @@ const weatherMap = {
     99: { desc: 'Tormenta Fuerte con Granizo', icon: 'ph-cloud-lightning', type: 'storm' }
 };
 
-// Listeners
 searchBtn.addEventListener('click', handleSearch);
 cityInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleSearch();
@@ -49,112 +51,118 @@ async function handleSearch() {
     const city = cityInput.value.trim();
     if (!city) return;
 
-    // Show loader
-    weatherCard.classList.add('hidden');
-    errorCard.classList.add('hidden');
-    loader.classList.remove('hidden');
+    showStatus('<i class="ph ph-spinner-gap spin"></i> Buscando...');
 
     try {
-        // 1. Get Coordinates from city name
+        // 1. Geocoding
         const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=es&format=json`);
         const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            throw new Error('Ciudad no encontrada');
+            throw new Error('Ciudad no encontrada.');
         }
 
-        const location = geoData.results[0];
-        const { latitude, longitude, name, country } = location;
+        const { latitude, longitude, name } = geoData.results[0];
 
-        // 2. Get Weather data
-        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,is_day,weather_code,wind_speed_10m`);
+        // 2. Weather Data (Current + Daily for Min/Max)
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
+        const weatherRes = await fetch(weatherUrl);
         const weatherData = await weatherRes.json();
         
-        const current = weatherData.current;
-
-        // Update UI
-        updateUI(name, country, current);
-
-        loader.classList.add('hidden');
-        weatherCard.classList.remove('hidden');
+        updateUI(name, weatherData);
+        hideStatus();
 
     } catch (error) {
-        loader.classList.add('hidden');
-        errorCard.classList.remove('hidden');
+        showStatus(`<i class="ph ph-warning-circle"></i> ${error.message}`);
     }
 }
 
-function updateUI(city, country, currentData) {
-    const temp = Math.round(currentData.temperature_2m);
-    const humidity = currentData.relative_humidity_2m;
-    const wind = currentData.wind_speed_10m;
-    const isDay = currentData.is_day;
-    const code = currentData.weather_code;
+function updateUI(city, data) {
+    const current = data.current;
+    const daily = data.daily;
 
-    // Get Weather Info from Map
+    const temp = Math.round(current.temperature_2m);
+    const feelsLike = Math.round(current.apparent_temperature);
+    const humidity = current.relative_humidity_2m;
+    const wind = current.wind_speed_10m;
+    const isDay = current.is_day;
+    const code = current.weather_code;
+    
+    const min = Math.round(daily.temperature_2m_min[0]);
+    const max = Math.round(daily.temperature_2m_max[0]);
+
     const weatherInfo = weatherMap[code] || { desc: 'Desconocido', icon: 'ph-cloud', type: 'cloudy' };
     
-    // Day/Night adjustments
+    // Iconos de Día/Noche
     let iconClass = weatherInfo.icon;
     if (iconClass === 'ph-sun' && !isDay) iconClass = 'ph-moon';
     if (iconClass === 'ph-cloud-sun' && !isDay) iconClass = 'ph-cloud-moon';
 
-    // Populate DOM
-    cityNameEl.innerText = `${city}, ${country}`;
+    // Rellenar Datos
+    cityNameEl.innerText = city;
     weatherDescEl.innerText = weatherInfo.desc;
     temperatureEl.innerText = temp;
-    humidityEl.innerText = `${humidity}%`;
-    windEl.innerText = `${wind} km/h`;
+    tempMinEl.innerText = min;
+    tempMaxEl.innerText = max;
+    feelsLikeEl.innerText = feelsLike;
+    humidityEl.innerText = humidity;
+    windEl.innerText = Math.round(wind);
     
     weatherIconEl.className = `ph ${iconClass} weather-icon-large`;
 
-    // Apply colors based on weather type
-    if(weatherInfo.type === 'sunny' && isDay) {
-        weatherIconEl.style.color = '#f59e0b';
-        secondaryGlow.style.background = 'rgba(245, 158, 11, 0.15)';
-    } else if (weatherInfo.type === 'rainy' || weatherInfo.type === 'storm') {
-        weatherIconEl.style.color = '#3b82f6';
-        secondaryGlow.style.background = 'rgba(59, 130, 246, 0.15)';
-    } else if (weatherInfo.type === 'snowy') {
-        weatherIconEl.style.color = '#cbd5e1';
-        secondaryGlow.style.background = 'rgba(203, 213, 225, 0.15)';
-    } else {
-        weatherIconEl.style.color = '#a8a8b3';
-        secondaryGlow.style.background = 'rgba(168, 168, 179, 0.15)';
-    }
+    // Actualizar Fondo Dinámico (Sky Gradient)
+    updateBackground(weatherInfo.type, isDay);
 
-    // Generate Smart Recommendation
-    recommendationTextEl.innerText = getRecommendation(temp, weatherInfo.type, wind);
+    // Actualizar Insight
+    recommendationTextEl.innerText = getInsight(temp, weatherInfo.type, wind);
+
+    // Mostrar el widget (re-trigger de la animación)
+    weatherWidget.classList.remove('hidden');
+    weatherWidget.style.animation = 'none';
+    weatherWidget.offsetHeight; // trigger reflow
+    weatherWidget.style.animation = null; 
 }
 
-// Lógica del Motor de Recomendaciones (Lo pedido por el usuario)
-function getRecommendation(temp, weatherType, windSpeed) {
-    let rec = "";
-
-    // Lógica principal basada en el tipo de clima
-    if (weatherType === 'rainy') {
-        rec = "Día lluvioso. 🌧️ Asegúrate de llevar un buen paraguas, usar calzado resistente al agua y, si conduces, hazlo con mucha precaución porque el asfalto estará resbaladizo.";
-    } else if (weatherType === 'storm') {
-        rec = "¡Alerta de Tormenta! ⚡ Lo mejor es quedarse en casa si es posible. Desconecta equipos electrónicos sensibles y evita lugares abiertos.";
-    } else if (weatherType === 'snowy') {
-        rec = "¡Está nevando! ❄️ Abrígate con capas térmicas, usa guantes y botas antideslizantes. Ideal para un chocolate caliente adentro.";
-    } else {
-        // Si no llueve ni nieva, evaluamos la temperatura
-        if (temp >= 30) {
-            rec = "¡Hace mucho calor! ☀️ Usa protector solar (FPS 50+), ponte ropa ligera y de colores claros, y no olvides llevar una botella de agua para mantenerte hidratado todo el día.";
-        } else if (temp >= 20 && temp < 30) {
-            rec = "El clima está ideal. 😎 Es un día perfecto para actividades al aire libre o tomar un café en una terraza. Disfruta el día.";
-        } else if (temp >= 10 && temp < 20) {
-            rec = "El clima está fresco. 🧥 Te recomiendo llevar una campera ligera o un suéter, especialmente si vas a salir por la tarde-noche.";
-        } else {
-            rec = "¡Hace mucho frío! 🥶 Es indispensable usar un buen abrigo, bufanda y tal vez guantes. Protege tu cuello y mantente en lugares cálidos.";
-        }
+function updateBackground(type, isDay) {
+    // Reset classes
+    body.className = '';
+    
+    if (!isDay) {
+        body.classList.add('sky-night');
+        return;
     }
 
-    // Añadir advertencia de viento si aplica
-    if (windSpeed > 30 && weatherType !== 'storm') {
-        rec += " Además, hay mucho viento 🌬️. Ten cuidado con objetos que puedan caer y evita arreglarte mucho el pelo.";
-    }
-
-    return rec;
+    // Si es de día
+    if (type === 'sunny') body.classList.add('sky-sunny');
+    else if (type === 'cloudy') body.classList.add('sky-cloudy');
+    else if (type === 'rainy' || type === 'storm') body.classList.add('sky-rainy');
+    else if (type === 'snowy') body.classList.add('sky-snowy');
+    else body.classList.add('sky-default');
 }
+
+function showStatus(html) {
+    weatherWidget.classList.add('hidden');
+    statusContainer.classList.remove('hidden');
+    statusMsg.innerHTML = html;
+}
+
+function hideStatus() {
+    statusContainer.classList.add('hidden');
+}
+
+function getInsight(temp, weatherType, windSpeed) {
+    if (weatherType === 'rainy') return "Lluvia a la vista. Un paraguas o impermeable son indispensables hoy.";
+    if (weatherType === 'storm') return "Tormenta activa. Mantente en interiores y desconecta aparatos sensibles si puedes.";
+    if (weatherType === 'snowy') return "Temperaturas bajo cero y nieve. Vístete en capas gruesas y cuida tus extremidades.";
+    
+    if (temp >= 32) return "Calor extremo. Evita el sol directo en horas pico y mantente muy hidratado.";
+    if (temp >= 25) return "El clima está cálido. Ideal para ropa ligera y protector solar.";
+    if (temp >= 15) return "Temperatura agradable. Un buen clima para estar al aire libre.";
+    if (temp >= 5)  return "Hace bastante frío. Necesitarás una campera gruesa antes de salir.";
+    return "Fuerte helada. Usa bufanda, guantes y gorro para protegerte.";
+}
+
+// Inicializar con una ciudad por defecto para mostrar algo lindo al entrar
+cityInput.value = "Buenos Aires";
+handleSearch();
+cityInput.value = "";

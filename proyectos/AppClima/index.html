@@ -3,82 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App del Clima Inteligente</title>
+    <title>Clima Premium</title>
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body>
-    <div class="bg-glow"></div>
-    <div class="bg-glow secondary"></div>
+<body class="sky-default">
+    
+    <!-- Botón Volver (Flotante) -->
+    <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Portafolio</a>
 
     <div class="container">
-        <header>
-            <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Volver al Portafolio</a>
-            <h1>Asistente del Clima</h1>
-        </header>
+        
+        <!-- Buscador Estilo Spotlight -->
+        <div class="search-bar frosted">
+            <i class="ph ph-magnifying-glass search-icon"></i>
+            <input type="text" id="city-input" placeholder="Buscar ciudad..." autocomplete="off">
+            <button id="search-btn" class="btn-invisible">Buscar</button>
+        </div>
 
-        <div class="weather-app">
-            <div class="search-box">
-                <i class="ph ph-magnifying-glass search-icon"></i>
-                <input type="text" id="city-input" placeholder="Ej. Buenos Aires, Madrid, Tokyo..." autocomplete="off">
-                <button id="search-btn" class="btn">Buscar</button>
-            </div>
+        <!-- Cargando / Error -->
+        <div id="status-container" class="status-box frosted hidden">
+            <p id="status-msg"><i class="ph ph-spinner-gap spin"></i> Buscando...</p>
+        </div>
 
-            <!-- Cargando -->
-            <div id="loader" class="loader hidden">
-                <i class="ph ph-spinner-gap spin"></i> Buscando...
-            </div>
-
-            <!-- Tarjeta de Error -->
-            <div id="error-card" class="card error-card hidden">
-                <i class="ph ph-warning-circle"></i>
-                <p id="error-msg">No pudimos encontrar esa ciudad.</p>
-            </div>
-
-            <!-- Tarjeta del Clima -->
-            <div id="weather-card" class="card weather-card hidden">
-                <div class="weather-header">
-                    <h2 id="city-name">Ciudad, País</h2>
-                    <span id="weather-desc" class="badge">Condición</span>
+        <!-- Widget del Clima Principal -->
+        <div id="weather-widget" class="weather-widget hidden">
+            
+            <!-- Cabecera Principal (Ciudad y Temp) -->
+            <div class="main-info">
+                <h1 id="city-name">Ciudad</h1>
+                <p id="weather-desc" class="desc">Condición</p>
+                <div class="huge-temp">
+                    <span id="temperature">0</span>°
                 </div>
+                <div class="min-max">
+                    <span>Mín: <span id="temp-min">0</span>°</span>
+                    <span>Máx: <span id="temp-max">0</span>°</span>
+                </div>
+            </div>
 
-                <div class="weather-main">
-                    <div class="temp-box">
-                        <i id="weather-icon" class="ph ph-sun weather-icon-large"></i>
-                        <div class="temp">
-                            <span id="temperature">0</span>°C
-                        </div>
+            <!-- Grilla de Detalles -->
+            <div class="details-grid">
+                
+                <!-- Sensación Térmica -->
+                <div class="detail-card frosted">
+                    <div class="detail-header">
+                        <i class="ph ph-thermometer"></i> SENSACIÓN TÉRMICA
+                    </div>
+                    <div class="detail-value">
+                        <span id="feels-like">0</span>°
                     </div>
                 </div>
 
-                <div class="weather-details">
-                    <div class="detail">
-                        <i class="ph ph-drop"></i>
-                        <div>
-                            <p>Humedad</p>
-                            <h4 id="humidity">0%</h4>
-                        </div>
+                <!-- Humedad -->
+                <div class="detail-card frosted">
+                    <div class="detail-header">
+                        <i class="ph ph-drop"></i> HUMEDAD
                     </div>
-                    <div class="detail">
-                        <i class="ph ph-wind"></i>
-                        <div>
-                            <p>Viento</p>
-                            <h4 id="wind">0 km/h</h4>
-                        </div>
+                    <div class="detail-value">
+                        <span id="humidity">0</span>%
                     </div>
                 </div>
 
-                <!-- Recomendación Inteligente -->
-                <div class="recommendation-box">
-                    <h3><i class="ph ph-lightbulb"></i> Recomendación Inteligente:</h3>
-                    <p id="recommendation-text">Buscando el mejor consejo para ti...</p>
+                <!-- Viento -->
+                <div class="detail-card frosted">
+                    <div class="detail-header">
+                        <i class="ph ph-wind"></i> VIENTO
+                    </div>
+                    <div class="detail-value">
+                        <span id="wind">0</span> km/h
+                    </div>
+                </div>
+
+                <!-- Ícono Decorativo -->
+                <div class="detail-card frosted flex-center">
+                    <i id="weather-icon" class="ph ph-sun weather-icon-large"></i>
                 </div>
             </div>
+
+            <!-- Insight / Recomendación Inteligente -->
+            <div class="insight-card frosted">
+                <div class="insight-header">
+                    <i class="ph ph-sparkle"></i> INSIGHT DEL DÍA
+                </div>
+                <p id="recommendation-text">Cargando recomendación...</p>
+            </div>
+
         </div>
     </div>
 
