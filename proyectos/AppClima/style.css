@@ -258,8 +258,19 @@ body {
 @media (min-width: 768px) {
     .container { max-width: 850px; }
     .frosted-widget { display: flex; flex-direction: row; align-items: stretch; }
-    .city-banner { flex: 1; border-right: 1px solid var(--glass-border); justify-content: center; }
-    .widget-body { flex: 1.2; padding: 30px; display: flex; flex-direction: column; justify-content: center; }
-    .main-info h1 { font-size: 2.8rem; }
-    .huge-temp { font-size: 6.5rem; }
+    .city-banner { flex: 1.1; border-right: 1px solid var(--glass-border); justify-content: center; }
+    .widget-body { 
+        flex: 1.4; 
+        padding: 30px; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: center; 
+        min-width: 0; /* FIX: Evita que el scroll horizontal rompa el Flexbox y corte la pantalla */
+    }
+    .main-info h1 { 
+        font-size: clamp(2rem, 3.5vw, 2.7rem); /* Se adapta al largo del nombre */
+        line-height: 1.1;
+        margin-bottom: 12px;
+    }
+    .huge-temp { font-size: 5.5rem; }
 }
