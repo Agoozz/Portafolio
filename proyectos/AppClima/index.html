@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App del Clima Inteligente</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow secondary"></div>
+
+    <div class="container">
+        <header>
+            <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Volver al Portafolio</a>
+            <h1>Asistente del Clima</h1>
+        </header>
+
+        <div class="weather-app">
+            <div class="search-box">
+                <i class="ph ph-magnifying-glass search-icon"></i>
+                <input type="text" id="city-input" placeholder="Ej. Buenos Aires, Madrid, Tokyo..." autocomplete="off">
+                <button id="search-btn" class="btn">Buscar</button>
+            </div>
+
+            <!-- Cargando -->
+            <div id="loader" class="loader hidden">
+                <i class="ph ph-spinner-gap spin"></i> Buscando...
+            </div>
+
+            <!-- Tarjeta de Error -->
+            <div id="error-card" class="card error-card hidden">
+                <i class="ph ph-warning-circle"></i>
+                <p id="error-msg">No pudimos encontrar esa ciudad.</p>
+            </div>
+
+            <!-- Tarjeta del Clima -->
+            <div id="weather-card" class="card weather-card hidden">
+                <div class="weather-header">
+                    <h2 id="city-name">Ciudad, País</h2>
+                    <span id="weather-desc" class="badge">Condición</span>
+                </div>
+
+                <div class="weather-main">
+                    <div class="temp-box">
+                        <i id="weather-icon" class="ph ph-sun weather-icon-large"></i>
+                        <div class="temp">
+                            <span id="temperature">0</span>°C
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weather-details">
+                    <div class="detail">
+                        <i class="ph ph-drop"></i>
+                        <div>
+                            <p>Humedad</p>
+                            <h4 id="humidity">0%</h4>
+                        </div>
+                    </div>
+                    <div class="detail">
+                        <i class="ph ph-wind"></i>
+                        <div>
+                            <p>Viento</p>
+                            <h4 id="wind">0 km/h</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recomendación Inteligente -->
+                <div class="recommendation-box">
+                    <h3><i class="ph ph-lightbulb"></i> Recomendación Inteligente:</h3>
+                    <p id="recommendation-text">Buscando el mejor consejo para ti...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
