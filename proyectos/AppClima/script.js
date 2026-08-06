@@ -19,6 +19,11 @@ const weatherIconEl = document.getElementById('weather-icon');
 const recommendationTextEl = document.getElementById('recommendation-text');
 const body = document.body;
 
+// Subtitle Elements
+const feelsLikeDescEl = document.getElementById('feels-like-desc');
+const humidityDescEl = document.getElementById('humidity-desc');
+const windDescEl = document.getElementById('wind-desc');
+
 // Mapa de Clima WMO
 const weatherMap = {
     0: { desc: 'Despejado', icon: 'ph-sun', type: 'sunny' },
@@ -44,7 +49,7 @@ const weatherMap = {
     99: { desc: 'Tormenta Fuerte con Granizo', icon: 'ph-cloud-lightning', type: 'storm' }
 };
 
-// Generar Emoji de Bandera desde Country Code (Ej: 'AR' -> 🇦🇷)
+// Generar Emoji de Bandera
 function getFlagEmoji(countryCode) {
     if (!countryCode) return '🏳️';
     const codePoints = countryCode
@@ -71,20 +76,20 @@ async function handleSearch() {
         const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            throw new Error('No encontramos esa ciudad. Intenta ser más específico (Ej: Córdoba Argentina).');
+            throw new Error('No encontramos esa ciudad. (Ej: Córdoba Argentina).');
         }
 
         const locationData = geoData.results[0];
-        const { latitude, longitude, name, admin1, country, country_code } = locationData;
+        const { latitude, longitude, name } = locationData;
 
-        showStatus('<i class="ph ph-spinner-gap spin"></i> Obteniendo clima e imágenes...');
+        showStatus('<i class="ph ph-spinner-gap spin"></i> Obteniendo clima...');
 
         // 2. Weather Data
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
         const weatherRes = await fetch(weatherUrl);
         const weatherData = await weatherRes.json();
         
-        // 3. Obtener foto de Wikipedia (opcional, no bloquea si falla)
+        // 3. Foto de Wikipedia
         let cityImageUrl = '';
         try {
             const wikiRes = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
@@ -94,9 +99,7 @@ async function handleSearch() {
                     cityImageUrl = wikiData.thumbnail.source;
                 }
             }
-        } catch (e) {
-            console.log("No se pudo obtener imagen de Wikipedia");
-        }
+        } catch (e) {}
 
         updateUI(locationData, weatherData, cityImageUrl);
         hideStatus();
@@ -113,7 +116,7 @@ function updateUI(locationData, weatherData, imageUrl) {
     const temp = Math.round(current.temperature_2m);
     const feelsLike = Math.round(current.apparent_temperature);
     const humidity = current.relative_humidity_2m;
-    const wind = current.wind_speed_10m;
+    const wind = Math.round(current.wind_speed_10m);
     const isDay = current.is_day;
     const code = current.weather_code;
     
@@ -129,8 +132,6 @@ function updateUI(locationData, weatherData, imageUrl) {
 
     // Rellenar Datos
     cityNameEl.innerText = locationData.name;
-    
-    // Construir location string: Provincia, País + Bandera
     const state = locationData.admin1 ? `${locationData.admin1}, ` : '';
     const flag = getFlagEmoji(locationData.country_code);
     cityLocationEl.innerText = `${state}${locationData.country} ${flag}`;
@@ -141,9 +142,17 @@ function updateUI(locationData, weatherData, imageUrl) {
     tempMaxEl.innerText = max;
     feelsLikeEl.innerText = feelsLike;
     humidityEl.innerText = humidity;
-    windEl.innerText = Math.round(wind);
+    windEl.innerText = wind;
     
-    weatherIconEl.className = `ph ${iconClass} weather-icon-large`;
+    // Usamos .ph-fill para que el icono tenga peso y reemplace a la fuente delgada
+    weatherIconEl.className = `ph-fill ${iconClass} weather-icon-large`;
+    
+    // Ajuste de colores del icono grande
+    if (weatherInfo.type === 'sunny' && isDay) weatherIconEl.style.color = '#fbbf24';
+    else if (weatherInfo.type === 'cloudy') weatherIconEl.style.color = '#e2e8f0';
+    else if (weatherInfo.type === 'rainy' || weatherInfo.type === 'storm') weatherIconEl.style.color = '#93c5fd';
+    else if (weatherInfo.type === 'snowy') weatherIconEl.style.color = '#ffffff';
+    else weatherIconEl.style.color = '#f8fafc';
 
     // Manejar Imagen de Wikipedia
     if (imageUrl) {
@@ -153,29 +162,44 @@ function updateUI(locationData, weatherData, imageUrl) {
         cityImageEl.classList.add('hidden');
     }
 
-    // Actualizar Fondo Dinámico (Sky Gradient)
+    // Actualizar Subtítulos Descriptivos
+    updateSubtitles(temp, feelsLike, humidity, wind);
+
+    // Actualizar Fondo Dinámico
     updateBackground(weatherInfo.type, isDay);
 
     // Actualizar Insight
     recommendationTextEl.innerText = getInsight(temp, weatherInfo.type, wind);
 
-    // Mostrar el widget (re-trigger de la animación)
+    // Animación
     weatherWidget.classList.remove('hidden');
     weatherWidget.style.animation = 'none';
-    weatherWidget.offsetHeight; // trigger reflow
+    weatherWidget.offsetHeight; 
     weatherWidget.style.animation = null; 
 }
 
-function updateBackground(type, isDay) {
-    // Reset classes
-    body.className = '';
-    
-    if (!isDay) {
-        body.classList.add('sky-night');
-        return;
-    }
+function updateSubtitles(temp, feelsLike, humidity, wind) {
+    // Sensación Térmica
+    if (feelsLike === temp) feelsLikeDescEl.innerText = "Similar a la real";
+    else if (feelsLike > temp) feelsLikeDescEl.innerText = "Se siente más calor";
+    else feelsLikeDescEl.innerText = "Se siente más frío";
 
-    // Si es de día
+    // Humedad
+    if (humidity < 30) humidityDescEl.innerText = "Baja (Seco)";
+    else if (humidity >= 30 && humidity <= 60) humidityDescEl.innerText = "Normal";
+    else humidityDescEl.innerText = "Alta (Húmedo)";
+
+    // Viento
+    if (wind < 5) windDescEl.innerText = "Calma";
+    else if (wind >= 5 && wind < 15) windDescEl.innerText = "Brisa ligera";
+    else if (wind >= 15 && wind < 30) windDescEl.innerText = "Viento moderado";
+    else windDescEl.innerText = "Viento fuerte";
+}
+
+function updateBackground(type, isDay) {
+    body.className = '';
+    if (!isDay) { body.classList.add('sky-night'); return; }
+
     if (type === 'sunny') body.classList.add('sky-sunny');
     else if (type === 'cloudy') body.classList.add('sky-cloudy');
     else if (type === 'rainy' || type === 'storm') body.classList.add('sky-rainy');
@@ -188,10 +212,7 @@ function showStatus(html) {
     statusContainer.classList.remove('hidden');
     statusMsg.innerHTML = html;
 }
-
-function hideStatus() {
-    statusContainer.classList.add('hidden');
-}
+function hideStatus() { statusContainer.classList.add('hidden'); }
 
 function getInsight(temp, weatherType, windSpeed) {
     if (weatherType === 'rainy') return "Lluvia a la vista. Un paraguas o impermeable son indispensables hoy.";

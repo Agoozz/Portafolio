@@ -8,12 +8,17 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body class="sky-default">
     
+    <!-- Orbes de Luz para resaltar el efecto de cristal -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
     <!-- Botón Volver (Flotante) -->
     <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Portafolio</a>
 
@@ -39,7 +44,7 @@
                 <img id="city-image" src="" alt="Foto de la ciudad" class="hidden">
                 <div class="city-banner-overlay"></div>
                 
-                <!-- Cabecera Principal (Ciudad y Temp) superpuesta a la foto -->
+                <!-- Cabecera Principal superpuesta -->
                 <div class="main-info">
                     <h1 id="city-name">Ciudad</h1>
                     <p id="city-location" class="location-desc">Provincia, País 🏳️</p>
@@ -61,43 +66,46 @@
                     <!-- Sensación Térmica -->
                     <div class="detail-card frosted-inner">
                         <div class="detail-header">
-                            <i class="ph ph-thermometer"></i> SENSACIÓN
+                            <i class="ph-fill ph-thermometer"></i> SENSACIÓN
                         </div>
                         <div class="detail-value">
                             <span id="feels-like">0</span>°
                         </div>
+                        <div class="detail-subtitle" id="feels-like-desc">Similar a la real</div>
                     </div>
 
                     <!-- Humedad -->
                     <div class="detail-card frosted-inner">
                         <div class="detail-header">
-                            <i class="ph ph-drop"></i> HUMEDAD
+                            <i class="ph-fill ph-drop"></i> HUMEDAD
                         </div>
                         <div class="detail-value">
                             <span id="humidity">0</span>%
                         </div>
+                        <div class="detail-subtitle" id="humidity-desc">Normal</div>
                     </div>
 
                     <!-- Viento -->
                     <div class="detail-card frosted-inner">
                         <div class="detail-header">
-                            <i class="ph ph-wind"></i> VIENTO
+                            <i class="ph-fill ph-wind"></i> VIENTO
                         </div>
                         <div class="detail-value">
-                            <span id="wind">0</span> km/h
+                            <span id="wind">0</span> <span style="font-size: 0.9rem">km/h</span>
                         </div>
+                        <div class="detail-subtitle" id="wind-desc">Brisa suave</div>
                     </div>
 
                     <!-- Ícono Decorativo -->
-                    <div class="detail-card frosted-inner flex-center">
-                        <i id="weather-icon" class="ph ph-sun weather-icon-large"></i>
+                    <div class="detail-card frosted-inner flex-center icon-card">
+                        <i id="weather-icon" class="ph-fill ph-sun weather-icon-large"></i>
                     </div>
                 </div>
 
                 <!-- Insight / Recomendación Inteligente -->
                 <div class="insight-card frosted-inner">
                     <div class="insight-header">
-                        <i class="ph ph-sparkle"></i> INSIGHT DEL DÍA
+                        <i class="ph-fill ph-sparkle" style="color: #ffd700;"></i> INSIGHT DEL DÍA
                     </div>
                     <p id="recommendation-text">Cargando recomendación...</p>
                 </div>
