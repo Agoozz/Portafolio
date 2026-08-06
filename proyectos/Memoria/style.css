@@ -171,11 +171,11 @@ body {
 
 .card.matched {
     transform: rotateY(180deg) scale(0.95);
-    opacity: 0.8;
 }
 .card.matched .card-back {
     box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
     border-color: rgba(255,255,255,0.6);
+    filter: brightness(0.8); /* Alternativa segura a opacity para el efecto 3D */
 }
 
 .card-face {
