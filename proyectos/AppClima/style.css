@@ -2,6 +2,7 @@
     --text-main: #ffffff;
     --text-muted: rgba(255, 255, 255, 0.7);
     --glass-bg: rgba(0, 0, 0, 0.2);
+    --glass-inner: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.15);
 }
 
@@ -17,7 +18,7 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Cambio para que el widget quede más arriba */
+    align-items: flex-start;
     padding-top: 60px;
     transition: background 1s ease-in-out;
     background-size: cover;
@@ -32,7 +33,6 @@ body {
 .sky-cloudy { background: linear-gradient(to bottom, #94a3b8, #64748b, #475569); }
 .sky-rainy { background: linear-gradient(to bottom, #475569, #334155, #1e293b); }
 .sky-snowy { background: linear-gradient(to bottom, #cbd5e1, #94a3b8, #64748b); }
-.sky-sunset { background: linear-gradient(to bottom, #f59e0b, #f43f5e, #881337); }
 
 
 .back-link {
@@ -54,18 +54,33 @@ body {
 
 .container {
     width: 100%;
-    max-width: 400px; /* Tamaño móvil ideal tipo widget */
+    max-width: 400px; 
     padding: 0 20px;
     padding-bottom: 40px;
 }
 
-/* --- Frosted Glass (Apple Style) --- */
+/* --- Frosted Glass --- */
 .frosted {
     background: var(--glass-bg);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
     border: 1px solid var(--glass-border);
     border-radius: 20px;
+}
+
+.frosted-widget {
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    overflow: hidden; /* Para que la imagen del banner respete los bordes */
+}
+
+.frosted-inner {
+    background: var(--glass-inner);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
 }
 
 /* Search Bar */
@@ -112,7 +127,7 @@ body {
 @keyframes spin { 100% { transform: rotate(360deg); } }
 .hidden { display: none !important; }
 
-/* --- Weather Main Info --- */
+/* --- Weather Widget Animation --- */
 .weather-widget {
     animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -121,15 +136,48 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-.main-info {
+/* --- Banner de la Ciudad --- */
+.city-banner {
+    position: relative;
+    width: 100%;
+    min-height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
     text-align: center;
-    margin-bottom: 40px;
 }
+
+#city-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
+
+.city-banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.8));
+    z-index: -1;
+}
+
 .main-info h1 {
-    font-size: 2.2rem;
-    font-weight: 400;
+    font-size: 2rem;
+    font-weight: 500;
     letter-spacing: 0.5px;
     margin-bottom: 2px;
+}
+.location-desc {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
 }
 .desc {
     font-size: 1.1rem;
@@ -138,18 +186,23 @@ body {
     text-transform: capitalize;
 }
 .huge-temp {
-    font-size: 6rem;
-    font-weight: 100; /* Apple style thin font */
+    font-size: 5rem;
+    font-weight: 100;
     line-height: 1;
-    margin: 10px 0;
-    margin-left: 20px; /* Centering tweak for degree symbol */
+    margin: 5px 0;
+    margin-left: 15px; 
 }
 .min-max {
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 500;
     display: flex;
     justify-content: center;
     gap: 15px;
+}
+
+/* --- Widget Body --- */
+.widget-body {
+    padding: 20px;
 }
 
 /* --- Details Grid --- */
@@ -161,7 +214,7 @@ body {
 }
 .detail-card {
     padding: 15px;
-    aspect-ratio: 1; /* Cuadrado perfecto */
+    aspect-ratio: 1; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;

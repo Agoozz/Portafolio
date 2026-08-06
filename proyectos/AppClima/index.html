@@ -22,7 +22,7 @@
         <!-- Buscador Estilo Spotlight -->
         <div class="search-bar frosted">
             <i class="ph ph-magnifying-glass search-icon"></i>
-            <input type="text" id="city-input" placeholder="Buscar ciudad..." autocomplete="off">
+            <input type="text" id="city-input" placeholder="Buscar ciudad (Ej: Córdoba Argentina)..." autocomplete="off">
             <button id="search-btn" class="btn-invisible">Buscar</button>
         </div>
 
@@ -32,66 +32,75 @@
         </div>
 
         <!-- Widget del Clima Principal -->
-        <div id="weather-widget" class="weather-widget hidden">
+        <div id="weather-widget" class="weather-widget hidden frosted-widget">
             
-            <!-- Cabecera Principal (Ciudad y Temp) -->
-            <div class="main-info">
-                <h1 id="city-name">Ciudad</h1>
-                <p id="weather-desc" class="desc">Condición</p>
-                <div class="huge-temp">
-                    <span id="temperature">0</span>°
-                </div>
-                <div class="min-max">
-                    <span>Mín: <span id="temp-min">0</span>°</span>
-                    <span>Máx: <span id="temp-max">0</span>°</span>
-                </div>
-            </div>
-
-            <!-- Grilla de Detalles -->
-            <div class="details-grid">
+            <!-- Banner Fotográfico de la Ciudad -->
+            <div class="city-banner">
+                <img id="city-image" src="" alt="Foto de la ciudad" class="hidden">
+                <div class="city-banner-overlay"></div>
                 
-                <!-- Sensación Térmica -->
-                <div class="detail-card frosted">
-                    <div class="detail-header">
-                        <i class="ph ph-thermometer"></i> SENSACIÓN TÉRMICA
+                <!-- Cabecera Principal (Ciudad y Temp) superpuesta a la foto -->
+                <div class="main-info">
+                    <h1 id="city-name">Ciudad</h1>
+                    <p id="city-location" class="location-desc">Provincia, País 🏳️</p>
+                    <p id="weather-desc" class="desc">Condición</p>
+                    <div class="huge-temp">
+                        <span id="temperature">0</span>°
                     </div>
-                    <div class="detail-value">
-                        <span id="feels-like">0</span>°
+                    <div class="min-max">
+                        <span>Mín: <span id="temp-min">0</span>°</span>
+                        <span>Máx: <span id="temp-max">0</span>°</span>
                     </div>
-                </div>
-
-                <!-- Humedad -->
-                <div class="detail-card frosted">
-                    <div class="detail-header">
-                        <i class="ph ph-drop"></i> HUMEDAD
-                    </div>
-                    <div class="detail-value">
-                        <span id="humidity">0</span>%
-                    </div>
-                </div>
-
-                <!-- Viento -->
-                <div class="detail-card frosted">
-                    <div class="detail-header">
-                        <i class="ph ph-wind"></i> VIENTO
-                    </div>
-                    <div class="detail-value">
-                        <span id="wind">0</span> km/h
-                    </div>
-                </div>
-
-                <!-- Ícono Decorativo -->
-                <div class="detail-card frosted flex-center">
-                    <i id="weather-icon" class="ph ph-sun weather-icon-large"></i>
                 </div>
             </div>
 
-            <!-- Insight / Recomendación Inteligente -->
-            <div class="insight-card frosted">
-                <div class="insight-header">
-                    <i class="ph ph-sparkle"></i> INSIGHT DEL DÍA
+            <div class="widget-body">
+                <!-- Grilla de Detalles -->
+                <div class="details-grid">
+                    
+                    <!-- Sensación Térmica -->
+                    <div class="detail-card frosted-inner">
+                        <div class="detail-header">
+                            <i class="ph ph-thermometer"></i> SENSACIÓN
+                        </div>
+                        <div class="detail-value">
+                            <span id="feels-like">0</span>°
+                        </div>
+                    </div>
+
+                    <!-- Humedad -->
+                    <div class="detail-card frosted-inner">
+                        <div class="detail-header">
+                            <i class="ph ph-drop"></i> HUMEDAD
+                        </div>
+                        <div class="detail-value">
+                            <span id="humidity">0</span>%
+                        </div>
+                    </div>
+
+                    <!-- Viento -->
+                    <div class="detail-card frosted-inner">
+                        <div class="detail-header">
+                            <i class="ph ph-wind"></i> VIENTO
+                        </div>
+                        <div class="detail-value">
+                            <span id="wind">0</span> km/h
+                        </div>
+                    </div>
+
+                    <!-- Ícono Decorativo -->
+                    <div class="detail-card frosted-inner flex-center">
+                        <i id="weather-icon" class="ph ph-sun weather-icon-large"></i>
+                    </div>
                 </div>
-                <p id="recommendation-text">Cargando recomendación...</p>
+
+                <!-- Insight / Recomendación Inteligente -->
+                <div class="insight-card frosted-inner">
+                    <div class="insight-header">
+                        <i class="ph ph-sparkle"></i> INSIGHT DEL DÍA
+                    </div>
+                    <p id="recommendation-text">Cargando recomendación...</p>
+                </div>
             </div>
 
         </div>

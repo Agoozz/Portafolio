@@ -6,6 +6,8 @@ const statusMsg = document.getElementById('status-msg');
 
 // DOM Elements
 const cityNameEl = document.getElementById('city-name');
+const cityLocationEl = document.getElementById('city-location');
+const cityImageEl = document.getElementById('city-image');
 const weatherDescEl = document.getElementById('weather-desc');
 const temperatureEl = document.getElementById('temperature');
 const tempMinEl = document.getElementById('temp-min');
@@ -42,34 +44,61 @@ const weatherMap = {
     99: { desc: 'Tormenta Fuerte con Granizo', icon: 'ph-cloud-lightning', type: 'storm' }
 };
 
+// Generar Emoji de Bandera desde Country Code (Ej: 'AR' -> 🇦🇷)
+function getFlagEmoji(countryCode) {
+    if (!countryCode) return '🏳️';
+    const codePoints = countryCode
+        .toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+}
+
 searchBtn.addEventListener('click', handleSearch);
 cityInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') handleSearch();
 });
 
 async function handleSearch() {
-    const city = cityInput.value.trim();
-    if (!city) return;
+    const query = cityInput.value.trim();
+    if (!query) return;
 
-    showStatus('<i class="ph ph-spinner-gap spin"></i> Buscando...');
+    showStatus('<i class="ph ph-spinner-gap spin"></i> Buscando ciudad...');
 
     try {
         // 1. Geocoding
-        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=es&format=json`);
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=es&format=json`);
         const geoData = await geoRes.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            throw new Error('Ciudad no encontrada.');
+            throw new Error('No encontramos esa ciudad. Intenta ser más específico (Ej: Córdoba Argentina).');
         }
 
-        const { latitude, longitude, name } = geoData.results[0];
+        const locationData = geoData.results[0];
+        const { latitude, longitude, name, admin1, country, country_code } = locationData;
 
-        // 2. Weather Data (Current + Daily for Min/Max)
+        showStatus('<i class="ph ph-spinner-gap spin"></i> Obteniendo clima e imágenes...');
+
+        // 2. Weather Data
         const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=auto`;
         const weatherRes = await fetch(weatherUrl);
         const weatherData = await weatherRes.json();
         
-        updateUI(name, weatherData);
+        // 3. Obtener foto de Wikipedia (opcional, no bloquea si falla)
+        let cityImageUrl = '';
+        try {
+            const wikiRes = await fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
+            if (wikiRes.ok) {
+                const wikiData = await wikiRes.json();
+                if (wikiData.thumbnail && wikiData.thumbnail.source) {
+                    cityImageUrl = wikiData.thumbnail.source;
+                }
+            }
+        } catch (e) {
+            console.log("No se pudo obtener imagen de Wikipedia");
+        }
+
+        updateUI(locationData, weatherData, cityImageUrl);
         hideStatus();
 
     } catch (error) {
@@ -77,9 +106,9 @@ async function handleSearch() {
     }
 }
 
-function updateUI(city, data) {
-    const current = data.current;
-    const daily = data.daily;
+function updateUI(locationData, weatherData, imageUrl) {
+    const current = weatherData.current;
+    const daily = weatherData.daily;
 
     const temp = Math.round(current.temperature_2m);
     const feelsLike = Math.round(current.apparent_temperature);
@@ -99,7 +128,13 @@ function updateUI(city, data) {
     if (iconClass === 'ph-cloud-sun' && !isDay) iconClass = 'ph-cloud-moon';
 
     // Rellenar Datos
-    cityNameEl.innerText = city;
+    cityNameEl.innerText = locationData.name;
+    
+    // Construir location string: Provincia, País + Bandera
+    const state = locationData.admin1 ? `${locationData.admin1}, ` : '';
+    const flag = getFlagEmoji(locationData.country_code);
+    cityLocationEl.innerText = `${state}${locationData.country} ${flag}`;
+
     weatherDescEl.innerText = weatherInfo.desc;
     temperatureEl.innerText = temp;
     tempMinEl.innerText = min;
@@ -109,6 +144,14 @@ function updateUI(city, data) {
     windEl.innerText = Math.round(wind);
     
     weatherIconEl.className = `ph ${iconClass} weather-icon-large`;
+
+    // Manejar Imagen de Wikipedia
+    if (imageUrl) {
+        cityImageEl.src = imageUrl;
+        cityImageEl.classList.remove('hidden');
+    } else {
+        cityImageEl.classList.add('hidden');
+    }
 
     // Actualizar Fondo Dinámico (Sky Gradient)
     updateBackground(weatherInfo.type, isDay);
@@ -162,7 +205,7 @@ function getInsight(temp, weatherType, windSpeed) {
     return "Fuerte helada. Usa bufanda, guantes y gorro para protegerte.";
 }
 
-// Inicializar con una ciudad por defecto para mostrar algo lindo al entrar
-cityInput.value = "Buenos Aires";
+// Inicializar
+cityInput.value = "Córdoba Argentina";
 handleSearch();
 cityInput.value = "";
