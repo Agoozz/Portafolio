@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Memoria Premium</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- Botón Volver -->
+    <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Portafolio</a>
+
+    <!-- Círculos de fondo para el efecto Glassmorphism -->
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+
+    <div class="game-container frosted">
+        <header class="game-header">
+            <h1>Memoria Visual</h1>
+            <p>Encuentra los pares antes de que termine el tiempo.</p>
+            
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <span class="stat-label">Movimientos</span>
+                    <span class="stat-value" id="moves">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">Tiempo</span>
+                    <span class="stat-value" id="time">00:00</span>
+                </div>
+                <button id="restart-btn" class="btn-icon" title="Reiniciar Juego">
+                    <i class="ph-bold ph-arrows-clockwise"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Tablero del Juego (Las cartas se inyectan aquí con JS) -->
+        <main class="game-board" id="game-board"></main>
+    </div>
+
+    <!-- Modal de Victoria -->
+    <div id="win-modal" class="modal hidden">
+        <div class="modal-content frosted">
+            <h2>¡Mente Brillante! 🏆</h2>
+            <p>Has encontrado todas las parejas.</p>
+            <div class="modal-stats">
+                <div>
+                    <i class="ph-fill ph-swap"></i>
+                    <span id="final-moves">0</span> Movimientos
+                </div>
+                <div>
+                    <i class="ph-fill ph-timer"></i>
+                    <span id="final-time">00:00</span> Tiempo
+                </div>
+            </div>
+            <button id="play-again-btn" class="btn-primary">Jugar de Nuevo</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
