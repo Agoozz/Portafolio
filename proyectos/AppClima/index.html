@@ -14,21 +14,28 @@
 </head>
 <body class="sky-default">
     
-    <!-- Orbes de Luz para resaltar el efecto de cristal -->
+    <!-- Orbes de Luz -->
     <div class="bg-orb orb-1"></div>
     <div class="bg-orb orb-2"></div>
     <div class="bg-orb orb-3"></div>
 
-    <!-- Botón Volver (Flotante) -->
     <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Portafolio</a>
 
     <div class="container">
         
         <!-- Buscador Estilo Spotlight -->
-        <div class="search-bar frosted">
-            <i class="ph ph-magnifying-glass search-icon"></i>
-            <input type="text" id="city-input" placeholder="Buscar ciudad (Ej: Córdoba Argentina)..." autocomplete="off">
-            <button id="search-btn" class="btn-invisible">Buscar</button>
+        <div class="search-wrapper">
+            <div class="search-bar frosted">
+                <i class="ph ph-magnifying-glass search-icon"></i>
+                <input type="text" id="city-input" placeholder="Buscar ciudad (Ej: Madrid)..." autocomplete="off">
+                <button id="geo-btn" class="btn-icon" title="Usar mi ubicación"><i class="ph-fill ph-navigation-arrow"></i></button>
+                <button id="search-btn" class="btn-invisible">Buscar</button>
+            </div>
+            
+            <!-- Lista Desplegable Predictiva -->
+            <ul id="suggestions" class="suggestions-list frosted hidden">
+                <!-- Se llena con JS -->
+            </ul>
         </div>
 
         <!-- Cargando / Error -->
@@ -39,12 +46,11 @@
         <!-- Widget del Clima Principal -->
         <div id="weather-widget" class="weather-widget hidden frosted-widget">
             
-            <!-- Banner Fotográfico de la Ciudad -->
+            <!-- Banner Fotográfico -->
             <div class="city-banner">
                 <img id="city-image" src="" alt="Foto de la ciudad" class="hidden">
                 <div id="city-banner-overlay" class="city-banner-overlay hidden"></div>
                 
-                <!-- Cabecera Principal superpuesta -->
                 <div class="main-info">
                     <h1 id="city-name">Ciudad</h1>
                     <div class="location-desc">
@@ -66,51 +72,41 @@
                 <!-- Grilla de Detalles -->
                 <div class="details-grid">
                     
-                    <!-- Sensación Térmica -->
                     <div class="detail-card frosted-inner">
-                        <div class="detail-header">
-                            <i class="ph-fill ph-thermometer"></i> SENSACIÓN
-                        </div>
-                        <div class="detail-value">
-                            <span id="feels-like">0</span>°
-                        </div>
+                        <div class="detail-header"><i class="ph-fill ph-thermometer"></i> SENSACIÓN</div>
+                        <div class="detail-value"><span id="feels-like">0</span>°</div>
                         <div class="detail-subtitle" id="feels-like-desc">Similar a la real</div>
                     </div>
 
-                    <!-- Humedad -->
                     <div class="detail-card frosted-inner">
-                        <div class="detail-header">
-                            <i class="ph-fill ph-drop"></i> HUMEDAD
-                        </div>
-                        <div class="detail-value">
-                            <span id="humidity">0</span>%
-                        </div>
+                        <div class="detail-header"><i class="ph-fill ph-drop"></i> HUMEDAD</div>
+                        <div class="detail-value"><span id="humidity">0</span>%</div>
                         <div class="detail-subtitle" id="humidity-desc">Normal</div>
                     </div>
 
-                    <!-- Viento -->
                     <div class="detail-card frosted-inner">
-                        <div class="detail-header">
-                            <i class="ph-fill ph-wind"></i> VIENTO
-                        </div>
-                        <div class="detail-value">
-                            <span id="wind">0</span> <span style="font-size: 0.9rem">km/h</span>
-                        </div>
+                        <div class="detail-header"><i class="ph-fill ph-wind"></i> VIENTO</div>
+                        <div class="detail-value"><span id="wind">0</span> <span style="font-size: 0.9rem">km/h</span></div>
                         <div class="detail-subtitle" id="wind-desc">Brisa suave</div>
                     </div>
 
-                    <!-- Ícono Decorativo -->
                     <div class="detail-card frosted-inner flex-center icon-card">
                         <i id="weather-icon" class="ph-fill ph-sun weather-icon-large"></i>
                     </div>
                 </div>
 
-                <!-- Insight / Recomendación Inteligente -->
+                <!-- Insight Card -->
                 <div class="insight-card frosted-inner">
-                    <div class="insight-header">
-                        <i class="ph-fill ph-sparkle" style="color: #ffd700;"></i> INSIGHT DEL DÍA
-                    </div>
+                    <div class="insight-header"><i class="ph-fill ph-sparkle" style="color: #ffd700;"></i> INSIGHT DEL DÍA</div>
                     <p id="recommendation-text">Cargando recomendación...</p>
+                </div>
+
+                <!-- Pronóstico Extendido de 7 Días -->
+                <div class="forecast-section">
+                    <div class="forecast-header"><i class="ph-fill ph-calendar-blank"></i> PRONÓSTICO 7 DÍAS</div>
+                    <div class="forecast-scroll" id="forecast-scroll">
+                        <!-- Las tarjetas se generan por JS -->
+                    </div>
                 </div>
             </div>
 
