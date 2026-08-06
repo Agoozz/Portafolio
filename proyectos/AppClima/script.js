@@ -201,11 +201,18 @@ async function loadWeatherForLocation(locationData) {
     try {
         const { latitude, longitude, name } = locationData;
 
+        // Fallback robusto para la zona horaria (Evita el fallo de 'auto' en Open-Meteo)
+        const tz = locationData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'auto';
+
         // Weather Data (Ahora extraemos 7 días completos)
-        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&daily=time,weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&daily=time,weather_code,temperature_2m_max,temperature_2m_min&timezone=${encodeURIComponent(tz)}`;
         const weatherRes = await fetch(weatherUrl);
         const weatherData = await weatherRes.json();
         
+        if (weatherData.error) {
+            throw new Error(weatherData.reason || "Error devuelto por la API del clima.");
+        }
+
         // Foto de Wikipedia
         let cityImageUrl = '';
         try {
@@ -222,7 +229,8 @@ async function loadWeatherForLocation(locationData) {
         hideStatus();
 
     } catch (error) {
-        showStatus(`<i class="ph ph-warning-circle"></i> Ocurrió un error al cargar el clima.`);
+        console.error(error);
+        showStatus(`<i class="ph ph-warning-circle"></i> Error: ${error.message}`);
     }
 }
 
