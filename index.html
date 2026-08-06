@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio Personal</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons (Ligeros y sin dependencias de node) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <!-- Elementos de fondo -->
+    <div class="bg-glow"></div>
+    <div class="bg-glow secondary"></div>
+
+    <!-- Navegación -->
+    <nav id="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">Porta<span>folio</span></a>
+            <ul class="nav-links">
+                <li><a href="#about">Sobre Mí</a></li>
+                <li><a href="#projects">Proyectos</a></li>
+                <li><a href="#contact">Contacto</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Sobre Mí (Hero) -->
+    <section id="about" class="section hero container">
+        <div class="hero-content">
+            <p class="greeting">Hola, soy Agostina</p>
+            <h1 class="hero-title">Desarrolladora Web <span class="highlight">Frontend</span></h1>
+            <p class="hero-description">
+                Diseño y construyo soluciones web limpias, rápidas y efectivas, utilizando las tecnologías fundamentales de la web.
+            </p>
+            <div class="hero-actions">
+                <a href="#projects" class="btn btn-primary">Ver Proyectos <i class="ph ph-arrow-right"></i></a>
+                <a href="#contact" class="btn btn-outline">Contactar <i class="ph ph-envelope"></i></a>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <img src="profile.png" alt="Mi foto de perfil" class="profile-img">
+        </div>
+    </section>
+
+    <!-- Proyectos -->
+    <section id="projects" class="section container">
+        <h2 class="section-title">Mis Proyectos</h2>
+        <div class="projects-grid">
+            
+            <div class="project-card">
+                <h3>Mateando</h3>
+                <p>Sitio web interactivo enfocado en la experiencia del usuario y maquetado moderno.</p>
+                <div class="project-tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">JavaScript</span>
+                </div>
+                <div class="project-links">
+                    <span style="color: var(--text-muted); font-size: 0.9rem;"><i class="ph ph-clock"></i> Próximamente en GitHub</span>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h3>Agenda para Profes Particulares</h3>
+                <p>Aplicación web diseñada para gestionar y organizar clases y alumnos de manera eficiente.</p>
+                <div class="project-tags">
+                    <span class="tag">HTML</span>
+                    <span class="tag">CSS</span>
+                    <span class="tag">JavaScript</span>
+                </div>
+                <div class="project-links">
+                    <a href="AgendaProfe/index.html" target="_blank" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; width: 100%; text-align: center;"><i class="ph ph-arrow-square-out"></i> Ver Proyecto en Vivo</a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Contacto -->
+    <section id="contact" class="section container">
+        <h2 class="section-title">Contáctame</h2>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h3>¡Hablemos de código!</h3>
+                <p>Estoy buscando nuevos retos y oportunidades para colaborar en proyectos interesantes.</p>
+                <div class="social-links">
+                    <a href="https://github.com/Agoozz" target="_blank" rel="noopener noreferrer" class="social-icon"><i class="ph ph-github-logo"></i></a>
+                    <a href="https://www.linkedin.com/feed/" target="_blank" rel="noopener noreferrer" class="social-icon"><i class="ph ph-linkedin-logo"></i></a>
+                </div>
+            </div>
+            
+            <div class="form-wrapper">
+                <div data-fs-success class="form-message success-message"></div>
+                <div data-fs-error class="form-message error-message"></div>
+                
+                <form id="contact-form" class="contact-form">
+                <input type="text" name="name" placeholder="Tu Nombre" data-fs-field required>
+                <span data-fs-error="name" class="field-error"></span>
+
+                <input type="email" name="email" placeholder="tu@email.com" data-fs-field required>
+                <span data-fs-error="email" class="field-error"></span>
+
+                <textarea name="message" rows="4" placeholder="¿En qué puedo ayudarte?" data-fs-field required></textarea>
+                <span data-fs-error="message" class="field-error"></span>
+
+                <button type="submit" class="btn btn-primary" data-fs-submit-btn>Enviar Mensaje</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p class="logo-footer">Porta<span>folio</span></p>
+            <p>&copy; 2026 Creado con HTML, CSS y JS puro.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    
+    <!-- Formspree AJAX Integration -->
+    <script>
+      window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+      formspree('initForm', { formElement: '#contact-form', formId: 'xgawvoep' });
+    </script>
+    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgendaProfe | Login</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<main class="min-vh-100 d-flex align-items-center justify-content-center p-3">
+
+  <section class="container">
+    <div class="row justify-content-center">
+
+      <div class="col-12 col-xl-10">
+        <div class="card border-0 shadow-lg rounded-5 overflow-hidden">
+
+          <div class="row g-0">
+
+            <div class="col-lg-6 bg-primary text-white p-5">
+              <span class="badge bg-white text-primary rounded-pill px-3 py-2 mb-4">
+                Gestión simple para clases particulares
+              </span>
+
+              <h1 class="display-5 fw-bold mb-3">
+                Tu espacio para organizar clases particulares.
+              </h1>
+
+              <p class="fs-5 opacity-75 mb-4">
+                Ingresá a tu agenda personal para administrar alumnos, horarios,
+                pagos y packs de clases.
+              </p>
+
+              <div class="vstack gap-3">
+
+                <div class="card bg-white bg-opacity-25 border-0 rounded-4 text-white p-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-calendar-check fs-2"></i>
+                    <div>
+                      <strong class="d-block">Agendá tus horarios</strong>
+                      <small>Organizá clases por día, materia y alumno.</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card bg-white bg-opacity-25 border-0 rounded-4 text-white p-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-wallet2 fs-2"></i>
+                    <div>
+                      <strong class="d-block">Controlá pagos</strong>
+                      <small>Registrá pagos realizados y deudas pendientes.</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card bg-white bg-opacity-25 border-0 rounded-4 text-white p-3">
+                  <div class="d-flex align-items-start gap-3">
+                    <i class="bi bi-box-seam fs-2"></i>
+                    <div>
+                      <strong class="d-block">Administrá packs</strong>
+                      <small>Marcá clases consumidas y clases restantes.</small>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="col-lg-6 bg-white p-5">
+              <div class="mb-4">
+                <h2 class="fw-bold text-primary mb-1">
+                  <i class="bi bi-journal-check me-2"></i>AgendaProfe
+                </h2>
+                <p class="text-secondary mb-0">
+                  Ingresá para organizar tu día.
+                </p>
+              </div>
+
+              <form id="loginForm">
+
+                <div class="mb-3">
+                  <label for="usuario" class="form-label fw-semibold">Usuario</label>
+                  <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-primary-subtle text-primary border-0">
+                      <i class="bi bi-person"></i>
+                    </span>
+                    <input type="text" class="form-control bg-light border-0" id="usuario" placeholder="Ej: glo">
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label fw-semibold">Contraseña</label>
+                  <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-primary-subtle text-primary border-0">
+                      <i class="bi bi-lock"></i>
+                    </span>
+                    <input type="password" class="form-control bg-light border-0" id="password" placeholder="••••••••">
+                  </div>
+                </div>
+
+                <p id="loginError" class="text-danger small d-none">
+                  Usuario o contraseña incorrectos.
+                </p>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 rounded-4 fw-semibold mt-2">
+                  Entrar a mi agenda
+                </button>
+
+              </form>
+
+              <div class="alert alert-primary border-0 rounded-4 mt-4 mb-0 p-3">
+                <p class="small fw-bold mb-2 text-primary-emphasis">
+                  <i class="bi bi-info-circle-fill me-1"></i> Usuarios de prueba:
+                </p>
+                <div class="row g-2">
+                  <div class="col-6">
+                    <div class="bg-white bg-opacity-50 p-2 rounded-3 text-center small">
+                      <span class="d-block text-secondary">Usuario</span>
+                      <strong class="text-primary">glo</strong>
+                      <span class="d-block text-secondary mt-1">Contraseña</span>
+                      <strong>1234</strong>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="bg-white bg-opacity-50 p-2 rounded-3 text-center small">
+                      <span class="d-block text-secondary">Usuario</span>
+                      <strong class="text-primary">maria</strong>
+                      <span class="d-block text-secondary mt-1">Contraseña</span>
+                      <strong>1234</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>

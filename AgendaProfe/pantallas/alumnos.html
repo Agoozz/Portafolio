@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgendaProfe | Alumnos</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm py-3">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold text-primary" href="inicio.html">
+      <i class="bi bi-journal-check me-2"></i>AgendaProfe
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto gap-lg-3">
+        <li class="nav-item"><a class="nav-link" href="inicio.html">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link active" href="alumnos.html">Alumnos</a></li>
+        <li class="nav-item"><a class="nav-link" href="agenda.html">Agenda</a></li>
+        <li class="nav-item"><a class="nav-link" href="pagos.html">Pagos</a></li>
+        <li class="nav-item"><a class="nav-link" href="packs.html">Materias y Packs</a></li>
+        <li class="nav-item"><a class="nav-link" href="reportes.html">Reportes</a></li>
+        <li class="nav-item">
+          <a class="btn btn-outline-primary rounded-4 px-3 ms-lg-2" href="../index.html">
+            <i class="bi bi-box-arrow-right me-1"></i>Salir
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+    <div>
+      <p class="text-primary fw-semibold mb-1">Alumnos</p>
+      <h1 class="h3 mb-0">Gestión de alumnos</h1>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary rounded-3" type="button" data-bs-toggle="modal" data-bs-target="#modalAlumno">
+        <i class="bi bi-person-plus me-1"></i>Agregar alumno
+      </button>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12">
+      <section class="card border-0 shadow-sm rounded-4">
+        <div class="card-body">
+          <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center mb-3">
+            <div>
+              <p class="text-primary fw-semibold mb-1">Listado</p>
+              <h2 class="h4 mb-0">Alumnos registrados</h2>
+            </div>
+            <span class="badge bg-primary-subtle text-primary" id="contadorAlumnos">0 alumnos</span>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-md-4">
+              <label class="form-label" for="busqueda">Buscar por nombre o apellido</label>
+              <input type="text" class="form-control rounded-3" id="busqueda" placeholder="Ej: María Gómez">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="filtroMateria">Filtros de materia</label>
+              <select class="form-select rounded-3" id="filtroMateria">
+                <option value="">Todas</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="filtroServicio">Servicio</label>
+              <select class="form-select rounded-3" id="filtroServicio">
+                <option value="">Todos</option>
+                <option value="paquete">Paga paquete</option>
+                <option value="clase">Paga por clase</option>
+                <option value="debe">Debe</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label" for="filtroEstado">Estado</label>
+              <select class="form-select rounded-3" id="filtroEstado">
+                <option value="">Todos</option>
+                <option value="Activo">Activo</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle custom-table">
+              <thead class="table-light">
+                <tr>
+                  <th>Alumno</th>
+                  <th>Servicio</th>
+                  <th>Materias</th>
+                  <th>Estado</th>
+                  <th>Contacto</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="alumnoTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<div class="modal fade" id="modalAlumno" tabindex="-1" aria-labelledby="modalAlumnoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-md-down modal-xl">
+    <div class="modal-content rounded-4">
+      <div class="modal-header border-0">
+        <div>
+          <p class="text-primary fw-semibold mb-1" id="modalAlumnoLabel">Ficha del alumno</p>
+          <h2 class="h4 mb-0">Registrar o editar alumno</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="alumnoForm">
+          <input type="hidden" id="alumnoId">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="nombre">Nombre</label>
+              <input type="text" class="form-control rounded-3" id="nombre" placeholder="Ej: Juan" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="apellido">Apellido</label>
+              <input type="text" class="form-control rounded-3" id="apellido" placeholder="Ej: Pérez" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="telefono">Teléfono</label>
+              <input type="text" class="form-control rounded-3" id="telefono" placeholder="11 2345 6789">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="email">Correo</label>
+              <input type="email" class="form-control rounded-3" id="email" placeholder="mail@ejemplo.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="servicio">Tipo de servicio</label>
+              <select class="form-select rounded-3" id="servicio">
+                <option value="paquete">Paga paquete</option>
+                <option value="clase">Paga por clase</option>
+                <option value="debe">Debe</option>
+              </select>
+            </div>
+            <div class="col-md-6" id="campoPaquete">
+              <label class="form-label" for="paqueteClases">Paquete de</label>
+              <select class="form-select rounded-3" id="paqueteClases" required>
+              </select>
+            </div>
+            <div class="col-md-6" id="campoClasesRestantes">
+              <label class="form-label" for="clasesRestantes">Clases restantes en pack</label>
+              <input type="number" class="form-control rounded-3" id="clasesRestantes" min="0" value="0">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="deuda">Deuda / observación de pago</label>
+              <div class="input-group">
+                <span class="input-group-text rounded-start-3">$</span>
+                <input type="number" class="form-control rounded-end-3" id="deuda" min="0" step="1" value="0">
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Materias asignadas</label>
+              <div class="border rounded-3 p-3 bg-light-subtle" id="materias">
+                <!-- Se cargan dinámicamente -->
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="estado">Estado / seguimiento</label>
+              <select class="form-select rounded-3" id="estado">
+                <option value="Activo">Activo</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Inactivo">Inactivo</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="observaciones">Observaciones</label>
+              <textarea class="form-control rounded-3" id="observaciones" rows="4" placeholder="Horario preferido, necesidades, notas de seguimiento..."></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-secondary rounded-3" type="button" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary rounded-3" type="submit" id="guardarAlumnoBtn" form="alumnoForm">Guardar alumno</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para Renovar Pack -->
+<div class="modal fade" id="modalRenovarPack" tabindex="-1" aria-labelledby="modalRenovarPackLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="modal-header bg-success text-white rounded-top-4 border-0">
+        <h5 class="modal-title fw-bold" id="modalRenovarPackLabel">
+          <i class="bi bi-arrow-repeat me-2"></i>Renovar Pack / Registrar Pago
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body p-4">
+        <form id="renovarPackForm">
+          <input type="hidden" id="renovarAlumnoId">
+          
+          <div class="text-center mb-3">
+            <h5 class="fw-bold mb-1" id="renovarAlumnoNombre">Alumno</h5>
+            <p class="text-secondary small mb-0" id="renovarAlumnoSaldoActual">Saldo actual: -3 cl.</p>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="renovarSelectPack">Seleccionar Pack a comprar</label>
+            <select class="form-select rounded-3" id="renovarSelectPack" required></select>
+          </div>
+          
+          <div class="row g-2 mb-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="renovarPrecio">Monto Cobrado</label>
+              <div class="input-group">
+                <span class="input-group-text rounded-start-3">$</span>
+                <input type="number" class="form-control rounded-end-3" id="renovarPrecio" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="renovarMetodo">Método de Pago</label>
+              <select class="form-select rounded-3" id="renovarMetodo">
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Mercado Pago">Mercado Pago</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="alert alert-info border-0 rounded-3 small mb-0">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            Esta acción sumará las clases del pack seleccionado al saldo actual y creará un registro de pago automático.
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer border-0 d-flex justify-content-end pb-4">
+        <button type="button" class="btn btn-outline-secondary rounded-3 px-4" data-bs-dismiss="modal">
+          Cancelar
+        </button>
+        <button type="button" id="btnConfirmarRenovacion" class="btn btn-success rounded-3 px-4 fw-semibold shadow-sm">
+          Registrar Renovación
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../js/auth-ui.js"></script>
+<script src="../js/alumnos.js"></script>
+</body>
+</html>

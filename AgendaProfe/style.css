@@ -1,0 +1,14 @@
+:root {
+  --bs-primary: #6c4bdc;
+  --bs-primary-rgb: 108, 75, 220;
+}
+body { background: #f7f3ff; }
+.nav-link.active {
+  color: #6c4bdc !important;
+  font-weight: 700;
+}
+.navbar { position: sticky; top: 0; z-index: 1050; }
+@media print {
+  nav, .navbar, .btn, button, #btnExportarPDF, #btnExportarExcel, #mesReporte, label[for="mesReporte"], #fab-acciones, main > div.d-flex.flex-column, main > p#ayudaMes, main > section.row.g-3.mb-4, .card-body > div.d-flex.flex-column.flex-md-row { display: none !important; }
+  body { background: #fff !important; color: #000 !important; }
+}
