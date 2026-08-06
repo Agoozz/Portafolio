@@ -1,6 +1,12 @@
+// --- Temáticas ---
+const themes = {
+    space: ['🚀', '👽', '🪐', '☄️', '🛸', '🛰️', '🧑‍🚀', '🌌', '⭐', '🌙', '🌞', '🌎'],
+    food: ['🍔', '🍕', '🍣', '🌭', '🌮', '🍩', '🍦', '🍒', '🥑', '🍉', '🥐', '🍟'],
+    animals: ['🐶', '🐱', '🦊', '🐼', '🦁', '🐸', '🐒', '🐧', '🦉', '🐢', '🦄', '🐙']
+};
+
 // --- Estado del Juego ---
-const cardArray = ['🚀', '👽', '🪐', '☄️', '🛸', '🛰️', '🧑‍🚀', '🌌'];
-let grid = [...cardArray, ...cardArray]; // Duplicar para crear pares
+let grid = [];
 let moves = 0;
 let time = 0;
 let timerInterval = null;
@@ -8,6 +14,7 @@ let hasFlippedCard = false;
 let lockBoard = false;
 let firstCard, secondCard;
 let matchedPairs = 0;
+let totalPairs = 0;
 
 // --- DOM Elements ---
 const board = document.getElementById('game-board');
@@ -19,12 +26,37 @@ const finalMovesEl = document.getElementById('final-moves');
 const finalTimeEl = document.getElementById('final-time');
 const playAgainBtn = document.getElementById('play-again-btn');
 
+// Menu Elements
+const menuScreen = document.getElementById('menu-screen');
+const gameScreen = document.getElementById('game-screen');
+const startBtn = document.getElementById('start-btn');
+const backToMenuBtn = document.getElementById('back-to-menu-btn');
+
+// --- Navegación ---
+startBtn.addEventListener('click', () => {
+    // Leer configuraciones
+    const selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+    const selectedDifficulty = parseInt(document.querySelector('input[name="difficulty"]:checked').value);
+    
+    menuScreen.classList.add('hidden');
+    gameScreen.classList.remove('hidden');
+    
+    initGame(selectedTheme, selectedDifficulty / 2);
+});
+
+backToMenuBtn.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    gameScreen.classList.add('hidden');
+    menuScreen.classList.remove('hidden');
+});
+
 // --- Inicialización ---
-function initGame() {
+function initGame(themeName = 'space', pairs = 8) {
     // Resetear variables
     moves = 0;
     time = 0;
     matchedPairs = 0;
+    totalPairs = pairs;
     hasFlippedCard = false;
     lockBoard = false;
     firstCard = null;
@@ -35,6 +67,10 @@ function initGame() {
     
     clearInterval(timerInterval);
     timerInterval = null;
+
+    // Crear arreglo cortado a la cantidad de pares
+    const selectedThemeArray = themes[themeName].slice(0, pairs);
+    grid = [...selectedThemeArray, ...selectedThemeArray];
 
     // Mezclar y renderizar
     shuffle(grid);
@@ -50,7 +86,7 @@ function shuffle(array) {
 
 function renderBoard() {
     board.innerHTML = '';
-    grid.forEach((symbol, index) => {
+    grid.forEach((symbol) => {
         const card = document.createElement('div');
         card.classList.add('card');
         card.dataset.symbol = symbol;
@@ -67,10 +103,9 @@ function renderBoard() {
 
 // --- Lógica Principal ---
 function flipCard() {
-    if (lockBoard) return; // Si estamos en delay de un error, no dejar hacer click
-    if (this === firstCard) return; // No dejar clickear la misma carta dos veces
+    if (lockBoard) return;
+    if (this === firstCard) return;
 
-    // Iniciar temporizador al primer click
     if (!timerInterval) {
         startTimer();
     }
@@ -78,13 +113,11 @@ function flipCard() {
     this.classList.add('flipped');
 
     if (!hasFlippedCard) {
-        // Primera vez que hace click
         hasFlippedCard = true;
         firstCard = this;
         return;
     }
 
-    // Segunda carta
     secondCard = this;
     incrementMoves();
     checkForMatch();
@@ -101,17 +134,15 @@ function checkForMatch() {
 }
 
 function disableCards() {
-    // Es par
     firstCard.removeEventListener('click', flipCard);
     secondCard.removeEventListener('click', flipCard);
     
-    // Efecto visual de pareja encontrada
     firstCard.classList.add('matched');
     secondCard.classList.add('matched');
 
     matchedPairs++;
     
-    if (matchedPairs === cardArray.length) {
+    if (matchedPairs === totalPairs) {
         endGame();
     }
 
@@ -119,10 +150,7 @@ function disableCards() {
 }
 
 function unflipCards() {
-    // No es par
-    lockBoard = true; // Bloqueamos la mesa para que vea su error
-    
-    // Añadimos pequeña vibración de error (opcional)
+    lockBoard = true;
     setTimeout(() => {
         firstCard.classList.remove('flipped');
         secondCard.classList.remove('flipped');
@@ -154,10 +182,8 @@ function startTimer() {
 function endGame() {
     clearInterval(timerInterval);
     
-    // Disparar Confetti (Librería Canvas Confetti)
     fireConfetti();
 
-    // Mostrar Modal después de un segundo
     setTimeout(() => {
         finalMovesEl.innerText = moves;
         finalTimeEl.innerText = timeEl.innerText;
@@ -193,9 +219,17 @@ function fireConfetti() {
     }
 }
 
-// --- Event Listeners ---
-restartBtn.addEventListener('click', initGame);
-playAgainBtn.addEventListener('click', initGame);
+// --- Event Listeners Secundarios ---
+restartBtn.addEventListener('click', () => {
+    // Reinicia con la configuración actual
+    const selectedTheme = document.querySelector('input[name="theme"]:checked').value;
+    const selectedDifficulty = parseInt(document.querySelector('input[name="difficulty"]:checked').value);
+    initGame(selectedTheme, selectedDifficulty / 2);
+});
 
-// Arrancar
-initGame();
+playAgainBtn.addEventListener('click', () => {
+    winModal.classList.add('hidden');
+    gameScreen.classList.add('hidden');
+    menuScreen.classList.remove('hidden');
+});
+

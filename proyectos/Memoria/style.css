@@ -214,6 +214,93 @@ body {
     box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
+/* --- Sistema de Pantallas --- */
+.menu-container {
+    width: 90%;
+    max-width: 500px;
+    border-radius: 30px;
+    padding: 40px;
+    text-align: center;
+}
+.menu-header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    background: linear-gradient(to right, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.menu-header p {
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+.option-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+.option-group h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+    color: #e2e8f0;
+}
+.radio-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.radio-label {
+    cursor: pointer;
+    flex: 1;
+}
+.radio-label input[type="radio"] {
+    display: none;
+}
+.radio-custom {
+    display: block;
+    text-align: center;
+    padding: 12px 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    background: rgba(255,255,255,0.05);
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+.radio-label input[type="radio"]:checked + .radio-custom {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.5), rgba(168, 85, 247, 0.5));
+    border-color: rgba(255,255,255,0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+}
+
+.btn-large {
+    width: 100%;
+    padding: 16px;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+.btn-text {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+    font-weight: 600;
+}
+.btn-text:hover {
+    color: white;
+}
+.header-top {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+}
+.hidden {
+    display: none !important;
+}
+
 /* --- Modal de Victoria --- */
 .modal {
     position: fixed;

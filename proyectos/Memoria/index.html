@@ -24,10 +24,63 @@
     <div class="circle circle-2"></div>
     <div class="circle circle-3"></div>
 
-    <div class="game-container frosted">
+    <!-- ================= PANTALLA DE MENÚ ================= -->
+    <div id="menu-screen" class="menu-container frosted">
+        <header class="menu-header">
+            <h1>Configurar Partida</h1>
+            <p>Elige tu reto y demuestra tu memoria.</p>
+        </header>
+
+        <div class="menu-options">
+            <!-- Temática -->
+            <div class="option-group">
+                <h3>Temática</h3>
+                <div class="radio-buttons">
+                    <label class="radio-label">
+                        <input type="radio" name="theme" value="space" checked>
+                        <span class="radio-custom">🚀 Espacio</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="theme" value="food">
+                        <span class="radio-custom">🍔 Comida</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="theme" value="animals">
+                        <span class="radio-custom">🦊 Animales</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Dificultad -->
+            <div class="option-group">
+                <h3>Dificultad</h3>
+                <div class="radio-buttons">
+                    <label class="radio-label">
+                        <input type="radio" name="difficulty" value="8">
+                        <span class="radio-custom">Fácil (8)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="difficulty" value="16" checked>
+                        <span class="radio-custom">Medio (16)</span>
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="difficulty" value="24">
+                        <span class="radio-custom">Difícil (24)</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <button id="start-btn" class="btn-primary btn-large">¡Jugar Ahora!</button>
+    </div>
+
+    <!-- ================= PANTALLA DE JUEGO ================= -->
+    <div id="game-screen" class="game-container frosted hidden">
         <header class="game-header">
+            <div class="header-top">
+                <button id="back-to-menu-btn" class="btn-text"><i class="ph ph-caret-left"></i> Volver al Menú</button>
+            </div>
             <h1>Memoria Visual</h1>
-            <p>Encuentra los pares antes de que termine el tiempo.</p>
             
             <div class="stats-panel">
                 <div class="stat-box">
