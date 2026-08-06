@@ -1,0 +1,261 @@
+:root {
+    --bg-color: #121214;
+    --text-color: #e1e1e6;
+    --text-muted: #a8a8b3;
+    --accent-color: #ff3366;
+    --accent-glow: rgba(255, 51, 102, 0.4);
+    --card-bg: rgba(32, 32, 36, 0.6);
+    --border-color: rgba(255, 255, 255, 0.1);
+    
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Background Effects */
+.bg-glow {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    background: var(--accent-glow);
+    border-radius: 50%;
+    filter: blur(150px);
+    z-index: -1;
+    top: -100px;
+    left: -100px;
+}
+.bg-glow.secondary {
+    background: rgba(16, 185, 129, 0.2);
+    top: auto;
+    bottom: -100px;
+    right: -100px;
+    left: auto;
+}
+
+.container {
+    width: 100%;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.back-link {
+    display: inline-block;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+.back-link:hover {
+    color: var(--accent-color);
+}
+.back-link i {
+    vertical-align: middle;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* Dashboard */
+.dashboard {
+    margin-bottom: 40px;
+}
+
+.balance-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+.balance-card h3 {
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+.balance-card h2 {
+    font-size: 3rem;
+    letter-spacing: 1px;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+.card h4 {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+}
+.money {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+.money.plus { color: var(--success-color); }
+.money.minus { color: var(--danger-color); }
+
+/* App Content Layout */
+.app-content {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 40px;
+}
+
+@media (max-width: 768px) {
+    .app-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Add Transaction Form */
+h3 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.form-control {
+    margin-bottom: 20px;
+}
+.form-control label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+input, select {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+input:focus, select:focus {
+    border-color: var(--accent-color);
+}
+option {
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px var(--accent-glow);
+}
+.btn:hover {
+    background: #ff1a53;
+    transform: translateY(-2px);
+}
+
+.error-msg {
+    color: var(--danger-color);
+    font-size: 0.85rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* History List */
+.list {
+    list-style-type: none;
+}
+.list li {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border-right: 5px solid transparent;
+    transition: transform 0.3s ease;
+}
+.list li:hover {
+    transform: translateX(-5px);
+}
+.list li.plus {
+    border-right-color: var(--success-color);
+}
+.list li.minus {
+    border-right-color: var(--danger-color);
+}
+
+.delete-btn {
+    cursor: pointer;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger-color);
+    border: 0;
+    font-size: 1.2rem;
+    padding: 5px 10px;
+    border-radius: 4px;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: -40px;
+    transform: translateY(-50%);
+    transition: all 0.3s ease;
+}
+.list li:hover .delete-btn {
+    opacity: 1;
+    left: -50px;
+}
+.delete-btn:hover {
+    background: var(--danger-color);
+    color: white;
+}

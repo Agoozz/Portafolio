@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Gastos</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow secondary"></div>
+
+    <div class="container">
+        <header>
+            <a href="../../index.html" class="back-link"><i class="ph ph-arrow-left"></i> Volver al Portafolio</a>
+            <h1>Gestor de Gastos</h1>
+        </header>
+
+        <div class="dashboard">
+            <div class="balance-card">
+                <h3>Balance Total</h3>
+                <h2 id="balance">$0.00</h2>
+            </div>
+            <div class="summary-cards">
+                <div class="card income">
+                    <h4>Ingresos <i class="ph ph-trend-up"></i></h4>
+                    <p id="money-plus" class="money plus">+$0.00</p>
+                </div>
+                <div class="card expense">
+                    <h4>Gastos <i class="ph ph-trend-down"></i></h4>
+                    <p id="money-minus" class="money minus">-$0.00</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-content">
+            <section class="add-transaction">
+                <h3>Nueva Transacción</h3>
+                <form id="form">
+                    <div class="form-control">
+                        <label for="text">Descripción</label>
+                        <input type="text" id="text" placeholder="Ej. Sueldo, Supermercado..." autocomplete="off">
+                    </div>
+                    <div class="form-control">
+                        <label for="amount">Monto</label>
+                        <input type="number" id="amount" placeholder="Ingrese el monto..." step="0.01">
+                    </div>
+                    <div class="form-control">
+                        <label for="type">Tipo</label>
+                        <select id="type">
+                            <option value="income">Ingreso (+)</option>
+                            <option value="expense">Gasto (-)</option>
+                        </select>
+                    </div>
+                    <button class="btn">Agregar Transacción</button>
+                    <p id="error-msg" class="error-msg"></p>
+                </form>
+            </section>
+
+            <section class="history">
+                <h3>Historial</h3>
+                <ul id="list" class="list">
+                    <!-- Las transacciones se insertarán aquí dinámicamente -->
+                </ul>
+            </section>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
