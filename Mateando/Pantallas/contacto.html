@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacto | Mateando</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<header class="productos-header">
+  <nav class="container-fluid d-flex align-items-center justify-content-between py-2 px-3">
+    <a href="../index.html" class="brand fw-bold fs-5">Mateando</a>
+
+    <div class="d-flex gap-4">
+      <a href="../index.html" class="nav-pill">Inicio</a>
+      <a href="productos.html" class="nav-pill">Productos</a>
+      <a href="ideas.html" class="nav-pill">Ideas</a>
+      <a href="contacto.html" class="nav-pill active">Contacto</a>
+      <a href="envios.html" class="nav-pill">Envios</a>
+    </div>
+
+    <div class="header-icons d-flex gap-2 align-items-center">
+     
+      <button class="cart-header-btn" type="button" data-bs-toggle="modal" data-bs-target="#carritoModal">
+        🛒 <span id="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main class="contacto-page">
+
+  <section class="contacto-hero py-5">
+    <div class="container-fluid px-5">
+      <div class="row align-items-center g-5">
+
+        <div class="col-md-6">
+          <span class="section-label">NUESTRA ESENCIA</span>
+          <h1>El arte de la calma,<br><em>cosechado a mano.</em></h1>
+
+          <p>
+            Yuyo & Ritual nace del deseo de recuperar los tiempos lentos.
+            En las sierras, donde el sol calienta la tierra y el aire huele a peperina,
+            aprendimos que cada infusión es un puente hacia nosotros mismos.
+          </p>
+
+          <p>
+            Seleccionamos cada hierba de productores locales, respetando los ciclos
+            de la naturaleza y el comercio justo.
+          </p>
+        </div>
+
+        <div class="col-md-6">
+          <div class="contacto-img-grid">
+            <img src="../Imagenes/contacto-1.jpg" alt="Hierbas naturales" class="img-principal">
+            <img src="../Imagenes/contacto-2.jpg" alt="Cosecha artesanal">
+            <img src="../Imagenes/contacto-3.jpg" alt="Infusión natural">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="contacto-form-section py-5">
+    <div class="container-fluid px-5">
+      <div class="row g-5 align-items-center">
+
+        <div class="col-md-6">
+          <span class="section-label">CONTACTO</span>
+          <h2>Hablemos de rituales</h2>
+
+          <p class="contact-intro">
+            ¿Tenés dudas sobre nuestros blends, envíos o querés visitarnos?
+            Escribinos y te respondemos con calma.
+          </p>
+
+          <div class="contact-info-box">
+            <div class="contact-line">
+              <div class="contact-icon">✉</div>
+              <div>
+                <span>CORREO</span>
+                <strong>hola@mateando.com</strong>
+              </div>
+            </div>
+
+            <div class="contact-line">
+              <div class="contact-icon">☎</div>
+              <div>
+                <span>TELÉFONO</span>
+                <strong>+54 9 362 000 0000</strong>
+              </div>
+            </div>
+
+            <div class="contact-line">
+              <div class="contact-icon">⌖</div>
+              <div>
+                <span>UBICACIÓN</span>
+                <strong>Resistencia, Chaco</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <form class="contact-form">
+            <label>Tu nombre</label>
+            <input type="text" placeholder="Ej: Sofía Martínez">
+
+            <label>Correo electrónico</label>
+            <input type="email" placeholder="sofia@ejemplo.com">
+
+            <label>Mensaje</label>
+            <textarea placeholder="¿En qué podemos ayudarte?"></textarea>
+
+            <button type="submit">Enviar mensaje</button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- CARRITO -->
+<div class="modal fade" id="carritoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content carrito-modal">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Tu carrito</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="cart-message" class="cart-message"></div>
+        <div id="cart-items"></div>
+
+        <div class="mt-4 border-top pt-3">
+          <p><strong>Total:</strong> $<span id="cart-total">0</span></p>
+        </div>
+      </div>
+
+      <div class="modal-footer d-block">
+        <p class="compra-info">
+          Enviá el comprobante al <strong>+54 9 362 000 0000</strong>
+        </p>
+
+        <button type="button" class="btn btn-success w-100 confirmar-compra">
+          Confirmar compra
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ORDEN -->
+<div class="modal fade" id="ordenModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content orden-modal text-center p-4">
+
+      <h4 class="mb-3">Compra registrada 🌿</h4>
+
+      <h3><strong id="numero-orden"></strong></h3>
+
+      <button type="button" class="btn btn-success w-100 finalizar-compra">
+        Entendido
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../script.js"></script>
+
+</body>
+</html>

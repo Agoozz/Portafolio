@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Envíos | Mateando</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+
+<header class="productos-header">
+  <nav class="container-fluid d-flex align-items-center justify-content-between py-2 px-3">
+    <a href="../index.html" class="brand fw-bold fs-5">Mateando</a>
+
+    <div class="d-flex gap-4">
+      <a href="../index.html" class="nav-pill">Inicio</a>
+      <a href="productos.html" class="nav-pill">Productos</a>
+      <a href="ideas.html" class="nav-pill">Ideas</a>
+      <a href="contacto.html" class="nav-pill">Contacto</a>
+      <a href="envios.html" class="nav-pill active">Envios</a>
+    </div>
+
+    <div class="header-icons d-flex gap-2 align-items-center">
+     
+      <button class="cart-header-btn" type="button" data-bs-toggle="modal" data-bs-target="#carritoModal">
+        🛒 <span id="cart-count">0</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main class="envios-page">
+
+  <section class="envios-hero py-5">
+    <div class="container-fluid px-5">
+      <div class="row align-items-center g-5">
+
+        <div class="col-md-6">
+          <span class="section-label">LOGÍSTICA CON PROPÓSITO</span>
+
+          <h1>Tus rituales, directamente a tu puerta.</h1>
+
+          <p>
+            Diseñamos un sistema de envíos que respeta el tiempo y la naturaleza.
+            Entregamos frescura y bienestar con la mayor eficiencia posible.
+          </p>
+
+          <div class="d-flex gap-3 mt-4">
+            <span class="pill">Seguimiento en tiempo real</span>
+            <span class="pill">Empaque sustentable</span>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <img src="../Imagenes/Envio1.png" class="envios-img" alt="Envíos">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="metodos-section py-5 text-center">
+    <h2>Métodos de Entrega</h2>
+    <p>Opciones flexibles que se adaptan a tu ritmo de vida.</p>
+
+    <div class="container-fluid px-5 mt-5">
+      <div class="row g-4">
+
+        <div class="col-md-4">
+          <div class="envio-card">
+            <h5>Envío Express</h5>
+            <p>Ideal para quienes no pueden esperar a su próxima infusión.</p>
+
+            <ul>
+              
+              <li>24 a 48 horas hábiles</li>
+              <li>Tarifa variable según zona</li>
+              <button type="button" class="btn btn-dark mt-3 seleccionar-envio" data-envio="Envío Express">
+                Seleccionar
+              </button>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="envio-card">
+            <h5>Envío Ritual (Estándar)</h5>
+            <p>Nuestro método más balanceado y sustentable.</p>
+
+            <ul>
+              <li>3 a 5 días hábiles</li>
+              <li>Gratis en compras + $60000</li>
+              <button type="button" class="btn btn-dark mt-3 seleccionar-envio" data-envio="Envío Ritual Estándar">
+                Seleccionar
+              </button>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="envio-card">
+            <h5>Retiro en Tienda</h5>
+            <p>Visitarnos en nuestro espacio y retirar sin costo adicional.</p>
+
+            <ul>
+              <li>Listo en 2 horas</li>
+              <li>Resistencia, Chaco</li>
+              <button type="button" class="btn btn-dark mt-3 seleccionar-envio" data-envio="Retiro en Tienda">
+                Seleccionar
+              </button>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-center mt-5">
+        <a href="productos.html" class="btn btn-dark px-5">
+          Ver Catálogo
+        </a>
+      </div>
+
+      <div id="form-envio" class="form-envio mt-5 d-none">
+        <h4>Datos para la entrega</h4>
+        <p id="tipo-envio-seleccionado"></p>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <input type="text" id="nombre-envio" class="form-control" placeholder="Nombre completo">
+          </div>
+
+          <div class="col-md-6">
+            <input type="text" id="dni-envio" class="form-control" placeholder="DNI">
+          </div>
+
+          <div class="col-md-6">
+            <input type="text" id="direccion-envio" class="form-control" placeholder="Dirección">
+          </div>
+
+          <div class="col-md-3">
+            <input type="text" id="ciudad-envio" class="form-control" placeholder="Ciudad">
+          </div>
+
+          <div class="col-md-3">
+            <input type="text" id="provincia-envio" class="form-control" placeholder="Provincia">
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-success mt-4" id="guardar-envio">
+          Guardar datos
+        </button>
+      </div>
+      
+    </div>
+  </section>
+
+  <section class="cobertura-section py-5">
+    <div class="container-fluid px-5">
+      <div class="row align-items-center g-5">
+
+        <div class="col-md-6">
+          <img src="../Imagenes/Envio2.png" class="cobertura-img" alt="Cobertura">
+        </div>
+
+        <div class="col-md-6">
+          <h2>Zonas de Cobertura</h2>
+          <p>
+            Llegamos a cada rincón del país con nuestra red de logística
+            especializada en productos naturales.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Ventana del carrito -->
+<div class="modal fade" id="carritoModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content carrito-modal">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Tu carrito</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="cart-message" class="cart-message"></div>
+
+        <div id="cart-items"></div>
+
+        <div class="mt-4 border-top pt-3">
+          <p><strong>Total:</strong> $<span id="cart-total">0</span></p>
+        </div>
+      </div>
+
+      <div class="modal-footer d-block">
+        <p class="compra-info">
+          Para confirmar tu compra, enviá el comprobante de la transferencia al número
+          <strong>+54 9 362 000 0000</strong>. La confirmación puede tardar hasta
+          <strong>24 horas hábiles</strong>. Una vez confirmada, tenés
+          <strong>5 días</strong> para retirar por el local. Si elegiste envío,
+          el despacho se realiza dentro de <strong>3 días hábiles</strong>.
+        </p>
+
+        <button type="button" class="btn btn-success w-100 confirmar-compra">
+          Confirmar compra
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Ventana de orden confirmada -->
+<div class="modal fade" id="ordenModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content orden-modal text-center p-4">
+
+      <h4 class="mb-3">Compra registrada 🌿</h4>
+
+      <p class="mb-2">Tu número de orden es:</p>
+
+      <h3 class="mb-3">
+        <strong id="numero-orden"></strong>
+      </h3>
+
+      <p class="small mb-4">
+        Enviá el comprobante de transferencia indicando este número de orden.
+      </p>
+
+      <button type="button" class="btn btn-success w-100 finalizar-compra">
+        Entendido
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../script.js"></script>
+</body>
+</html>
