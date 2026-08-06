@@ -7,7 +7,9 @@ const statusMsg = document.getElementById('status-msg');
 // DOM Elements
 const cityNameEl = document.getElementById('city-name');
 const cityLocationEl = document.getElementById('city-location');
+const flagIconEl = document.getElementById('flag-icon');
 const cityImageEl = document.getElementById('city-image');
+const cityBannerOverlayEl = document.getElementById('city-banner-overlay');
 const weatherDescEl = document.getElementById('weather-desc');
 const temperatureEl = document.getElementById('temperature');
 const tempMinEl = document.getElementById('temp-min');
@@ -48,16 +50,6 @@ const weatherMap = {
     96: { desc: 'Tormenta con Granizo', icon: 'ph-cloud-lightning', type: 'storm' },
     99: { desc: 'Tormenta Fuerte con Granizo', icon: 'ph-cloud-lightning', type: 'storm' }
 };
-
-// Generar Emoji de Bandera
-function getFlagEmoji(countryCode) {
-    if (!countryCode) return '🏳️';
-    const codePoints = countryCode
-        .toUpperCase()
-        .split('')
-        .map(char => 127397 + char.charCodeAt(0));
-    return String.fromCodePoint(...codePoints);
-}
 
 searchBtn.addEventListener('click', handleSearch);
 cityInput.addEventListener('keypress', (e) => {
@@ -133,8 +125,15 @@ function updateUI(locationData, weatherData, imageUrl) {
     // Rellenar Datos
     cityNameEl.innerText = locationData.name;
     const state = locationData.admin1 ? `${locationData.admin1}, ` : '';
-    const flag = getFlagEmoji(locationData.country_code);
-    cityLocationEl.innerText = `${state}${locationData.country} ${flag}`;
+    cityLocationEl.innerText = `${state}${locationData.country}`;
+    
+    // Bandera con API Externa (Funciona siempre en Windows)
+    if(locationData.country_code) {
+        flagIconEl.src = `https://flagcdn.com/w40/${locationData.country_code.toLowerCase()}.png`;
+        flagIconEl.classList.remove('hidden');
+    } else {
+        flagIconEl.classList.add('hidden');
+    }
 
     weatherDescEl.innerText = weatherInfo.desc;
     temperatureEl.innerText = temp;
@@ -144,22 +143,21 @@ function updateUI(locationData, weatherData, imageUrl) {
     humidityEl.innerText = humidity;
     windEl.innerText = wind;
     
-    // Usamos .ph-fill para que el icono tenga peso y reemplace a la fuente delgada
     weatherIconEl.className = `ph-fill ${iconClass} weather-icon-large`;
-    
-    // Ajuste de colores del icono grande
     if (weatherInfo.type === 'sunny' && isDay) weatherIconEl.style.color = '#fbbf24';
     else if (weatherInfo.type === 'cloudy') weatherIconEl.style.color = '#e2e8f0';
     else if (weatherInfo.type === 'rainy' || weatherInfo.type === 'storm') weatherIconEl.style.color = '#93c5fd';
     else if (weatherInfo.type === 'snowy') weatherIconEl.style.color = '#ffffff';
     else weatherIconEl.style.color = '#f8fafc';
 
-    // Manejar Imagen de Wikipedia
+    // Manejar Imagen de Wikipedia (Evitar fondo negro si no hay foto)
     if (imageUrl) {
         cityImageEl.src = imageUrl;
         cityImageEl.classList.remove('hidden');
+        cityBannerOverlayEl.classList.remove('hidden'); // Mostrar oscurecimiento
     } else {
         cityImageEl.classList.add('hidden');
+        cityBannerOverlayEl.classList.add('hidden'); // Ocultar oscurecimiento para dejar pasar el Glassmorphism puro
     }
 
     // Actualizar Subtítulos Descriptivos
@@ -179,17 +177,14 @@ function updateUI(locationData, weatherData, imageUrl) {
 }
 
 function updateSubtitles(temp, feelsLike, humidity, wind) {
-    // Sensación Térmica
     if (feelsLike === temp) feelsLikeDescEl.innerText = "Similar a la real";
     else if (feelsLike > temp) feelsLikeDescEl.innerText = "Se siente más calor";
     else feelsLikeDescEl.innerText = "Se siente más frío";
 
-    // Humedad
     if (humidity < 30) humidityDescEl.innerText = "Baja (Seco)";
     else if (humidity >= 30 && humidity <= 60) humidityDescEl.innerText = "Normal";
     else humidityDescEl.innerText = "Alta (Húmedo)";
 
-    // Viento
     if (wind < 5) windDescEl.innerText = "Calma";
     else if (wind >= 5 && wind < 15) windDescEl.innerText = "Brisa ligera";
     else if (wind >= 15 && wind < 30) windDescEl.innerText = "Viento moderado";

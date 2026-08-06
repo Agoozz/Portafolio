@@ -42,12 +42,15 @@
             <!-- Banner Fotográfico de la Ciudad -->
             <div class="city-banner">
                 <img id="city-image" src="" alt="Foto de la ciudad" class="hidden">
-                <div class="city-banner-overlay"></div>
+                <div id="city-banner-overlay" class="city-banner-overlay hidden"></div>
                 
                 <!-- Cabecera Principal superpuesta -->
                 <div class="main-info">
                     <h1 id="city-name">Ciudad</h1>
-                    <p id="city-location" class="location-desc">Provincia, País 🏳️</p>
+                    <div class="location-desc">
+                        <span id="city-location">Provincia, País</span>
+                        <img id="flag-icon" src="" alt="Bandera" class="hidden flag-img">
+                    </div>
                     <p id="weather-desc" class="desc">Condición</p>
                     <div class="huge-temp">
                         <span id="temperature">0</span>°
