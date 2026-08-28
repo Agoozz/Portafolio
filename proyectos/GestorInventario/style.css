@@ -1,0 +1,193 @@
+/* Custom Theme Variables */
+:root {
+    --theme-color: #0d6efd;
+    --theme-hover: #0b5ed7;
+    --theme-rgb: 13, 110, 253;
+}
+
+[data-theme="orange"] {
+    --theme-color: #fd7e14;
+    --theme-hover: #e37012;
+    --theme-rgb: 253, 126, 20;
+}
+
+[data-theme="pink"] {
+    --theme-color: #d63384;
+    --theme-hover: #c02d76;
+    --theme-rgb: 214, 51, 132;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Custom Theme Classes for Bootstrap integration */
+.text-theme {
+    color: var(--theme-color) !important;
+}
+
+.bg-theme {
+    background-color: var(--theme-color) !important;
+}
+
+.btn-theme {
+    background-color: var(--theme-color);
+    color: #fff;
+    border: none;
+}
+.btn-theme:hover, .btn-theme:focus {
+    background-color: var(--theme-hover);
+    color: #fff;
+}
+.btn-theme:disabled {
+    background-color: var(--theme-color);
+    opacity: 0.65;
+}
+
+.btn-outline-theme {
+    color: var(--theme-color);
+    border-color: var(--theme-color);
+    background-color: transparent;
+}
+.btn-outline-theme:hover, .btn-outline-theme.active {
+    color: #fff;
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+}
+
+/* Sidebar nav */
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    background-color: var(--theme-color);
+    color: #fff !important;
+}
+.nav-link {
+    transition: all 0.2s ease;
+}
+.nav-link:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Themes selectors */
+.theme-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+    padding: 0;
+}
+.theme-btn:hover { transform: scale(1.1); }
+.theme-btn.active { border-color: #212529; }
+.theme-btn.blue { background-color: #0d6efd; }
+.theme-btn.orange { background-color: #fd7e14; }
+.theme-btn.pink { background-color: #d63384; }
+
+/* Dashboard Card Icons */
+.stat-card .card-body > div:first-child {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Category Chips Scrollbar */
+.category-chips::-webkit-scrollbar {
+    height: 6px;
+}
+.category-chips::-webkit-scrollbar-thumb {
+    background-color: #dee2e6;
+    border-radius: 10px;
+}
+.category-chips {
+    white-space: nowrap;
+}
+
+/* POS Products Grid */
+#pos-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    display: grid;
+    align-content: start;
+}
+
+.product-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    border-color: var(--theme-color) !important;
+}
+.product-img-placeholder {
+    height: 100px;
+    background-color: #f8f9fa;
+    border-radius: 0.375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 2.5rem;
+}
+
+/* Quantity Buttons */
+.qty-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+/* Fix POS Layout Scrolling */
+#pos {
+    /* Forzamos que la vista POS ocupe exactamente el espacio disponible */
+    height: calc(100vh - 120px) !important; 
+    overflow: hidden;
+}
+
+#pos-products-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    display: grid;
+    align-content: start;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+#cart-items-container {
+    flex: 1 1 0 !important;
+    min-height: 0; /* Clave en flexbox para que no empuje */
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* AI Assistant Transition */
+#ai-assistant-card {
+    flex-shrink: 0;
+}
+
+/* Dashed borders */
+.border-dashed {
+    border-style: dashed !important;
+}
+
+/* Print Styles */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #receipt-printable-area, #receipt-printable-area * {
+        visibility: visible;
+    }
+    #receipt-printable-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+}
