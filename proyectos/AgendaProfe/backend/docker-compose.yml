@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.4-alpine
+    container_name: agenda_profe_postgres_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-agenda_profe_db}
+      POSTGRES_USER: ${DB_USER:-agendaprofe_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - agenda_profe_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-agendaprofe_user} -d ${DB_NAME:-agenda_profe_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  agenda_profe_pg_data:
+    name: agenda_profe_pg_data_volume
