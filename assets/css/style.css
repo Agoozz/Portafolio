@@ -220,24 +220,35 @@ nav.scrolled {
 .project-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    padding: 2rem;
     border-radius: 12px;
-    transition: transform 0.3s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 .project-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
     border-color: var(--accent-color);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+.project-body {
+    padding: 1.5rem 1.8rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 .project-card h3 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 .project-card p {
     color: var(--text-muted);
     margin-bottom: 1.5rem;
     font-size: 0.95rem;
+    flex: 1;
 }
 .project-tags {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 1.5rem;
 }
@@ -253,6 +264,295 @@ nav.scrolled {
     gap: 1rem;
     border-top: 1px solid var(--border-color);
     padding-top: 1rem;
+}
+
+/* Project Previews / Miniatures */
+.project-preview {
+    height: 165px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.preview-window {
+    width: 100%;
+    height: 100%;
+    background: rgba(13, 13, 13, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.35s ease;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+.project-card:hover .preview-window {
+    transform: scale(1.04) translateY(-2px);
+}
+.preview-dots {
+    display: flex;
+    gap: 5px;
+    padding: 7px 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.preview-dots span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+}
+.preview-dots span:nth-child(1) { background: #ef4444; }
+.preview-dots span:nth-child(2) { background: #f59e0b; }
+.preview-dots span:nth-child(3) { background: #10b981; }
+.preview-body {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 1. Memoria 3D */
+.preview-memoria {
+    background: radial-gradient(circle at top right, rgba(168, 85, 247, 0.35), rgba(30, 27, 75, 0.6));
+}
+.mini-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+}
+.mini-card {
+    height: 54px;
+    border-radius: 6px;
+    background: rgba(168, 85, 247, 0.18);
+    border: 1px solid rgba(192, 132, 252, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #c084fc;
+    font-size: 1.1rem;
+    transition: transform 0.3s;
+}
+.mini-card.flipped {
+    background: rgba(168, 85, 247, 0.45);
+    border-color: #c084fc;
+    box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+}
+.project-card:hover .mini-card.flipped {
+    transform: rotateY(15deg) scale(1.06);
+}
+
+/* 2. POS & Inventario */
+.preview-pos {
+    background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.35), rgba(15, 23, 42, 0.8));
+}
+.pos-layout {
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+}
+.pos-metrics {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+.pos-stat {
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.25);
+    padding: 0.25rem 0.6rem;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+}
+.pos-stat span {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+.pos-stat strong {
+    font-size: 0.85rem;
+    color: #60a5fa;
+}
+.pos-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 65px;
+    flex: 1;
+    justify-content: flex-end;
+}
+.pos-bars span {
+    width: 12px;
+    background: rgba(96, 165, 250, 0.3);
+    border-radius: 3px 3px 0 0;
+    transition: height 0.3s;
+}
+.pos-bars span.active {
+    background: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+}
+
+/* 3. Mateando (Imagen real) */
+.preview-img-container {
+    padding: 0;
+}
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+}
+.project-card:hover .preview-img {
+    transform: scale(1.07);
+}
+.preview-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(13, 13, 13, 0.75), transparent 60%);
+    display: flex;
+    align-items: flex-end;
+    padding: 0.8rem 1rem;
+}
+.preview-badge {
+    background: rgba(64, 81, 61, 0.9);
+    color: #e8ded3;
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* 4. Agenda Profe */
+.preview-agenda {
+    background: radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.28), rgba(24, 24, 27, 0.8));
+}
+.agenda-layout {
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: stretch;
+}
+.agenda-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.75rem;
+}
+.agenda-time {
+    color: var(--text-muted);
+    font-family: monospace;
+    font-size: 0.7rem;
+}
+.agenda-pill {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.06);
+    border-left: 3px solid #9ca3af;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    color: var(--text-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.agenda-pill.accent {
+    background: rgba(236, 72, 153, 0.15);
+    border-left-color: var(--accent-color);
+    color: #f472b6;
+}
+
+/* 5. Gestor de Gastos */
+.preview-gastos {
+    background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.25), rgba(20, 20, 25, 0.85));
+}
+.gastos-layout {
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.gastos-balance {
+    text-align: center;
+}
+.gastos-balance span {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+.gastos-balance strong {
+    font-size: 1.2rem;
+    color: #10b981;
+}
+.gastos-pills {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.7rem;
+}
+.gasto-in, .gasto-out {
+    padding: 0.18rem 0.55rem;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.gasto-in {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+.gasto-out {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+/* 6. Travel-Mate Backend */
+.preview-backend {
+    background: radial-gradient(circle at center, rgba(245, 158, 11, 0.22), rgba(17, 24, 39, 0.9));
+}
+.terminal-layout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    font-family: monospace;
+    font-size: 0.73rem;
+}
+.terminal-layout code {
+    display: block;
+    color: #e5e7eb;
+}
+.http-get { color: #38bdf8; font-weight: 700; }
+.http-post { color: #a78bfa; font-weight: 700; }
+.http-ok { color: #34d399; }
+.terminal-muted { color: #9ca3af !important; font-size: 0.68rem; }
+
+/* 7. App del Clima */
+.preview-clima {
+    background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.32), rgba(15, 23, 42, 0.85));
+}
+.clima-main {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+.clima-icon {
+    font-size: 2.3rem;
+    color: #fbbf24;
+    filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5));
+}
+.clima-main strong {
+    display: block;
+    font-size: 1.25rem;
+    line-height: 1.1;
+}
+.clima-main span {
+    font-size: 0.72rem;
+    color: #bae6fd;
 }
 
 /* Contact */
