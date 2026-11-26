@@ -44,11 +44,28 @@ function calcularFechaVencimiento(estado) {
     return `01/${mesStr}/${anioStr}`;
 }
 
-function filtrarSocios() {
+let paginaActualSocios = 1;
+const SOCIOS_POR_PAGINA = 5;
+let ultimoFiltroFirma = '';
+
+function cambiarPaginaSocios(nuevaPagina) {
+    paginaActualSocios = nuevaPagina;
+    filtrarSocios(true);
+}
+window.cambiarPaginaSocios = cambiarPaginaSocios;
+
+function filtrarSocios(mantenerPagina = false) {
     const busq = document.getElementById('search-socio')?.value.toLowerCase() || '';
     const estado = document.getElementById('filter-estado')?.value || 'todos';
     const clase = document.getElementById('filter-clase')?.value || 'todos';
     const mesPago = document.getElementById('filter-mes-pago')?.value || 'todos';
+    const orden = document.getElementById('filter-orden')?.value || 'nombre';
+
+    const firmaActual = `${busq}|${estado}|${clase}|${mesPago}|${orden}`;
+    if (!mantenerPagina && firmaActual !== ultimoFiltroFirma) {
+        paginaActualSocios = 1;
+    }
+    ultimoFiltroFirma = firmaActual;
 
     const isEncargado = (typeof rRol !== 'undefined' && rRol === 'encargado');
     const btnNuevoCobro = document.getElementById('btn-nuevo-cobro');
@@ -83,7 +100,6 @@ function filtrarSocios() {
         return matchBusq && matchEstado && matchClase && matchMes;
     });
 
-    const orden = document.getElementById('filter-orden')?.value || 'nombre';
     if (orden === 'nombre') {
         lista.sort((a, b) => a.nombre.localeCompare(b.nombre));
     } else if (orden === 'monto') {
@@ -92,10 +108,52 @@ function filtrarSocios() {
         lista.sort((a, b) => a.estado.localeCompare(b.estado));
     }
 
+    const totalRegistros = lista.length;
+    const totalPaginas = Math.max(1, Math.ceil(totalRegistros / SOCIOS_POR_PAGINA));
+    if (paginaActualSocios > totalPaginas) paginaActualSocios = totalPaginas;
+    if (paginaActualSocios < 1) paginaActualSocios = 1;
+
+    const indiceInicio = (paginaActualSocios - 1) * SOCIOS_POR_PAGINA;
+    const indiceFin = Math.min(indiceInicio + SOCIOS_POR_PAGINA, totalRegistros);
+    const listaPaginada = lista.slice(indiceInicio, indiceFin);
+
+    // Actualizar controles de paginación
+    const infoEl = document.getElementById('paginacion-info');
+    const controlesEl = document.getElementById('paginacion-controles');
+    if (infoEl) {
+        infoEl.innerText = totalRegistros === 0
+            ? 'No se encontraron socios'
+            : `Mostrando ${indiceInicio + 1}–${indiceFin} de ${totalRegistros} socios`;
+    }
+    if (controlesEl) {
+        let btnsHtml = `
+            <button type="button" onclick="cambiarPaginaSocios(${paginaActualSocios - 1})" ${paginaActualSocios === 1 ? 'disabled' : ''}
+                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase border transition ${paginaActualSocios === 1 ? 'bg-slate-900/40 text-slate-600 border-slate-800/50 cursor-not-allowed' : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-orange-500 hover:text-white'}">
+                <i class="fas fa-chevron-left mr-1"></i> Ant.
+            </button>
+        `;
+        for (let p = 1; p <= totalPaginas; p++) {
+            const activo = p === paginaActualSocios;
+            btnsHtml += `
+                <button type="button" onclick="cambiarPaginaSocios(${p})"
+                    class="w-8 h-8 rounded-lg text-xs font-black border transition ${activo ? 'bg-orange-500 text-white border-orange-500 shadow-lg shadow-orange-500/25' : 'bg-slate-900 text-slate-400 border-slate-700 hover:border-orange-500 hover:text-white'}">
+                    ${p}
+                </button>
+            `;
+        }
+        btnsHtml += `
+            <button type="button" onclick="cambiarPaginaSocios(${paginaActualSocios + 1})" ${paginaActualSocios === totalPaginas ? 'disabled' : ''}
+                class="px-3 py-1.5 rounded-lg text-[10px] font-black uppercase border transition ${paginaActualSocios === totalPaginas ? 'bg-slate-900/40 text-slate-600 border-slate-800/50 cursor-not-allowed' : 'bg-slate-900 text-slate-300 border-slate-700 hover:border-orange-500 hover:text-white'}">
+                Sig. <i class="fas fa-chevron-right ml-1"></i>
+            </button>
+        `;
+        controlesEl.innerHTML = btnsHtml;
+    }
+
     const tbody = document.getElementById('tabla-socios-body');
     if (!tbody) return;
 
-    tbody.innerHTML = lista.map(s => {
+    tbody.innerHTML = listaPaginada.map(s => {
         // Determinar el mes que estamos visualizando
         const mesVisualizado = (mesPago === 'todos') ? '05' : mesPago;
 
@@ -179,7 +237,7 @@ function filtrarSocios() {
     // 6. Dibujamos las tarjetas responsivas móviles
     const tarjetasContainer = document.getElementById('contenedor-tarjetas-socios');
     if (tarjetasContainer) {
-        tarjetasContainer.innerHTML = lista.map(s => {
+        tarjetasContainer.innerHTML = listaPaginada.map(s => {
             const mesVisualizado = (mesPago === 'todos') ? '05' : mesPago;
 
             let estadoParaMostrar = s.estado;
