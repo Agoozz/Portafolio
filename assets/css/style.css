@@ -602,9 +602,9 @@ nav.scrolled {
     border-color: rgba(249, 115, 22, 0.4);
 }
 
-/* 9. Agoozz QA Lab */
+/* 9. Agoozz QA Suite */
 .preview-qa {
-    background: radial-gradient(circle at top left, rgba(236, 72, 153, 0.35), rgba(88, 28, 135, 0.65));
+    background: linear-gradient(135deg, #161822, #0d0e14);
 }
 .qa-layout {
     flex-direction: column;
@@ -616,22 +616,24 @@ nav.scrolled {
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    font-size: 0.73rem;
-    color: #e2e8f0;
+    font-size: 0.72rem;
+    color: #cbd5e1;
+    font-family: monospace;
 }
 .qa-row i {
-    color: #f472b6;
-    font-size: 0.9rem;
+    color: #56d364;
+    font-size: 0.85rem;
 }
 .qa-score-pill {
     margin-top: 0.2rem;
-    background: rgba(236, 72, 153, 0.2);
-    border: 1px solid rgba(244, 114, 182, 0.45);
-    color: #f472b6;
-    font-size: 0.68rem;
-    font-weight: 700;
-    padding: 0.15rem 0.6rem;
-    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #e2e8f0;
+    font-family: monospace;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.14rem 0.55rem;
+    border-radius: 4px;
     letter-spacing: 0.5px;
 }
 

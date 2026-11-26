@@ -3,70 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agoozz QA Lab ✨ | Auditoría Web &amp; E2E Testing por Agostina</title>
+    <title>Agostina F. · Web QA &amp; Static Analysis Suite</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
-    <!-- Glows característicos de tu Portafolio -->
-    <div class="bg-orb orb-pink"></div>
-    <div class="bg-orb orb-violet"></div>
-
     <header class="qa-header">
         <div class="container header-inner">
             <div class="brand-group">
-                <div class="avatar-ring">
-                    <img src="../../assets/img/profile.png" alt="Agostina" class="brand-avatar">
-                    <span class="status-dot" title="Engine Online"></span>
-                </div>
+                <img src="../../assets/img/profile.png" alt="Agostina" class="brand-avatar">
                 <div>
                     <div class="brand-topline">
-                        <span class="signature-pill">BY AGOSTINA · @AGOOZZ</span>
-                        <span class="mate-pill">🧉 Mate-Driven QA Engine</span>
+                        <span class="signature-pill">AGOSTINA · WEB ENGINEERING &amp; QA</span>
+                        <span class="version-pill">v2.4 · Client-Side Engine</span>
                     </div>
-                    <h1>Agoozz <span>QA Lab</span></h1>
+                    <h1>Agoozz <span>QA Suite</span></h1>
                 </div>
             </div>
             <div class="header-actions">
-                <a href="../../index.html" class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Mi Portafolio</a>
+                <a href="../../index.html" class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Portafolio</a>
                 <button id="btn-export-report" class="btn btn-ghost"><i class="ph ph-download-simple"></i> Exportar JSON</button>
-                <button id="btn-run-all" class="btn btn-pink"><i class="ph-fill ph-sparkle"></i> Auditar Mis Proyectos</button>
+                <button id="btn-run-all" class="btn btn-primary"><i class="ph-fill ph-play"></i> Auditar Repositorio</button>
             </div>
         </div>
     </header>
 
     <main class="container qa-main">
-        <!-- Hero Personalizado -->
+        <!-- Nota de Ingeniería sobria y profesional -->
         <section class="personal-banner">
             <div class="banner-text">
-                <h2>¿Se te rompió un botón o un link en <span>GitHub Pages</span>?</h2>
-                <p>Armé este laboratorio para que puedas arrastrar tu carpeta HTML (o pegar tu código) y detectar en segundos botones vacíos, rutas sensibles a mayúsculas/minúsculas, anclas rotas y errores JavaScript antes de entregar o publicar.</p>
+                <h2>Auditoría Estática &amp; Pruebas E2E para Proyectos HTML</h2>
+                <p>Herramienta de validación previa al despliegue. Inspecciona integridad del DOM, accesibilidad en controles interactivos, resolución de rutas case-sensitive (estándar Linux / GitHub Pages) y errores en tiempo de ejecución.</p>
             </div>
-            <div class="banner-Note">
-                <div class="note-card">
-                    <span class="note-tag"><i class="ph-fill ph-quotes"></i> Agostina's Dev Tip</span>
-                    <p>"En Windows <code>pantallas/</code> y <code>Pantallas/</code> parecen lo mismo, pero en Linux tiran 404. Este motor lo chequea por vos."</p>
-                </div>
+            <div class="note-card">
+                <span class="note-tag"><i class="ph ph-terminal"></i> Nota de Arquitectura — Agostina</span>
+                <p>"Las diferencias entre sistemas de archivos locales (Windows) y servidores de producción (Linux) son la causa principal de enlaces rotos 404. Este motor valida el árbol de archivos de forma estricta antes del deploy."</p>
             </div>
         </section>
 
         <!-- Selector de Modo (Tabs Principales) -->
         <section class="mode-switcher">
             <button class="mode-tab active" data-mode="custom">
-                <i class="ph-fill ph-magic-wand"></i>
+                <i class="ph ph-folder-open"></i>
                 <div>
-                    <strong>Laboratorio Abierto: Probá Tu Proyecto HTML</strong>
-                    <span>Arrastrá tu carpeta completa, archivos sueltos o pegá tu código para pasarlo por el radar</span>
+                    <strong>Auditar Proyecto Externo (HTML / CSS / JS)</strong>
+                    <span>Cargar directorio local, archivos individuales o analizar código fuente</span>
                 </div>
             </button>
             <button class="mode-tab" data-mode="portfolio">
-                <i class="ph-fill ph-folders"></i>
+                <i class="ph ph-Hard-Drives"></i>
                 <div>
-                    <strong>Auditoría en Vivo de Mi Portafolio (16 Vistas)</strong>
-                    <span>Inspección automática de SquatGym OS, Mateando, StockMaster POS y mis demás apps</span>
+                    <strong>Suite del Repositorio Principal (16 Vistas)</strong>
+                    <span>Verificación automatizada sobre SquatGym, Mateando, StockMaster POS y aplicaciones del portafolio</span>
                 </div>
             </button>
         </section>
@@ -76,43 +67,43 @@
             <div class="uploader-grid">
                 <!-- Dropzone Archivos / Carpeta -->
                 <div id="dropzone" class="dropzone-card">
-                    <div class="dropzone-badge">DROPZONE INTERACTIVA</div>
-                    <div class="dropzone-icon"><i class="ph-duotone ph-folder-Simple-star"></i></div>
-                    <h3>Soltá la carpeta de tu proyecto acá</h3>
-                    <p>Reconstruyo el árbol de tus archivos en memoria y pruebo cada <code>&lt;button&gt;</code>, menú <code>&lt;nav&gt;</code>, imagen y ruta local como si estuviera desplegado en producción.</p>
+                    <div class="dropzone-badge">WORKSPACE LOCAL</div>
+                    <div class="dropzone-icon"><i class="ph ph-folder-notch-open"></i></div>
+                    <h3>Arrastrá el directorio del proyecto o seleccioná los archivos</h3>
+                    <p>El motor indexa los archivos en memoria local para verificar referencias cruzadas entre páginas HTML, hojas de estilo, scripts, botones y menús de navegación.</p>
                     
                     <div class="upload-buttons">
-                        <label class="btn btn-pink">
-                            <i class="ph-fill ph-folder-open"></i> Subir Carpeta Completa
+                        <label class="btn btn-primary">
+                            <i class="ph ph-folder-open"></i> Seleccionar Carpeta
                             <input type="file" id="input-folder" webkitdirectory directory multiple hidden>
                         </label>
                         <label class="btn btn-ghost">
-                            <i class="ph-fill ph-file-html"></i> Elegir Archivos (.html, .css, .js)
+                            <i class="ph ph-file-html"></i> Seleccionar Archivos
                             <input type="file" id="input-files" multiple accept=".html,.htm,.css,.js,.png,.jpg,.jpeg,.svg,.webp,.gif,.json" hidden>
                         </label>
                     </div>
-                    <span class="upload-hint"><i class="ph-fill ph-shield-star"></i> 100% Client-Side: Tu código no se sube a ningún servidor externo.</span>
+                    <span class="upload-hint"><i class="ph ph-lock-simple"></i> Ejecución 100% local en el navegador. Ningún archivo es transmitido a servidores externos.</span>
                 </div>
 
                 <!-- Pegar Código HTML Rápido -->
                 <div class="code-paste-card">
                     <div class="paste-header">
                         <div>
-                            <h3><i class="ph-fill ph-code-block"></i> Quick Snippet Inspector</h3>
-                            <p>Pegá un HTML suelto o cargá mi plantilla de errores típicos para ver el radar en acción</p>
+                            <h3><i class="ph ph-code"></i> Inspector de Código HTML</h3>
+                            <p>Pegá un documento HTML para validar estructura, controles y eventos JS</p>
                         </div>
-                        <button id="btn-load-demo-broken" class="btn-mini btn-bug" title="Carga un HTML de ejemplo con los 7 errores más comunes">
-                            <i class="ph-fill ph-bug-beetle"></i> Cargar HTML con 7 Bugs
+                        <button id="btn-load-demo-broken" class="btn-mini btn-bug" title="Carga un caso de prueba con 7 defectos frecuentes">
+                            <i class="ph ph-flask"></i> Cargar Caso de Prueba (7 Defectos)
                         </button>
                     </div>
-                    <textarea id="textarea-html" placeholder="<!DOCTYPE html>&#10;<html>&#10;<head>&#10;  <title>Mi Proyecto</title>&#10;</head>&#10;<body>&#10;  <nav><a href='index.html'>Inicio</a></nav>&#10;  <button>Enviar</button>&#10;</body>&#10;</html>"></textarea>
+                    <textarea id="textarea-html" placeholder="<!DOCTYPE html>&#10;<html>&#10;<head>&#10;  <title>Documento</title>&#10;</head>&#10;<body>&#10;  <nav><a href='index.html'>Inicio</a></nav>&#10;  <button>Confirmar</button>&#10;</body>&#10;</html>"></textarea>
                     <div class="paste-actions">
                         <label class="check-option">
                             <input type="checkbox" id="chk-autoclick" checked>
-                            <span>Auto-Clickear botones en el simulador E2E</span>
+                            <span>Ejecutar simulación de eventos click en Sandbox</span>
                         </label>
-                        <button id="btn-audit-paste" class="btn btn-pink">
-                            <i class="ph-fill ph-lightning"></i> Pasar por el Radar
+                        <button id="btn-audit-paste" class="btn btn-primary">
+                            <i class="ph ph-play"></i> Ejecutar Análisis
                         </button>
                     </div>
                 </div>
@@ -122,30 +113,30 @@
         <!-- Métricas Globales -->
         <section class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-icon pink"><i class="ph-fill ph-files"></i></div>
+                <div class="metric-icon"><i class="ph ph-files"></i></div>
                 <div>
-                    <span class="metric-label">Vistas HTML</span>
+                    <span class="metric-label">Documentos HTML</span>
                     <strong id="stat-pages">0</strong>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon purple"><i class="ph-fill ph-cursor-click"></i></div>
+                <div class="metric-icon"><i class="ph ph-cursor-click"></i></div>
                 <div>
-                    <span class="metric-label">Botones &amp; Triggers</span>
+                    <span class="metric-label">Controles &amp; Botones</span>
                     <strong id="stat-buttons">0</strong>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon orange"><i class="ph-fill ph-compass"></i></div>
+                <div class="metric-icon"><i class="ph ph-link"></i></div>
                 <div>
-                    <span class="metric-label">Menús &amp; Rutas</span>
+                    <span class="metric-label">Rutas &amp; Enlaces</span>
                     <strong id="stat-links">0</strong>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon emerald"><i class="ph-fill ph-seal-check"></i></div>
+                <div class="metric-icon"><i class="ph ph-check-square-offset"></i></div>
                 <div>
-                    <span class="metric-label">Agoozz Quality Score</span>
+                    <span class="metric-label">Índice de Conformidad</span>
                     <strong id="stat-score">—</strong>
                 </div>
             </div>
@@ -154,16 +145,16 @@
         <!-- Barra de progreso y filtros (modo portafolio) -->
         <section class="control-bar">
             <div id="portfolio-filters" class="filter-pills hidden">
-                <button class="pill-btn active" data-filter="all">Todos Mis Proyectos</button>
+                <button class="pill-btn active" data-filter="all">Todos</button>
                 <button class="pill-btn" data-filter="Portafolio">Portafolio</button>
-                <button class="pill-btn" data-filter="SquatGym">SquatGym OS</button>
+                <button class="pill-btn" data-filter="SquatGym">SquatGym</button>
                 <button class="pill-btn" data-filter="Mateando">Mateando</button>
                 <button class="pill-btn" data-filter="POS">StockMaster POS</button>
-                <button class="pill-btn" data-filter="Apps">Otras Apps</button>
+                <button class="pill-btn" data-filter="Apps">Otras Aplicaciones</button>
             </div>
             <div class="progress-wrap">
                 <div class="progress-info">
-                    <span id="status-text">Esperando archivos o código para auditar...</span>
+                    <span id="status-text">Esperando archivos o ejecución de suite...</span>
                     <span id="progress-percent">0%</span>
                 </div>
                 <div class="progress-track">
@@ -177,8 +168,8 @@
             <!-- Lista detallada por pantalla -->
             <section class="results-panel">
                 <div class="panel-header">
-                    <h2><i class="ph-fill ph-list-magnifying-glass"></i> Diagnóstico Detallado + Tips de Corrección</h2>
-                    <span id="badge-summary" class="status-badge neutral">Sin escaneo activo</span>
+                    <h2><i class="ph ph-list-checks"></i> Reporte Técnico de Auditoría</h2>
+                    <span id="badge-summary" class="status-badge neutral">Inactivo</span>
                 </div>
                 <div id="suites-container" class="suites-list"></div>
             </section>
@@ -187,21 +178,21 @@
             <aside class="inspector-sidebar">
                 <div class="sandbox-panel">
                     <div class="panel-header">
-                        <h2><i class="ph-fill ph-monitor-play"></i> Simulador E2E en Vivo</h2>
-                        <span id="sandbox-url" class="mono-badge">standby</span>
+                        <h2><i class="ph ph-browser"></i> Entorno de Pruebas E2E (Sandbox)</h2>
+                        <span id="sandbox-url" class="mono-badge">idle</span>
                     </div>
                     <div class="sandbox-viewport">
                         <iframe id="qa-iframe" title="Sandbox E2E" src="about:blank"></iframe>
                         <div id="sandbox-overlay" class="sandbox-overlay">
-                            <i class="ph-duotone ph-sparkle"></i>
-                            <p>Acá se monta tu página en tiempo real mientras el motor prueba los botones y escucha si hay errores en la consola.</p>
+                            <i class="ph ph-desktop"></i>
+                            <p>Vista de aislamiento DOM donde se renderiza cada documento y se monitorean excepciones en tiempo de ejecución.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="console-panel">
                     <div class="panel-header">
-                        <h2><i class="ph-fill ph-terminal-window"></i> Agoozz Terminal Log</h2>
+                        <h2><i class="ph ph-terminal-window"></i> Registro de Eventos</h2>
                         <button id="btn-clear-log" class="btn-mini">Limpiar</button>
                     </div>
                     <div id="console-output" class="console-body"></div>
@@ -213,16 +204,16 @@
     <footer class="qa-footer">
         <div class="container footer-inner">
             <div class="footer-brand">
-                <span class="footer-logo">Agoozz<span>.QA</span></span>
-                <p>Diseñado y programado por <strong>Agostina</strong> · Resistencia, Chaco 🧉</p>
+                <span class="footer-logo">Agostina Fankhauser · <span>@Agoozz</span></span>
+                <p>Web Engineering &amp; Quality Assurance · Resistencia, Chaco</p>
             </div>
             <div class="footer-links">
-                <a href="../../index.html"><i class="ph ph-briefcase"></i> Portafolio</a>
-                <a href="https://github.com/Agoozz" target="_blank" rel="noopener"><i class="ph ph-github-logo"></i> GitHub @Agoozz</a>
+                <a href="../../index.html"><i class="ph ph-arrow-up-right"></i> Portafolio Principal</a>
+                <a href="https://github.com/Agoozz" target="_blank" rel="noopener"><i class="ph ph-github-logo"></i> GitHub</a>
             </div>
         </div>
     </footer>
 
-    <script src="script.js?v=2"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>

@@ -653,7 +653,7 @@ function buildAgoozzTips(checks) {
 
     return `
         <div class="agoozz-tips-box">
-            <h4><i class="ph-fill ph-sparkle"></i> Tips de Agostina para dejarlo 10/10:</h4>
+            <h4><i class="ph ph-wrench"></i> Recomendaciones Técnicas de Corrección:</h4>
             <ul>
                 ${uniqueTips.map(t => `<li>${t}</li>`).join('')}
             </ul>
@@ -666,10 +666,10 @@ function renderCustomSuites() {
 
     if (customResultsStore.length === 0) {
         suitesContainer.innerHTML = `
-            <div style="text-align: center; padding: 2.5rem 1rem; color: #9ca3af;">
-                <i class="ph-duotone ph-magic-wand" style="font-size: 2.6rem; color: #ec4899; display: block; margin-bottom: 0.5rem;"></i>
-                <strong style="color: #f8fafc;">El radar está listo para escanear tu código</strong>
-                <p style="font-size: 0.82rem; margin-top: 0.3rem;">Arrastrá tu carpeta HTML arriba, elegí archivos sueltos o probá el botón <em>"🐞 Cargar HTML con 7 Bugs"</em>.</p>
+            <div style="text-align: center; padding: 2.5rem 1rem; color: #8e95a5;">
+                <i class="ph ph-folder-notch-open" style="font-size: 2.1rem; color: #8e95a5; display: block; margin-bottom: 0.5rem;"></i>
+                <strong style="color: #ededf0; font-size: 0.9rem;">Sin documentos cargados</strong>
+                <p style="font-size: 0.78rem; margin-top: 0.3rem;">Seleccioná una carpeta local, archivos HTML o utilizá el botón <em>"Cargar Caso de Prueba (7 Defectos)"</em>.</p>
             </div>
         `;
         return;
@@ -684,15 +684,15 @@ function renderCustomSuites() {
         card.innerHTML = `
             <div class="suite-top">
                 <div class="suite-title">
-                    <i class="ph-fill ${res.passed ? 'ph-seal-check' : 'ph-warning-octagon'}"
-                       style="color: ${res.passed ? '#10b981' : '#ec4899'}; font-size: 1.3rem;"></i>
+                    <i class="ph-fill ${res.passed ? 'ph-check-circle' : 'ph-warning-circle'}"
+                       style="color: ${res.passed ? '#2ea043' : '#e5534b'}; font-size: 1.15rem;"></i>
                     <div>
                         <h3>${res.target.name}</h3>
                         <span class="suite-path">${res.target.url}</span>
                     </div>
                 </div>
                 <div class="suite-actions">
-                    <button class="btn-mini btn-preview-custom" data-id="${res.target.id}"><i class="ph ph-eye"></i> Ver en Simulador</button>
+                    <button class="btn-mini btn-preview-custom" data-id="${res.target.id}"><i class="ph ph-eye"></i> Ver en Sandbox</button>
                 </div>
             </div>
             <div class="suite-stats">
