@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA AutoTester Pro | Auditoría de Botones y Menús</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <header class="qa-header">
+        <div class="container header-inner">
+            <div class="brand-group">
+                <div class="brand-icon"><i class="ph-fill ph-shield-check"></i></div>
+                <div>
+                    <h1>QA AutoTester <span>Pro</span></h1>
+                    <p>Suite Automatizada de Auditoría de Botones, Menús, DOM y Rutas HTTP</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="../../index.html" class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Volver al Portafolio</a>
+                <button id="btn-run-all" class="btn btn-emerald"><i class="ph-fill ph-play"></i> Auditar Todos los Proyectos</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container qa-main">
+        <!-- Métricas Globales -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon blue"><i class="ph-fill ph-stack"></i></div>
+                <div>
+                    <span class="metric-label">Pantallas Auditadas</span>
+                    <strong id="stat-pages">0 / 16</strong>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon purple"><i class="ph-fill ph-cursor-click"></i></div>
+                <div>
+                    <span class="metric-label">Botones &amp; Triggers</span>
+                    <strong id="stat-buttons">0</strong>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon cyan"><i class="ph-fill ph-compass"></i></div>
+                <div>
+                    <span class="metric-label">Menús &amp; Rutas HTTP</span>
+                    <strong id="stat-links">0</strong>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon emerald"><i class="ph-fill ph-check-circle"></i></div>
+                <div>
+                    <span class="metric-label">Health Score</span>
+                    <strong id="stat-score">—</strong>
+                </div>
+            </div>
+        </section>
+
+        <!-- Barra de progreso y filtros -->
+        <section class="control-bar">
+            <div class="filter-pills">
+                <button class="pill-btn active" data-filter="all">Todos los Proyectos</button>
+                <button class="pill-btn" data-filter="Portafolio">Portafolio</button>
+                <button class="pill-btn" data-filter="SquatGym">SquatGym OS</button>
+                <button class="pill-btn" data-filter="Mateando">Mateando E-Commerce</button>
+                <button class="pill-btn" data-filter="POS">POS &amp; Inventario</button>
+                <button class="pill-btn" data-filter="Apps">Otras Apps (Clima, Agenda, Memoria, Gastos)</button>
+            </div>
+            <div class="progress-wrap">
+                <div class="progress-info">
+                    <span id="status-text">Listo para iniciar escaneo automatizado...</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div id="progress-bar" class="progress-fill"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel Principal: Resultados + Consola + Sandbox E2E -->
+        <div class="workspace-grid">
+            <!-- Lista detallada por pantalla -->
+            <section class="results-panel">
+                <div class="panel-header">
+                    <h2><i class="ph-fill ph-list-checks"></i> Reporte de Inspección por Pantalla</h2>
+                    <span id="badge-summary" class="status-badge neutral">Esperando ejecución</span>
+                </div>
+                <div id="suites-container" class="suites-list"></div>
+            </section>
+
+            <!-- Columna Derecha: Sandbox E2E en vivo + Consola de Logs -->
+            <aside class="inspector-sidebar">
+                <div class="sandbox-panel">
+                    <div class="panel-header">
+                        <h2><i class="ph-fill ph-browser"></i> Simulador E2E en Vivo</h2>
+                        <span id="sandbox-url" class="mono-badge">idle</span>
+                    </div>
+                    <div class="sandbox-viewport">
+                        <iframe id="qa-iframe" title="Sandbox E2E" src="about:blank"></iframe>
+                        <div id="sandbox-overlay" class="sandbox-overlay">
+                            <i class="ph-duotone ph-radar"></i>
+                            <p>El motor cargará cada proyecto aquí para inspeccionar su DOM, botones y menús en tiempo real.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="console-panel">
+                    <div class="panel-header">
+                        <h2><i class="ph-fill ph-terminal-window"></i> Live Test Runner Log</h2>
+                        <button id="btn-clear-log" class="btn-mini">Limpiar</button>
+                    </div>
+                    <div id="console-output" class="console-body"></div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

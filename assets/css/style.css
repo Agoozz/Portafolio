@@ -602,6 +602,39 @@ nav.scrolled {
     border-color: rgba(249, 115, 22, 0.4);
 }
 
+/* 9. QA AutoTester Pro */
+.preview-qa {
+    background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.35), rgba(6, 78, 59, 0.75));
+}
+.qa-layout {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    width: 100%;
+}
+.qa-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.73rem;
+    color: #e2e8f0;
+}
+.qa-row i {
+    color: #34d399;
+    font-size: 0.9rem;
+}
+.qa-score-pill {
+    margin-top: 0.2rem;
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(52, 211, 153, 0.45);
+    color: #34d399;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.15rem 0.6rem;
+    border-radius: 99px;
+    letter-spacing: 0.5px;
+}
+
 /* Contact */
 .contact-content {
     display: grid;
