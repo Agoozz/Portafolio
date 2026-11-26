@@ -3,197 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agostina F. · Web QA &amp; Static Analysis Suite</title>
+    <title>Agoozz QA · Auditoría HTML</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
-    <header class="qa-header">
-        <div class="container header-inner">
-            <div class="brand-group">
-                <img src="../../assets/img/profile.png" alt="Agostina" class="brand-avatar">
-                <div>
-                    <div class="brand-topline">
-                        <span class="signature-pill">AGOSTINA · WEB ENGINEERING &amp; QA</span>
-                        <span class="version-pill">v2.4 · Client-Side Engine</span>
-                    </div>
-                    <h1>Agoozz <span>QA Suite</span></h1>
+    <!-- Barra superior minimalista -->
+    <header class="topbar">
+        <div class="container topbar-inner">
+            <div class="brand">
+                <a href="../../index.html" class="back-link" title="Volver al Portafolio"><i class="ph ph-arrow-left"></i></a>
+                <span class="brand-name">Agoozz<span>/qa</span></span>
+                <div class="segmented-tabs">
+                    <button class="mode-tab active" data-mode="custom">Analizar HTML</button>
+                    <button class="mode-tab" data-mode="portfolio">Suite Portafolio (16)</button>
                 </div>
             </div>
-            <div class="header-actions">
-                <a href="../../index.html" class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Portafolio</a>
-                <button id="btn-export-report" class="btn btn-ghost"><i class="ph ph-download-simple"></i> Exportar JSON</button>
-                <button id="btn-run-all" class="btn btn-primary"><i class="ph-fill ph-play"></i> Auditar Repositorio</button>
+            <div class="topbar-actions">
+                <button id="btn-export-report" class="btn-text"><i class="ph ph-download-simple"></i> JSON</button>
+                <button id="btn-run-all" class="btn-solid"><i class="ph-fill ph-play"></i> Correr Suite</button>
             </div>
         </div>
     </header>
 
-    <main class="container qa-main">
-        <!-- Nota de Ingeniería sobria y profesional -->
-        <section class="personal-banner">
-            <div class="banner-text">
-                <h2>Auditoría Estática &amp; Pruebas E2E para Proyectos HTML</h2>
-                <p>Herramienta de validación previa al despliegue. Inspecciona integridad del DOM, accesibilidad en controles interactivos, resolución de rutas case-sensitive (estándar Linux / GitHub Pages) y errores en tiempo de ejecución.</p>
+    <main class="container main-layout">
+        <!-- Entrada limpia y unificada (Solo visible en modo Analizar HTML) -->
+        <section id="custom-uploader-panel" class="input-card">
+            <div class="input-toolbar">
+                <div class="upload-triggers">
+                    <label class="btn-outline">
+                        <i class="ph ph-folder-open"></i> Subir Carpeta
+                        <input type="file" id="input-folder" webkitdirectory directory multiple hidden>
+                    </label>
+                    <label class="btn-outline">
+                        <i class="ph ph-file-code"></i> Subir Archivo
+                        <input type="file" id="input-files" multiple accept=".html,.htm,.css,.js" hidden>
+                    </label>
+                    <button id="btn-load-demo-broken" class="btn-text">
+                        Cargar ejemplo con errores
+                    </button>
+                </div>
+                <div class="run-triggers">
+                    <label class="toggle-check">
+                        <input type="checkbox" id="chk-autoclick" checked>
+                        <span>Testear clicks</span>
+                    </label>
+                    <button id="btn-audit-paste" class="btn-solid">
+                        Analizar código
+                    </button>
+                </div>
             </div>
-            <div class="note-card">
-                <span class="note-tag"><i class="ph ph-terminal"></i> Nota de Arquitectura — Agostina</span>
-                <p>"Las diferencias entre sistemas de archivos locales (Windows) y servidores de producción (Linux) son la causa principal de enlaces rotos 404. Este motor valida el árbol de archivos de forma estricta antes del deploy."</p>
-            </div>
-        </section>
-
-        <!-- Selector de Modo (Tabs Principales) -->
-        <section class="mode-switcher">
-            <button class="mode-tab active" data-mode="custom">
-                <i class="ph ph-folder-open"></i>
-                <div>
-                    <strong>Auditar Proyecto Externo (HTML / CSS / JS)</strong>
-                    <span>Cargar directorio local, archivos individuales o analizar código fuente</span>
-                </div>
-            </button>
-            <button class="mode-tab" data-mode="portfolio">
-                <i class="ph ph-Hard-Drives"></i>
-                <div>
-                    <strong>Suite del Repositorio Principal (16 Vistas)</strong>
-                    <span>Verificación automatizada sobre SquatGym, Mateando, StockMaster POS y aplicaciones del portafolio</span>
-                </div>
-            </button>
-        </section>
-
-        <!-- PANEL MODO 1: CARGAR PROYECTO PROPIO -->
-        <section id="custom-uploader-panel" class="uploader-section">
-            <div class="uploader-grid">
-                <!-- Dropzone Archivos / Carpeta -->
-                <div id="dropzone" class="dropzone-card">
-                    <div class="dropzone-badge">WORKSPACE LOCAL</div>
-                    <div class="dropzone-icon"><i class="ph ph-folder-notch-open"></i></div>
-                    <h3>Arrastrá el directorio del proyecto o seleccioná los archivos</h3>
-                    <p>El motor indexa los archivos en memoria local para verificar referencias cruzadas entre páginas HTML, hojas de estilo, scripts, botones y menús de navegación.</p>
-                    
-                    <div class="upload-buttons">
-                        <label class="btn btn-primary">
-                            <i class="ph ph-folder-open"></i> Seleccionar Carpeta
-                            <input type="file" id="input-folder" webkitdirectory directory multiple hidden>
-                        </label>
-                        <label class="btn btn-ghost">
-                            <i class="ph ph-file-html"></i> Seleccionar Archivos
-                            <input type="file" id="input-files" multiple accept=".html,.htm,.css,.js,.png,.jpg,.jpeg,.svg,.webp,.gif,.json" hidden>
-                        </label>
-                    </div>
-                    <span class="upload-hint"><i class="ph ph-lock-simple"></i> Ejecución 100% local en el navegador. Ningún archivo es transmitido a servidores externos.</span>
-                </div>
-
-                <!-- Pegar Código HTML Rápido -->
-                <div class="code-paste-card">
-                    <div class="paste-header">
-                        <div>
-                            <h3><i class="ph ph-code"></i> Inspector de Código HTML</h3>
-                            <p>Pegá un documento HTML para validar estructura, controles y eventos JS</p>
-                        </div>
-                        <button id="btn-load-demo-broken" class="btn-mini btn-bug" title="Carga un caso de prueba con 7 defectos frecuentes">
-                            <i class="ph ph-flask"></i> Cargar Caso de Prueba (7 Defectos)
-                        </button>
-                    </div>
-                    <textarea id="textarea-html" placeholder="<!DOCTYPE html>&#10;<html>&#10;<head>&#10;  <title>Documento</title>&#10;</head>&#10;<body>&#10;  <nav><a href='index.html'>Inicio</a></nav>&#10;  <button>Confirmar</button>&#10;</body>&#10;</html>"></textarea>
-                    <div class="paste-actions">
-                        <label class="check-option">
-                            <input type="checkbox" id="chk-autoclick" checked>
-                            <span>Ejecutar simulación de eventos click en Sandbox</span>
-                        </label>
-                        <button id="btn-audit-paste" class="btn btn-primary">
-                            <i class="ph ph-play"></i> Ejecutar Análisis
-                        </button>
-                    </div>
-                </div>
+            <div id="dropzone">
+                <textarea id="textarea-html" placeholder="Pegá tu código HTML acá o arrastrá una carpeta / archivo..."></textarea>
             </div>
         </section>
 
-        <!-- Métricas Globales -->
-        <section class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-icon"><i class="ph ph-files"></i></div>
-                <div>
-                    <span class="metric-label">Documentos HTML</span>
-                    <strong id="stat-pages">0</strong>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon"><i class="ph ph-cursor-click"></i></div>
-                <div>
-                    <span class="metric-label">Controles &amp; Botones</span>
-                    <strong id="stat-buttons">0</strong>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon"><i class="ph ph-link"></i></div>
-                <div>
-                    <span class="metric-label">Rutas &amp; Enlaces</span>
-                    <strong id="stat-links">0</strong>
-                </div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-icon"><i class="ph ph-check-square-offset"></i></div>
-                <div>
-                    <span class="metric-label">Índice de Conformidad</span>
-                    <strong id="stat-score">—</strong>
-                </div>
-            </div>
-        </section>
-
-        <!-- Barra de progreso y filtros (modo portafolio) -->
-        <section class="control-bar">
+        <!-- Barra única de estado y métricas en línea -->
+        <section class="summary-strip">
             <div id="portfolio-filters" class="filter-pills hidden">
                 <button class="pill-btn active" data-filter="all">Todos</button>
                 <button class="pill-btn" data-filter="Portafolio">Portafolio</button>
                 <button class="pill-btn" data-filter="SquatGym">SquatGym</button>
                 <button class="pill-btn" data-filter="Mateando">Mateando</button>
-                <button class="pill-btn" data-filter="POS">StockMaster POS</button>
-                <button class="pill-btn" data-filter="Apps">Otras Aplicaciones</button>
+                <button class="pill-btn" data-filter="POS">POS</button>
+                <button class="pill-btn" data-filter="Apps">Apps</button>
             </div>
-            <div class="progress-wrap">
-                <div class="progress-info">
-                    <span id="status-text">Esperando archivos o ejecución de suite...</span>
-                    <span id="progress-percent">0%</span>
-                </div>
-                <div class="progress-track">
-                    <div id="progress-bar" class="progress-fill"></div>
-                </div>
+
+            <div class="inline-stats">
+                <span>Archivos: <strong id="stat-pages">0</strong></span>
+                <span class="dot">·</span>
+                <span>Botones: <strong id="stat-buttons">0</strong></span>
+                <span class="dot">·</span>
+                <span>Links: <strong id="stat-links">0</strong></span>
+                <span class="dot">·</span>
+                <span>Score: <strong id="stat-score">—</strong></span>
+                <span id="badge-summary" class="status-badge neutral" style="display:none;"></span>
+            </div>
+
+            <div class="status-right">
+                <span id="status-text">Listo</span>
+                <span id="progress-percent" style="display:none;">0%</span>
+            </div>
+            <div class="progress-track">
+                <div id="progress-bar" class="progress-fill"></div>
             </div>
         </section>
 
-        <!-- Panel Principal: Resultados + Consola + Sandbox E2E -->
-        <div class="workspace-grid">
-            <!-- Lista detallada por pantalla -->
-            <section class="results-panel">
-                <div class="panel-header">
-                    <h2><i class="ph ph-list-checks"></i> Reporte Técnico de Auditoría</h2>
-                    <span id="badge-summary" class="status-badge neutral">Inactivo</span>
-                </div>
+        <!-- Resultados + Vista previa limpia -->
+        <div class="workspace">
+            <section class="results-col">
                 <div id="suites-container" class="suites-list"></div>
             </section>
 
-            <!-- Columna Derecha: Sandbox E2E en vivo + Consola de Logs -->
-            <aside class="inspector-sidebar">
-                <div class="sandbox-panel">
-                    <div class="panel-header">
-                        <h2><i class="ph ph-browser"></i> Entorno de Pruebas E2E (Sandbox)</h2>
-                        <span id="sandbox-url" class="mono-badge">idle</span>
+            <aside class="preview-col">
+                <div class="preview-box">
+                    <div class="box-bar">
+                        <span>Vista Previa (Sandbox)</span>
+                        <code id="sandbox-url">idle</code>
                     </div>
                     <div class="sandbox-viewport">
                         <iframe id="qa-iframe" title="Sandbox E2E" src="about:blank"></iframe>
                         <div id="sandbox-overlay" class="sandbox-overlay">
-                            <i class="ph ph-desktop"></i>
-                            <p>Vista de aislamiento DOM donde se renderiza cada documento y se monitorean excepciones en tiempo de ejecución.</p>
+                            <span>Sin vista previa activa</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="console-panel">
-                    <div class="panel-header">
-                        <h2><i class="ph ph-terminal-window"></i> Registro de Eventos</h2>
-                        <button id="btn-clear-log" class="btn-mini">Limpiar</button>
+                <div class="log-box">
+                    <div class="box-bar">
+                        <span>Consola</span>
+                        <button id="btn-clear-log" class="btn-clear">Limpiar</button>
                     </div>
                     <div id="console-output" class="console-body"></div>
                 </div>
@@ -201,19 +123,13 @@
         </div>
     </main>
 
-    <footer class="qa-footer">
-        <div class="container footer-inner">
-            <div class="footer-brand">
-                <span class="footer-logo">Agostina Fankhauser · <span>@Agoozz</span></span>
-                <p>Web Engineering &amp; Quality Assurance · Resistencia, Chaco</p>
-            </div>
-            <div class="footer-links">
-                <a href="../../index.html"><i class="ph ph-arrow-up-right"></i> Portafolio Principal</a>
-                <a href="https://github.com/Agoozz" target="_blank" rel="noopener"><i class="ph ph-github-logo"></i> GitHub</a>
-            </div>
+    <footer class="minimal-footer">
+        <div class="container footer-row">
+            <span>Agostina Fankhauser · <a href="https://github.com/Agoozz" target="_blank" rel="noopener">@Agoozz</a></span>
+            <a href="../../index.html">Volver al Portafolio</a>
         </div>
     </footer>
 
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>
