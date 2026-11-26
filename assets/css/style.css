@@ -555,6 +555,53 @@ nav.scrolled {
     color: #bae6fd;
 }
 
+/* 8. SquatGym */
+.preview-gym {
+    background: radial-gradient(circle at top right, rgba(249, 115, 22, 0.35), rgba(24, 24, 27, 0.88));
+}
+.gym-layout {
+    flex-direction: column;
+    gap: 0.55rem;
+    width: 100%;
+}
+.gym-header {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.gym-icon {
+    font-size: 2rem;
+    color: #fb923c;
+    filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.45));
+}
+.gym-header strong {
+    display: block;
+    font-size: 1rem;
+    line-height: 1.1;
+    color: #fff;
+}
+.gym-header span {
+    font-size: 0.68rem;
+    color: #fed7aa;
+}
+.gym-badges {
+    display: flex;
+    gap: 0.45rem;
+    font-size: 0.68rem;
+}
+.gym-pill {
+    padding: 0.15rem 0.55rem;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.gym-pill.active {
+    background: rgba(249, 115, 22, 0.2);
+    color: #fb923c;
+    border-color: rgba(249, 115, 22, 0.4);
+}
+
 /* Contact */
 .contact-content {
     display: grid;
