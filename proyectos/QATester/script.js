@@ -15,11 +15,13 @@ const TEST_TARGETS = [
         e2eAction: async (doc, win, log) => {
             if (typeof win.autoLoginDemo === 'function') {
                 log('⚡ Ejecutando E2E Login Demo (Admin: 1 / admin)...', 'info');
-                win.autoLoginDemo('admin', '1', 'admin');
+                await win.autoLoginDemo('admin', '1', 'admin');
                 await new Promise(r => setTimeout(r, 250));
                 const appVisible = !doc.getElementById('app-container')?.classList.contains('hidden');
                 if (appVisible) {
                     log('✓ E2E Login Admin exitoso: Dashboard y Sidebar cargados.', 'ok');
+                } else {
+                    throw new Error('App container sigue oculto');
                 }
             }
         }

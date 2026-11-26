@@ -95,7 +95,13 @@
           }
         }
 
-        function autoLoginDemo(rol, dni, pass) {
+        async function autoLoginDemo(rol, dni, pass) {
+          // Esperar a que cargarPantallas() haya terminado de inyectar #v-inicio
+          for (let i = 0; i < 30; i++) {
+            if (document.getElementById('v-inicio') && document.getElementById('txt-saludo')) break;
+            await new Promise(r => setTimeout(r, 80));
+          }
+
           if (rol === 'alumno') {
             window._loginSubrol = 'alumno';
             if (typeof setLoginUIRol === 'function') setLoginUIRol('alumno');
