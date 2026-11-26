@@ -312,21 +312,53 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
             resolve(res);
         };
 
-        const timer = setTimeout(() => done({ clickedCount: 0, runtimeErrors }), 2000);
+        const timer = setTimeout(() => done({ clickedCount: 0, formsSubmitted: 0, runtimeErrors }), 2200);
 
         qaIframe.onload = async () => {
             clearTimeout(timer);
             let clickedCount = 0;
+            let formsSubmitted = 0;
             try {
                 const win = qaIframe.contentWindow;
                 const doc = qaIframe.contentDocument;
                 const shouldClick = document.getElementById('chk-autoclick')?.checked;
 
                 if (shouldClick && doc && win) {
-                    const safeBtns = Array.from(doc.querySelectorAll('button:not([type="submit"])')).slice(0, 12);
+                    // 1. Auto-rellenar inputs y selects y probar submit de formularios
+                    const forms = Array.from(doc.querySelectorAll('form'));
+                    for (const formEl of forms) {
+                        // Evitar navegación real si el form no llamó a preventDefault()
+                        formEl.addEventListener('submit', (ev) => ev.preventDefault());
+
+                        // Rellenar campos requeridos con datos válidos de prueba
+                        formEl.querySelectorAll('input, select, textarea').forEach(field => {
+                            if (field.tagName === 'SELECT') {
+                                const validOpt = Array.from(field.options).find(o => o.value !== '');
+                                if (validOpt) field.value = validOpt.value;
+                            } else if (field.type === 'email') {
+                                field.value = 'test@agoozz.qa';
+                            } else if (field.type === 'number') {
+                                field.value = '42';
+                            } else if (field.type === 'checkbox' || field.type === 'radio') {
+                                field.checked = true;
+                            } else if (field.type !== 'submit' && field.type !== 'button') {
+                                field.value = 'Estudiante Demo QA';
+                            }
+                        });
+
+                        try {
+                            const submitEvent = new win.Event('submit', { bubbles: true, cancelable: true });
+                            formEl.dispatchEvent(submitEvent);
+                            formsSubmitted++;
+                        } catch (e) {
+                            runtimeErrors.push(e.message);
+                        }
+                    }
+
+                    // 2. Probar botones normales
+                    const safeBtns = Array.from(doc.querySelectorAll('button:not([type="submit"]), input[type="button"]')).slice(0, 12);
                     for (const btn of safeBtns) {
                         const onclickAttr = btn.getAttribute('onclick') || '';
-                        // Evitar recargas o cierres de ventana
                         if (/location|reload|close|window\.open/i.test(onclickAttr)) continue;
                         try {
                             btn.click();
@@ -342,7 +374,7 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
             } catch (err) {
                 // Ignorar errores cross-origin si los hubiera
             }
-            done({ clickedCount, runtimeErrors });
+            done({ clickedCount, formsSubmitted, runtimeErrors });
         };
 
         qaIframe.srcdoc = instrumentedHtml;
@@ -380,6 +412,42 @@ async function auditCustomHtmlDocument(fileName, htmlText, virtualFileMap = null
         checks.push({ label: `IDs duplicados: #${Array.from(dupIds).join(', #')}`, pass: false });
         writeLog(`✖ IDs duplicados en ${fileName}: #${Array.from(dupIds).join(', #')}`, 'err');
     }
+
+    // 2.b Cruzar getElementById / querySelector('#id') del <script> contra los IDs reales del HTML
+    const inlineScripts = Array.from(doc.querySelectorAll('script:not([src])')).map(s => s.textContent).join('\n');
+    if (inlineScripts.trim().length > 0) {
+        const jsIdRegex = /(?:getElementById\s*\(\s*["']([^"']+)["']\s*\)|querySelector\s*\(\s*["']#([a-zA-Z0-9_-]+)["']\s*\))/g;
+        let idMatch;
+        const checkedJsIds = new Set();
+        while ((idMatch = jsIdRegex.exec(inlineScripts)) !== null) {
+            const targetId = idMatch[1] || idMatch[2];
+            if (!targetId || checkedJsIds.has(targetId)) continue;
+            checkedJsIds.add(targetId);
+
+            if (seenIds.has(targetId)) {
+                checks.push({ label: `JS Selector #${targetId} existe en HTML`, pass: true });
+            } else {
+                // Buscar si hay un ID muy parecido en el HTML (ej. studentTable vs studentsTable)
+                const similarId = Array.from(seenIds).find(realId =>
+                    realId.toLowerCase().includes(targetId.toLowerCase().slice(0, 5)) ||
+                    targetId.toLowerCase().includes(realId.toLowerCase().slice(0, 5))
+                );
+                const hint = similarId ? ` (¿quisiste poner "#${similarId}"?)` : '';
+                checks.push({ label: `JS busca #${targetId} pero NO existe en HTML${hint}`, pass: false });
+                writeLog(`✖ ${fileName}: El script busca document.getElementById("${targetId}") pero ese ID no existe en el HTML${hint}.`, 'err');
+            }
+        }
+    }
+
+    // 2.c Verificar labels (<label for="...">) que apunten a un input real
+    const labelsWithFor = Array.from(doc.querySelectorAll('label[for]'));
+    labelsWithFor.forEach(lbl => {
+        const forId = lbl.getAttribute('for');
+        if (forId && !seenIds.has(forId)) {
+            checks.push({ label: `<label for="${forId}"> no coincide con ningún input`, pass: false });
+            writeLog(`✖ ${fileName}: <label for="${forId}"> apunta a un ID inexistente.`, 'err');
+        }
+    });
 
     // 3. Auditar Botones
     const buttons = Array.from(doc.querySelectorAll('button, input[type="button"], input[type="submit"]'));
@@ -670,8 +738,10 @@ function buildAgoozzTips(checks) {
             tips.push('🖼️ <strong>Accesibilidad en Imágenes:</strong> Agregale <code>alt="Descripción de la imagen"</code> a tus etiquetas <code>&lt;img&gt;</code>.');
         } else if (f.label.includes('Mayúsc/Minúsc') || f.label.includes('Case-Sensitive')) {
             tips.push('🐧 <strong>Alerta GitHub Pages (Case-Sensitive):</strong> La ruta tiene diferencias de mayúsculas/minúsculas con el nombre real del archivo o carpeta. En Windows anda, pero al subirlo a GitHub Pages va a dar Error 404.');
+        } else if (f.label.includes('JS busca #')) {
+            tips.push(`🎯 <strong>Selector JS Desconectado:</strong> <code>${f.label}</code>. Cuando <code>document.getElementById(...)</code> no encuentra el ID, devuelve <code>null</code> y rompe el código al intentar usarlo.`);
         } else if (f.label.includes('Error JS')) {
-            tips.push('⚡ <strong>Crash en JavaScript:</strong> Al hacer clic en uno de los botones se disparó una función que no existe o falló. Revisá la consola acá a la derecha.');
+            tips.push('⚡ <strong>Excepción en JavaScript al interactuar:</strong> Al enviar el formulario o hacer clic en un botón se disparó un error en tiempo de ejecución. Revisá la consola a la derecha.');
         }
     });
 
