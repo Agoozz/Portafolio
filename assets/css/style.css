@@ -602,9 +602,9 @@ nav.scrolled {
     border-color: rgba(249, 115, 22, 0.4);
 }
 
-/* 9. QA AutoTester Pro */
+/* 9. Agoozz QA Lab */
 .preview-qa {
-    background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.35), rgba(6, 78, 59, 0.75));
+    background: radial-gradient(circle at top left, rgba(236, 72, 153, 0.35), rgba(88, 28, 135, 0.65));
 }
 .qa-layout {
     flex-direction: column;
@@ -620,14 +620,14 @@ nav.scrolled {
     color: #e2e8f0;
 }
 .qa-row i {
-    color: #34d399;
+    color: #f472b6;
     font-size: 0.9rem;
 }
 .qa-score-pill {
     margin-top: 0.2rem;
-    background: rgba(16, 185, 129, 0.2);
-    border: 1px solid rgba(52, 211, 153, 0.45);
-    color: #34d399;
+    background: rgba(236, 72, 153, 0.2);
+    border: 1px solid rgba(244, 114, 182, 0.45);
+    color: #f472b6;
     font-size: 0.68rem;
     font-weight: 700;
     padding: 0.15rem 0.6rem;

@@ -553,41 +553,52 @@ dropzone.addEventListener('drop', (e) => {
     }
 });
 
-// Botón "Cargar Ejemplo con Bugs" para demostrar cómo detecta errores
+// Botón "Cargar HTML con 7 Bugs" para demostrar cómo detecta errores
 document.getElementById('btn-load-demo-broken').addEventListener('click', () => {
     textareaHtml.value = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Landing Demo con Bugs para QA</title>
+  <!-- ❌ ERROR 1: Falta la etiqueta <meta name="viewport"> para celulares -->
+  <title>Tienda Tech - Proyecto de Prueba</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #0f172a; color: #f8fafc; }
-    nav { display: flex; gap: 12px; margin-bottom: 16px; }
-    a { color: #38bdf8; }
-    button { padding: 8px 14px; border-radius: 6px; border: none; background: #10b981; color: #042f2e; font-weight: bold; cursor: pointer; margin-right: 8px; }
+    body { font-family: system-ui, sans-serif; background: #14141b; color: #f8fafc; padding: 20px; }
+    nav { display: flex; gap: 15px; background: #0a0a0d; padding: 12px 18px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #272536; }
+    nav a { color: #f472b6; text-decoration: none; font-weight: bold; }
+    .card { background: #0a0a0d; padding: 16px; border-radius: 10px; border: 1px solid #272536; margin-bottom: 15px; }
+    button { background: #ec4899; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
   </style>
 </head>
 <body>
   <nav>
-    <a href="#inicio">Inicio</a>
-    <!-- Bug 1: Ancla a sección que no existe -->
-    <a href="#precios-inexistentes">Precios</a>
-    <!-- Bug 2: Link sin href -->
-    <a>Contacto Roto</a>
+    <a href="#catalogo">Catálogo</a>
+    <!-- ❌ ERROR 2: El menú apunta a #ofertas, pero abajo la sección es id="promociones" -->
+    <a href="#ofertas">Ofertas</a>
+    <!-- ❌ ERROR 3: Link sin atributo href -->
+    <a>Contacto</a>
   </nav>
 
-  <section id="inicio">
-    <h2>Prueba de Botones</h2>
-    <button onclick="document.getElementById('msg').textContent = '¡Botón 1 funciona!'">Botón Correcto</button>
-    <!-- Bug 3: Botón completamente vacío sin texto ni ícono -->
+  <section id="catalogo" class="card">
+    <h2>Auriculares Gamer Pro</h2>
+    <!-- ❌ ERROR 4: Imagen sin atributo alt -->
+    <img src="https://via.placeholder.com/120x80" width="120" height="80">
+    <!-- ❌ ERROR 5: Dos elementos con el mismo id="precio-item" -->
+    <p id="precio-item">$45.000</p>
+    <p id="precio-item">Envío gratis</p>
+
+    <button onclick="console.log('Agregado')">Agregar al carrito</button>
+    <!-- ❌ ERROR 6: Botón vacío -->
     <button></button>
-    <!-- Bug 4: ID duplicado -->
-    <div id="msg">Listo</div>
-    <div id="msg">ID Duplicado</div>
+    <!-- ❌ ERROR 7: Función JS inexistente -->
+    <button onclick="funcionQueNoExiste()">Comprar Ahora</button>
+  </section>
+
+  <section id="promociones" class="card">
+    <h3>Promociones de la semana</h3>
   </section>
 </body>
 </html>`;
-    writeLog('🐞 Código HTML de prueba con bugs cargado. Tocá "Auditar Código HTML".', 'info');
+    writeLog('🐞 Plantilla con los 7 errores más comunes cargada. Tocá "Pasar por el Radar".', 'info');
 });
 
 // Auditar código HTML pegado
@@ -612,15 +623,53 @@ document.getElementById('btn-audit-paste').addEventListener('click', async () =>
     isRunning = false;
 });
 
+function buildAgoozzTips(checks) {
+    const failed = checks.filter(c => !c.pass);
+    if (failed.length === 0) return '';
+
+    const tips = [];
+    failed.forEach(f => {
+        if (f.label.includes('Meta Viewport')) {
+            tips.push('📱 <strong>Diseño Responsivo:</strong> Agregá <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> dentro del <code>&lt;head&gt;</code> para que no se vea minúsculo en celulares.');
+        } else if (f.label.includes('IDs duplicados')) {
+            tips.push('🆔 <strong>IDs Repetidos:</strong> En HTML el atributo <code>id</code> tiene que ser único. Si varios elementos comparten estilo o comportamiento, usá <code>class="..."</code>.');
+        } else if (f.label.includes('VACÍO')) {
+            tips.push('🔘 <strong>Botón Vacío:</strong> Hay un <code>&lt;button&gt;&lt;/button&gt;</code> sin texto ni ícono adentro. Si es un botón con solo ícono, sumale <code>aria-label="Descripción"</code>.');
+        } else if (f.label.includes('Ancla rota')) {
+            tips.push('🧭 <strong>Menú Desconectado:</strong> Un link del menú apunta a una sección <code>#id</code> que no existe en la página. Revisá que el <code>href="#nombre"</code> coincida exacto con el <code>id="nombre"</code>.');
+        } else if (f.label.includes('sin atributo href')) {
+            tips.push('🔗 <strong>Link sin destino:</strong> Tenés una etiqueta <code>&lt;a&gt;</code> sin <code>href</code>. Si actúa como botón, te conviene usar <code>&lt;button type="button"&gt;</code>.');
+        } else if (f.label.includes('sin atributo alt')) {
+            tips.push('🖼️ <strong>Accesibilidad en Imágenes:</strong> Agregale <code>alt="Descripción de la imagen"</code> a tus etiquetas <code>&lt;img&gt;</code>.');
+        } else if (f.label.includes('Mayúsc/Minúsc') || f.label.includes('Case-Sensitive')) {
+            tips.push('🐧 <strong>Alerta GitHub Pages (Case-Sensitive):</strong> La ruta tiene diferencias de mayúsculas/minúsculas con el nombre real del archivo o carpeta. En Windows anda, pero al subirlo a GitHub Pages va a dar Error 404.');
+        } else if (f.label.includes('Error JS')) {
+            tips.push('⚡ <strong>Crash en JavaScript:</strong> Al hacer clic en uno de los botones se disparó una función que no existe o falló. Revisá la consola acá a la derecha.');
+        }
+    });
+
+    const uniqueTips = [...new Set(tips)];
+    if (uniqueTips.length === 0) return '';
+
+    return `
+        <div class="agoozz-tips-box">
+            <h4><i class="ph-fill ph-sparkle"></i> Tips de Agostina para dejarlo 10/10:</h4>
+            <ul>
+                ${uniqueTips.map(t => `<li>${t}</li>`).join('')}
+            </ul>
+        </div>
+    `;
+}
+
 function renderCustomSuites() {
     suitesContainer.innerHTML = '';
 
     if (customResultsStore.length === 0) {
         suitesContainer.innerHTML = `
-            <div style="text-align: center; padding: 2.5rem 1rem; color: #94a3b8;">
-                <i class="ph-duotone ph-file-html" style="font-size: 2.5rem; color: #10b981; display: block; margin-bottom: 0.5rem;"></i>
-                <strong style="color: #f8fafc;">Todavía no cargaste ningún proyecto</strong>
-                <p style="font-size: 0.82rem; margin-top: 0.3rem;">Subí tu carpeta HTML arriba, elegí archivos sueltos o probá el botón <em>"Cargar Ejemplo con Bugs"</em>.</p>
+            <div style="text-align: center; padding: 2.5rem 1rem; color: #9ca3af;">
+                <i class="ph-duotone ph-magic-wand" style="font-size: 2.6rem; color: #ec4899; display: block; margin-bottom: 0.5rem;"></i>
+                <strong style="color: #f8fafc;">El radar está listo para escanear tu código</strong>
+                <p style="font-size: 0.82rem; margin-top: 0.3rem;">Arrastrá tu carpeta HTML arriba, elegí archivos sueltos o probá el botón <em>"🐞 Cargar HTML con 7 Bugs"</em>.</p>
             </div>
         `;
         return;
@@ -635,15 +684,15 @@ function renderCustomSuites() {
         card.innerHTML = `
             <div class="suite-top">
                 <div class="suite-title">
-                    <i class="ph-fill ${res.passed ? 'ph-check-circle' : 'ph-warning-circle'}"
-                       style="color: ${res.passed ? '#10b981' : '#ef4444'}; font-size: 1.25rem;"></i>
+                    <i class="ph-fill ${res.passed ? 'ph-seal-check' : 'ph-warning-octagon'}"
+                       style="color: ${res.passed ? '#10b981' : '#ec4899'}; font-size: 1.3rem;"></i>
                     <div>
                         <h3>${res.target.name}</h3>
                         <span class="suite-path">${res.target.url}</span>
                     </div>
                 </div>
                 <div class="suite-actions">
-                    <button class="btn-mini btn-preview-custom" data-id="${res.target.id}"><i class="ph ph-eye"></i> Previsualizar</button>
+                    <button class="btn-mini btn-preview-custom" data-id="${res.target.id}"><i class="ph ph-eye"></i> Ver en Simulador</button>
                 </div>
             </div>
             <div class="suite-stats">
@@ -660,6 +709,7 @@ function renderCustomSuites() {
                         </div>
                     `).join('')}
                 </div>
+                ${buildAgoozzTips(res.checks)}
             </div>
         `;
         suitesContainer.appendChild(card);

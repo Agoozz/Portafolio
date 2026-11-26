@@ -3,49 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QA AutoTester Pro | Plataforma de Auditoría para Proyectos HTML</title>
+    <title>Agoozz QA Lab ✨ | Auditoría Web &amp; E2E Testing por Agostina</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
+    <!-- Glows característicos de tu Portafolio -->
+    <div class="bg-orb orb-pink"></div>
+    <div class="bg-orb orb-violet"></div>
 
     <header class="qa-header">
         <div class="container header-inner">
             <div class="brand-group">
-                <div class="brand-icon"><i class="ph-fill ph-shield-check"></i></div>
+                <div class="avatar-ring">
+                    <img src="../../assets/img/profile.png" alt="Agostina" class="brand-avatar">
+                    <span class="status-dot" title="Engine Online"></span>
+                </div>
                 <div>
-                    <h1>QA AutoTester <span>Studio</span></h1>
-                    <p>Cargá tu propio proyecto HTML/CSS/JS o auditá los proyectos del Portafolio</p>
+                    <div class="brand-topline">
+                        <span class="signature-pill">BY AGOSTINA · @AGOOZZ</span>
+                        <span class="mate-pill">🧉 Mate-Driven QA Engine</span>
+                    </div>
+                    <h1>Agoozz <span>QA Lab</span></h1>
                 </div>
             </div>
             <div class="header-actions">
-                <a href="../../index.html" class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Volver al Portafolio</a>
+                <a href="../../index.html" class="btn btn-ghost"><i class="ph ph-arrow-left"></i> Mi Portafolio</a>
                 <button id="btn-export-report" class="btn btn-ghost"><i class="ph ph-download-simple"></i> Exportar JSON</button>
-                <button id="btn-run-all" class="btn btn-emerald"><i class="ph-fill ph-play"></i> Auditar Portafolio</button>
+                <button id="btn-run-all" class="btn btn-pink"><i class="ph-fill ph-sparkle"></i> Auditar Mis Proyectos</button>
             </div>
         </div>
     </header>
 
     <main class="container qa-main">
+        <!-- Hero Personalizado -->
+        <section class="personal-banner">
+            <div class="banner-text">
+                <h2>¿Se te rompió un botón o un link en <span>GitHub Pages</span>?</h2>
+                <p>Armé este laboratorio para que puedas arrastrar tu carpeta HTML (o pegar tu código) y detectar en segundos botones vacíos, rutas sensibles a mayúsculas/minúsculas, anclas rotas y errores JavaScript antes de entregar o publicar.</p>
+            </div>
+            <div class="banner-Note">
+                <div class="note-card">
+                    <span class="note-tag"><i class="ph-fill ph-quotes"></i> Agostina's Dev Tip</span>
+                    <p>"En Windows <code>pantallas/</code> y <code>Pantallas/</code> parecen lo mismo, pero en Linux tiran 404. Este motor lo chequea por vos."</p>
+                </div>
+            </div>
+        </section>
+
         <!-- Selector de Modo (Tabs Principales) -->
         <section class="mode-switcher">
             <button class="mode-tab active" data-mode="custom">
-                <i class="ph-fill ph-upload-simple"></i>
+                <i class="ph-fill ph-magic-wand"></i>
                 <div>
-                    <strong>Probar Tu Propio Proyecto HTML</strong>
-                    <span>Subí una carpeta, archivos sueltos o pegá tu código HTML</span>
+                    <strong>Laboratorio Abierto: Probá Tu Proyecto HTML</strong>
+                    <span>Arrastrá tu carpeta completa, archivos sueltos o pegá tu código para pasarlo por el radar</span>
                 </div>
             </button>
             <button class="mode-tab" data-mode="portfolio">
                 <i class="ph-fill ph-folders"></i>
                 <div>
-                    <strong>Proyectos del Portafolio (16 Vistas)</strong>
-                    <span>Suite preconfigurada con SquatGym, Mateando, POS y más</span>
+                    <strong>Auditoría en Vivo de Mi Portafolio (16 Vistas)</strong>
+                    <span>Inspección automática de SquatGym OS, Mateando, StockMaster POS y mis demás apps</span>
                 </div>
             </button>
         </section>
@@ -55,42 +76,43 @@
             <div class="uploader-grid">
                 <!-- Dropzone Archivos / Carpeta -->
                 <div id="dropzone" class="dropzone-card">
-                    <div class="dropzone-icon"><i class="ph-duotone ph-folder-notch-open"></i></div>
-                    <h3>Arrastrá tu carpeta o archivos HTML/CSS/JS acá</h3>
-                    <p>El motor reconstruirá tu proyecto en memoria y verificará que todos los botones, menús, formularios, imágenes y rutas (con sensibilidad de mayúsculas/minúsculas como Linux/GitHub Pages) funcionen sin errores.</p>
+                    <div class="dropzone-badge">DROPZONE INTERACTIVA</div>
+                    <div class="dropzone-icon"><i class="ph-duotone ph-folder-Simple-star"></i></div>
+                    <h3>Soltá la carpeta de tu proyecto acá</h3>
+                    <p>Reconstruyo el árbol de tus archivos en memoria y pruebo cada <code>&lt;button&gt;</code>, menú <code>&lt;nav&gt;</code>, imagen y ruta local como si estuviera desplegado en producción.</p>
                     
                     <div class="upload-buttons">
-                        <label class="btn btn-emerald">
+                        <label class="btn btn-pink">
                             <i class="ph-fill ph-folder-open"></i> Subir Carpeta Completa
                             <input type="file" id="input-folder" webkitdirectory directory multiple hidden>
                         </label>
                         <label class="btn btn-ghost">
-                            <i class="ph-fill ph-file-html"></i> Subir Archivos (.html, .css, .js)
+                            <i class="ph-fill ph-file-html"></i> Elegir Archivos (.html, .css, .js)
                             <input type="file" id="input-files" multiple accept=".html,.htm,.css,.js,.png,.jpg,.jpeg,.svg,.webp,.gif,.json" hidden>
                         </label>
                     </div>
-                    <span class="upload-hint"><i class="ph ph-lock-key"></i> 100% Privado: Tus archivos se analizan localmente en tu navegador sin subirse a ningún servidor.</span>
+                    <span class="upload-hint"><i class="ph-fill ph-shield-star"></i> 100% Client-Side: Tu código no se sube a ningún servidor externo.</span>
                 </div>
 
                 <!-- Pegar Código HTML Rápido -->
                 <div class="code-paste-card">
                     <div class="paste-header">
                         <div>
-                            <h3><i class="ph-fill ph-code"></i> ¿Tenés un solo archivo? Pegá tu HTML</h3>
-                            <p>Ideal para probar ejercicios rápidos, landing pages o componentes</p>
+                            <h3><i class="ph-fill ph-code-block"></i> Quick Snippet Inspector</h3>
+                            <p>Pegá un HTML suelto o cargá mi plantilla de errores típicos para ver el radar en acción</p>
                         </div>
-                        <button id="btn-load-demo-broken" class="btn-mini" title="Carga un HTML de ejemplo con errores típicos para ver cómo los detecta">
-                            <i class="ph-fill ph-bug"></i> Cargar Ejemplo con Bugs
+                        <button id="btn-load-demo-broken" class="btn-mini btn-bug" title="Carga un HTML de ejemplo con los 7 errores más comunes">
+                            <i class="ph-fill ph-bug-beetle"></i> Cargar HTML con 7 Bugs
                         </button>
                     </div>
                     <textarea id="textarea-html" placeholder="<!DOCTYPE html>&#10;<html>&#10;<head>&#10;  <title>Mi Proyecto</title>&#10;</head>&#10;<body>&#10;  <nav><a href='index.html'>Inicio</a></nav>&#10;  <button>Enviar</button>&#10;</body>&#10;</html>"></textarea>
                     <div class="paste-actions">
                         <label class="check-option">
                             <input type="checkbox" id="chk-autoclick" checked>
-                            <span>Simular clics E2E en botones seguros</span>
+                            <span>Auto-Clickear botones en el simulador E2E</span>
                         </label>
-                        <button id="btn-audit-paste" class="btn btn-emerald">
-                            <i class="ph-fill ph-lightning"></i> Auditar Código HTML
+                        <button id="btn-audit-paste" class="btn btn-pink">
+                            <i class="ph-fill ph-lightning"></i> Pasar por el Radar
                         </button>
                     </div>
                 </div>
@@ -100,30 +122,30 @@
         <!-- Métricas Globales -->
         <section class="metrics-grid">
             <div class="metric-card">
-                <div class="metric-icon blue"><i class="ph-fill ph-stack"></i></div>
+                <div class="metric-icon pink"><i class="ph-fill ph-files"></i></div>
                 <div>
-                    <span class="metric-label">Archivos HTML</span>
+                    <span class="metric-label">Vistas HTML</span>
                     <strong id="stat-pages">0</strong>
                 </div>
             </div>
             <div class="metric-card">
                 <div class="metric-icon purple"><i class="ph-fill ph-cursor-click"></i></div>
                 <div>
-                    <span class="metric-label">Botones &amp; Inputs</span>
+                    <span class="metric-label">Botones &amp; Triggers</span>
                     <strong id="stat-buttons">0</strong>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon cyan"><i class="ph-fill ph-compass"></i></div>
+                <div class="metric-icon orange"><i class="ph-fill ph-compass"></i></div>
                 <div>
-                    <span class="metric-label">Menús &amp; Recursos</span>
+                    <span class="metric-label">Menús &amp; Rutas</span>
                     <strong id="stat-links">0</strong>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="metric-icon emerald"><i class="ph-fill ph-check-circle"></i></div>
+                <div class="metric-icon emerald"><i class="ph-fill ph-seal-check"></i></div>
                 <div>
-                    <span class="metric-label">Health Score</span>
+                    <span class="metric-label">Agoozz Quality Score</span>
                     <strong id="stat-score">—</strong>
                 </div>
             </div>
@@ -132,16 +154,16 @@
         <!-- Barra de progreso y filtros (modo portafolio) -->
         <section class="control-bar">
             <div id="portfolio-filters" class="filter-pills hidden">
-                <button class="pill-btn active" data-filter="all">Todos los Proyectos</button>
+                <button class="pill-btn active" data-filter="all">Todos Mis Proyectos</button>
                 <button class="pill-btn" data-filter="Portafolio">Portafolio</button>
                 <button class="pill-btn" data-filter="SquatGym">SquatGym OS</button>
-                <button class="pill-btn" data-filter="Mateando">Mateando E-Commerce</button>
-                <button class="pill-btn" data-filter="POS">POS &amp; Inventario</button>
+                <button class="pill-btn" data-filter="Mateando">Mateando</button>
+                <button class="pill-btn" data-filter="POS">StockMaster POS</button>
                 <button class="pill-btn" data-filter="Apps">Otras Apps</button>
             </div>
             <div class="progress-wrap">
                 <div class="progress-info">
-                    <span id="status-text">Subí una carpeta/archivo HTML o pegá código para auditarlo...</span>
+                    <span id="status-text">Esperando archivos o código para auditar...</span>
                     <span id="progress-percent">0%</span>
                 </div>
                 <div class="progress-track">
@@ -155,8 +177,8 @@
             <!-- Lista detallada por pantalla -->
             <section class="results-panel">
                 <div class="panel-header">
-                    <h2><i class="ph-fill ph-list-checks"></i> Diagnóstico de Botones, Menús y Estructura</h2>
-                    <span id="badge-summary" class="status-badge neutral">Esperando proyecto</span>
+                    <h2><i class="ph-fill ph-list-magnifying-glass"></i> Diagnóstico Detallado + Tips de Corrección</h2>
+                    <span id="badge-summary" class="status-badge neutral">Sin escaneo activo</span>
                 </div>
                 <div id="suites-container" class="suites-list"></div>
             </section>
@@ -165,21 +187,21 @@
             <aside class="inspector-sidebar">
                 <div class="sandbox-panel">
                     <div class="panel-header">
-                        <h2><i class="ph-fill ph-browser"></i> Vista Previa &amp; Simulador E2E</h2>
-                        <span id="sandbox-url" class="mono-badge">idle</span>
+                        <h2><i class="ph-fill ph-monitor-play"></i> Simulador E2E en Vivo</h2>
+                        <span id="sandbox-url" class="mono-badge">standby</span>
                     </div>
                     <div class="sandbox-viewport">
                         <iframe id="qa-iframe" title="Sandbox E2E" src="about:blank"></iframe>
                         <div id="sandbox-overlay" class="sandbox-overlay">
-                            <i class="ph-duotone ph-radar"></i>
-                            <p>Cargá tu proyecto para previsualizarlo y ejecutar pruebas interactivas sobre sus botones y menús.</p>
+                            <i class="ph-duotone ph-sparkle"></i>
+                            <p>Acá se monta tu página en tiempo real mientras el motor prueba los botones y escucha si hay errores en la consola.</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="console-panel">
                     <div class="panel-header">
-                        <h2><i class="ph-fill ph-terminal-window"></i> Consola de Auditoría QA</h2>
+                        <h2><i class="ph-fill ph-terminal-window"></i> Agoozz Terminal Log</h2>
                         <button id="btn-clear-log" class="btn-mini">Limpiar</button>
                     </div>
                     <div id="console-output" class="console-body"></div>
@@ -188,6 +210,19 @@
         </div>
     </main>
 
-    <script src="script.js"></script>
+    <footer class="qa-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <span class="footer-logo">Agoozz<span>.QA</span></span>
+                <p>Diseñado y programado por <strong>Agostina</strong> · Resistencia, Chaco 🧉</p>
+            </div>
+            <div class="footer-links">
+                <a href="../../index.html"><i class="ph ph-briefcase"></i> Portafolio</a>
+                <a href="https://github.com/Agoozz" target="_blank" rel="noopener"><i class="ph ph-github-logo"></i> GitHub @Agoozz</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js?v=2"></script>
 </body>
 </html>
