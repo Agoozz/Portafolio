@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=4">
+    <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
     <!-- Barra superior minimalista -->
@@ -23,6 +23,10 @@
                 </div>
             </div>
             <div class="topbar-actions">
+                <button id="btn-theme-toggle" class="btn-outline" title="Cambiar Modo Claro / Oscuro">
+                    <i id="theme-icon" class="ph ph-sun"></i>
+                    <span id="theme-label">Modo Claro</span>
+                </button>
                 <button id="btn-export-report" class="btn-text"><i class="ph ph-download-simple"></i> JSON</button>
                 <button id="btn-run-all" class="btn-solid"><i class="ph-fill ph-play"></i> Correr Suite</button>
             </div>
@@ -130,6 +134,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=4"></script>
+    <script src="script.js?v=5"></script>
 </body>
 </html>

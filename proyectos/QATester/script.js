@@ -163,6 +163,33 @@ document.getElementById('btn-clear-log').addEventListener('click', () => {
     writeLog('Consola limpia.', 'info');
 });
 
+// Selector Modo Claro / Modo Oscuro
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const themeLabel = document.getElementById('theme-label');
+
+function applyTheme(isLight) {
+    if (isLight) {
+        document.body.classList.add('light-mode');
+        if (themeIcon) themeIcon.className = 'ph ph-moon';
+        if (themeLabel) themeLabel.textContent = 'Modo Oscuro';
+    } else {
+        document.body.classList.remove('light-mode');
+        if (themeIcon) themeIcon.className = 'ph ph-sun';
+        if (themeLabel) themeLabel.textContent = 'Modo Claro';
+    }
+    localStorage.setItem('agoozz_qa_theme', isLight ? 'light' : 'dark');
+}
+
+if (btnThemeToggle) {
+    btnThemeToggle.addEventListener('click', () => {
+        const isCurrentlyLight = document.body.classList.contains('light-mode');
+        applyTheme(!isCurrentlyLight);
+    });
+}
+// Aplicar tema guardado (por defecto Modo Claro para que puedas verlo directo, o el que elijas)
+applyTheme(localStorage.getItem('agoozz_qa_theme') === 'light');
+
 // Cambio de Modo: Proyecto Propio vs Portafolio
 document.querySelectorAll('.mode-tab').forEach(tab => {
     tab.addEventListener('click', () => {
