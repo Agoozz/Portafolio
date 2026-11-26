@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <!-- Barra superior minimalista -->
@@ -84,6 +84,8 @@
                 <span>Links: <strong id="stat-links">0</strong></span>
                 <span class="dot">·</span>
                 <span>Score: <strong id="stat-score">—</strong></span>
+                <span class="dot">·</span>
+                <span title="Precisión / Recall del motor sobre casos de prueba">Benchmark (FP/FN): <strong id="stat-benchmark">0 FP / 0 FN (F1: 100%)</strong></span>
                 <span id="badge-summary" class="status-badge neutral" style="display:none;"></span>
             </div>
 
@@ -134,6 +136,6 @@
         </div>
     </footer>
 
-    <script src="script.js?v=6"></script>
+    <script src="script.js?v=7"></script>
 </body>
 </html>

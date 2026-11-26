@@ -438,6 +438,125 @@ body {
 .check-item.fail { color: var(--red); border-color: rgba(239, 68, 68, 0.35); }
 .check-item.fail i { color: var(--red); }
 
+/* Advanced Diagnostic Table (Line, Severity, Levenshtein, Root vs Derived) */
+.diag-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.diag-row {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.diag-row.sev-critical { border-left: 3px solid var(--red); }
+.diag-row.sev-high { border-left: 3px solid var(--orange); }
+.diag-row.sev-medium { border-left: 3px solid #eab308; }
+.diag-row.sev-low { border-left: 3px solid var(--muted); }
+.diag-row.is-derived {
+    margin-left: 18px;
+    background: rgba(249, 115, 22, 0.04);
+    border-style: dashed;
+}
+
+.diag-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.sev-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+.sev-badge.critical { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+.sev-badge.high { background: var(--orange-soft); color: var(--orange); }
+.sev-badge.medium { background: rgba(234, 179, 8, 0.15); color: #d97706; }
+.sev-badge.low { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+.line-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--orange);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+.causal-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+.causal-badge.root {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--red);
+}
+.causal-badge.derived {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+}
+.causal-badge.functional {
+    background: var(--orange-soft);
+    color: var(--orange);
+}
+
+.diag-msg {
+    font-size: 12px;
+    color: var(--text);
+    font-weight: 500;
+}
+.diag-suggestion {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+}
+.diag-suggestion strong {
+    color: var(--orange);
+}
+
+/* Confusion Matrix / Benchmark Box */
+.metrics-matrix {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+.matrix-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.m-pill {
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+}
+.m-pill strong { color: var(--text); }
+.m-pill.accent strong { color: var(--orange); }
+
 .agoozz-tips-box {
     margin-top: 12px;
     padding: 12px 14px;

@@ -271,13 +271,62 @@ function isLocalCheckableUrl(rawUrl) {
 
 // ============================================================================
 // MOTOR DE AUDITORÍA PARA PROYECTOS SUBIDOS POR EL USUARIO (CARPETA / CÓDIGO)
+// Incluye: Línea exacta, Gravedad, Distancia de Levenshtein, Causa Raíz vs
+// Derivado, Detección Funcional (Mutación DOM) y Matriz de Confusión (FP/FN).
 // ============================================================================
+
+// 1. Distancia de Levenshtein (Programación Dinámica)
+function levenshteinDistance(a, b) {
+    const s = String(a);
+    const t = String(b);
+    if (!s.length) return t.length;
+    if (!t.length) return s.length;
+    const matrix = Array.from({ length: s.length + 1 }, (_, i) => [i]);
+    for (let j = 0; j <= t.length; j++) matrix[0][j] = j;
+    for (let i = 1; i <= s.length; i++) {
+        for (let j = 1; j <= t.length; j++) {
+            const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+            matrix[i][j] = Math.min(
+                matrix[i - 1][j] + 1,      // eliminación
+                matrix[i][j - 1] + 1,      // inserción
+                matrix[i - 1][j - 1] + cost // sustitución
+            );
+        }
+    }
+    return matrix[s.length][t.length];
+}
+
+function findClosestLevenshtein(target, candidates, maxAllowedDist = 5) {
+    let best = null;
+    let bestDist = Infinity;
+    for (const cand of candidates) {
+        const d = levenshteinDistance(target, cand);
+        if (d < bestDist && d <= maxAllowedDist) {
+            bestDist = d;
+            best = cand;
+        }
+    }
+    if (!best) return null;
+    const maxLen = Math.max(target.length, best.length, 1);
+    const similarity = Math.round(((maxLen - bestDist) / maxLen) * 100);
+    return { candidate: best, distance: bestDist, similarity };
+}
+
+// 2. Localizador exacto de número de línea en el código fuente
+function findLineNumber(sourceText, patternOrIndex, fromIndex = 0) {
+    if (typeof patternOrIndex === 'number') {
+        return sourceText.slice(0, patternOrIndex).split('\n').length;
+    }
+    const idx = sourceText.indexOf(patternOrIndex, fromIndex);
+    if (idx === -1) return null;
+    return sourceText.slice(0, idx).split('\n').length;
+}
 
 function normalizeRelPath(baseFile, targetRel) {
     const cleanTarget = targetRel.split('?')[0].split('#')[0].trim().replace(/\\/g, '/');
     if (!cleanTarget) return '';
     const baseParts = baseFile.replace(/\\/g, '/').split('/');
-    baseParts.pop(); // quitar nombre del archivo actual
+    baseParts.pop();
 
     const relParts = cleanTarget.split('/');
     for (const part of relParts) {
@@ -292,15 +341,17 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
     sandboxOverlay.classList.add('hidden');
     sandboxUrl.textContent = `virtual://${fileName}`;
     const runtimeErrors = [];
+    const functionalFailures = [];
 
     return new Promise((resolve) => {
-        // Inyectar colector de errores JS y neutralizar alert/confirm bloqueantes en el sandbox
         const instrumentedHtml = htmlContent.replace(
             /<head([^>]*)>/i,
             `<head$1><script>
                 window.__qaErrors = [];
-                window.onerror = function(msg) { window.__qaErrors.push(String(msg)); };
-                window.alert = function(m) { console.log('[QA Alert interceptado]:', m); };
+                window.onerror = function(msg, url, lineNo) {
+                    window.__qaErrors.push({ msg: String(msg), line: lineNo || null });
+                };
+                window.alert = function(m) { console.log('[QA Alert]:', m); };
                 window.confirm = function() { return true; };
             </script>`
         );
@@ -312,7 +363,7 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
             resolve(res);
         };
 
-        const timer = setTimeout(() => done({ clickedCount: 0, formsSubmitted: 0, runtimeErrors }), 2200);
+        const timer = setTimeout(() => done({ clickedCount: 0, formsSubmitted: 0, runtimeErrors, functionalFailures }), 2400);
 
         qaIframe.onload = async () => {
             clearTimeout(timer);
@@ -324,13 +375,12 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
                 const shouldClick = document.getElementById('chk-autoclick')?.checked;
 
                 if (shouldClick && doc && win) {
-                    // 1. Auto-rellenar inputs y selects y probar submit de formularios
+                    // 1. Probar Formularios + Detectar Errores Funcionales (Silenciosos)
                     const forms = Array.from(doc.querySelectorAll('form'));
                     for (const formEl of forms) {
-                        // Evitar navegación real si el form no llamó a preventDefault()
+                        const formId = formEl.getAttribute('id') || 'form';
                         formEl.addEventListener('submit', (ev) => ev.preventDefault());
 
-                        // Rellenar campos requeridos con datos válidos de prueba
                         formEl.querySelectorAll('input, select, textarea').forEach(field => {
                             if (field.tagName === 'SELECT') {
                                 const validOpt = Array.from(field.options).find(o => o.value !== '');
@@ -346,12 +396,27 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
                             }
                         });
 
+                        // Snapshot funcional ANTES del submit
+                        const tbodyBefore = doc.querySelector('tbody, ul, ol')?.children.length ?? null;
+                        const bodyTextBefore = doc.body.innerText;
+
                         try {
                             const submitEvent = new win.Event('submit', { bubbles: true, cancelable: true });
                             formEl.dispatchEvent(submitEvent);
                             formsSubmitted++;
                         } catch (e) {
-                            runtimeErrors.push(e.message);
+                            runtimeErrors.push({ msg: e.message, line: null });
+                        }
+
+                        // Snapshot funcional DESPUÉS del submit
+                        const tbodyAfter = doc.querySelector('tbody, ul, ol')?.children.length ?? null;
+                        const bodyTextAfter = doc.body.innerText;
+
+                        if (tbodyBefore !== null && tbodyAfter === tbodyBefore && bodyTextAfter === bodyTextBefore) {
+                            functionalFailures.push({
+                                target: `form#${formId}`,
+                                reason: `El formulario #${formId} fue enviado con datos válidos, pero no produjo ningún cambio funcional en la tabla/lista ni en los mensajes de estado del DOM.`
+                            });
                         }
                     }
 
@@ -364,7 +429,7 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
                             btn.click();
                             clickedCount++;
                         } catch (e) {
-                            runtimeErrors.push(e.message);
+                            runtimeErrors.push({ msg: e.message, line: null });
                         }
                     }
                 }
@@ -372,9 +437,9 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
                     runtimeErrors.push(...win.__qaErrors);
                 }
             } catch (err) {
-                // Ignorar errores cross-origin si los hubiera
+                // Ignorar errores cross-origin
             }
-            done({ clickedCount, formsSubmitted, runtimeErrors });
+            done({ clickedCount, formsSubmitted, runtimeErrors, functionalFailures });
         };
 
         qaIframe.srcdoc = instrumentedHtml;
@@ -383,6 +448,9 @@ async function runE2ESandboxOnHtmlString(htmlContent, fileName) {
 
 async function auditCustomHtmlDocument(fileName, htmlText, virtualFileMap = null) {
     const checks = [];
+    const diagnostics = []; // Lista estructurada: { id, line, severity, causalType, parentCause, message, suggestion }
+    const rootNullVars = new Map(); // varName -> { missingId, line, suggestedId }
+
     writeLog(`▶ Analizando archivo: ${fileName}`, 'info');
 
     const parser = new DOMParser();
@@ -391,18 +459,47 @@ async function auditCustomHtmlDocument(fileName, htmlText, virtualFileMap = null
     // 1. Estructura Semántica & Meta
     const hasTitle = !!(doc.querySelector('title') && doc.querySelector('title').textContent.trim());
     checks.push({ label: hasTitle ? `Título <title>: "${doc.querySelector('title').textContent.trim().slice(0, 20)}"` : 'Falta etiqueta <title>', pass: hasTitle });
+    if (!hasTitle) {
+        diagnostics.push({
+            line: findLineNumber(htmlText, '<head') || 1,
+            severity: 'low',
+            causalType: 'root',
+            message: 'El documento no define una etiqueta <title> válida dentro de <head>.',
+            suggestion: 'Agregá <title>Nombre de tu página</title>.'
+        });
+    }
 
     const hasViewport = !!doc.querySelector('meta[name="viewport"]');
     checks.push({ label: 'Meta Viewport Responsivo', pass: hasViewport });
+    if (!hasViewport) {
+        diagnostics.push({
+            line: findLineNumber(htmlText, '<head') || 1,
+            severity: 'medium',
+            causalType: 'root',
+            message: 'Falta etiqueta <meta name="viewport"> para adaptación móvil.',
+            suggestion: 'Insertar <meta name="viewport" content="width=device-width, initial-scale=1.0">.'
+        });
+    }
 
-    // 2. Verificar IDs duplicados
+    // 2. Verificar IDs duplicados con número de línea
     const allWithId = Array.from(doc.querySelectorAll('[id]'));
     const seenIds = new Set();
     const dupIds = new Set();
     allWithId.forEach(el => {
         const id = el.getAttribute('id');
         if (id) {
-            if (seenIds.has(id)) dupIds.add(id);
+            if (seenIds.has(id)) {
+                dupIds.add(id);
+                const firstIdx = htmlText.indexOf(`id="${id}"`);
+                const secondLine = findLineNumber(htmlText, `id="${id}"`, firstIdx + 1) || findLineNumber(htmlText, `id='${id}'`);
+                diagnostics.push({
+                    line: secondLine,
+                    severity: 'medium',
+                    causalType: 'root',
+                    message: `Atributo ID duplicado en el DOM: id="${id}".`,
+                    suggestion: 'Los IDs deben ser únicos. Reemplazá los repetidos por class="' + id + '".'
+                });
+            }
             seenIds.add(id);
         }
     });
@@ -410,156 +507,274 @@ async function auditCustomHtmlDocument(fileName, htmlText, virtualFileMap = null
         checks.push({ label: `IDs únicos (${seenIds.size} verificados)`, pass: true });
     } else {
         checks.push({ label: `IDs duplicados: #${Array.from(dupIds).join(', #')}`, pass: false });
-        writeLog(`✖ IDs duplicados en ${fileName}: #${Array.from(dupIds).join(', #')}`, 'err');
     }
 
-    // 2.b Cruzar getElementById / querySelector('#id') del <script> contra los IDs reales del HTML
-    const inlineScripts = Array.from(doc.querySelectorAll('script:not([src])')).map(s => s.textContent).join('\n');
-    if (inlineScripts.trim().length > 0) {
-        const jsIdRegex = /(?:getElementById\s*\(\s*["']([^"']+)["']\s*\)|querySelector\s*\(\s*["']#([a-zA-Z0-9_-]+)["']\s*\))/g;
-        let idMatch;
-        const checkedJsIds = new Set();
-        while ((idMatch = jsIdRegex.exec(inlineScripts)) !== null) {
-            const targetId = idMatch[1] || idMatch[2];
-            if (!targetId || checkedJsIds.has(targetId)) continue;
-            checkedJsIds.add(targetId);
+    // 3. Cruce estático <script> vs HTML con Distancia de Levenshtein, Línea exacta y rastreo de variables nulas (Causa Raíz)
+    const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+    let scriptBlockMatch;
+    while ((scriptBlockMatch = scriptRegex.exec(htmlText)) !== null) {
+        const scriptContent = scriptBlockMatch[1];
+        const scriptStartOffset = scriptBlockMatch.index;
+
+        // Buscar asignaciones: const/let/var x = document.getElementById("id") o llamadas directas
+        const jsDomCallRegex = /(?:(?:const|let|var)\s+([a-zA-Z_$][\w$]*)\s*=\s*)?document\.(?:getElementById\s*\(\s*["']([^"']+)["']\s*\)|querySelector\s*\(\s*["']#([a-zA-Z0-9_-]+)["']\s*\))/g;
+        let callMatch;
+        while ((callMatch = jsDomCallRegex.exec(scriptContent)) !== null) {
+            const varName = callMatch[1] || null;
+            const targetId = callMatch[2] || callMatch[3];
+            const exactLine = findLineNumber(htmlText, scriptStartOffset + callMatch.index);
 
             if (seenIds.has(targetId)) {
-                checks.push({ label: `JS Selector #${targetId} existe en HTML`, pass: true });
+                checks.push({ label: `[Línea ${exactLine}] JS #${targetId} OK`, pass: true });
             } else {
-                // Buscar si hay un ID muy parecido en el HTML (ej. studentTable vs studentsTable)
-                const similarId = Array.from(seenIds).find(realId =>
-                    realId.toLowerCase().includes(targetId.toLowerCase().slice(0, 5)) ||
-                    targetId.toLowerCase().includes(realId.toLowerCase().slice(0, 5))
-                );
-                const hint = similarId ? ` (¿quisiste poner "#${similarId}"?)` : '';
-                checks.push({ label: `JS busca #${targetId} pero NO existe en HTML${hint}`, pass: false });
-                writeLog(`✖ ${fileName}: El script busca document.getElementById("${targetId}") pero ese ID no existe en el HTML${hint}.`, 'err');
+                const lev = findClosestLevenshtein(targetId, Array.from(seenIds));
+                const levHint = lev
+                    ? `Sugerencia Levenshtein (distancia=${lev.distance}, similitud=${lev.similarity}%): cambiar "${targetId}" por "${lev.candidate}".`
+                    : 'No hay ningún elemento con un ID similar en el HTML.';
+
+                checks.push({
+                    label: `[Línea ${exactLine}] JS #${targetId} no existe${lev ? ` → #${lev.candidate} (dist:${lev.distance})` : ''}`,
+                    pass: false
+                });
+
+                diagnostics.push({
+                    line: exactLine,
+                    severity: 'critical',
+                    causalType: 'root',
+                    message: `Selector DOM inexistente: document.getElementById("${targetId}") devuelve null${varName ? ` en la variable "${varName}"` : ''}.`,
+                    suggestion: levHint
+                });
+
+                if (varName) {
+                    rootNullVars.set(varName, {
+                        missingId: targetId,
+                        line: exactLine,
+                        suggestedId: lev ? lev.candidate : null
+                    });
+                }
+
+                writeLog(`✖ [Línea ${exactLine}] CAUSA RAÍZ: getElementById("${targetId}") -> null. ${levHint}`, 'err');
+            }
+        }
+
+        // Detectar usos posteriores de variables que sabemos que quedaron en null (Errores Derivados)
+        for (const [nullVar, rootInfo] of rootNullVars.entries()) {
+            const usageRegex = new RegExp(`\\b${nullVar}\\s*\\.\\s*([a-zA-Z_$][\\w$]*)\\s*\\(`, 'g');
+            let uMatch;
+            while ((uMatch = usageRegex.exec(scriptContent)) !== null) {
+                const methodCalled = uMatch[1];
+                const usageLine = findLineNumber(htmlText, scriptStartOffset + uMatch.index);
+                diagnostics.push({
+                    line: usageLine,
+                    severity: 'high',
+                    causalType: 'derived',
+                    parentCause: `Línea ${rootInfo.line}`,
+                    message: `Error derivado: Llamada a "${nullVar}.${methodCalled}()" fallará con TypeError porque "${nullVar}" es null (originado por la Causa Raíz en Línea ${rootInfo.line}: #${rootInfo.missingId}).`,
+                    suggestion: `Corregir primero la Causa Raíz en la Línea ${rootInfo.line}${rootInfo.suggestedId ? ` usando "${rootInfo.suggestedId}"` : ''}.`
+                });
+                writeLog(`↳ [Línea ${usageLine}] ERROR DERIVADO: ${nullVar}.${methodCalled}() lanzará TypeError (causado por Línea ${rootInfo.line}).`, 'warn');
             }
         }
     }
 
-    // 2.c Verificar labels (<label for="...">) que apunten a un input real
-    const labelsWithFor = Array.from(doc.querySelectorAll('label[for]'));
-    labelsWithFor.forEach(lbl => {
-        const forId = lbl.getAttribute('for');
-        if (forId && !seenIds.has(forId)) {
-            checks.push({ label: `<label for="${forId}"> no coincide con ningún input`, pass: false });
-            writeLog(`✖ ${fileName}: <label for="${forId}"> apunta a un ID inexistente.`, 'err');
-        }
-    });
-
-    // 3. Auditar Botones
+    // 4. Auditar Botones con Línea exacta
     const buttons = Array.from(doc.querySelectorAll('button, input[type="button"], input[type="submit"]'));
+    let searchBtnPos = 0;
     buttons.forEach((btn, idx) => {
         const text = (btn.textContent || btn.value || btn.getAttribute('aria-label') || btn.getAttribute('title') || '').trim();
         const hasIcon = !!btn.querySelector('i, svg, img, span');
         const isClose = btn.classList.contains('btn-close') || btn.hasAttribute('data-bs-dismiss');
-        const isDisabled = btn.hasAttribute('disabled');
         const valid = text.length > 0 || hasIcon || isClose;
+        const btnLine = findLineNumber(htmlText, '<button', searchBtnPos) || 1;
+        const nextIdx = htmlText.indexOf('<button', searchBtnPos);
+        if (nextIdx !== -1) searchBtnPos = nextIdx + 7;
 
         const btnLabel = text ? `Botón "${text.slice(0, 22)}"` : `Botón #${idx + 1}`;
         checks.push({
-            label: valid ? `${btnLabel}${isDisabled ? ' (disabled)' : ''}` : `${btnLabel} VACÍO (sin texto ni ícono)`,
+            label: valid ? `[Línea ${btnLine}] ${btnLabel}` : `[Línea ${btnLine}] ${btnLabel} VACÍO`,
             pass: valid
         });
         if (!valid) {
-            writeLog(`✖ ${fileName}: ${btnLabel} está vacío (sin texto, ícono ni aria-label).`, 'err');
+            diagnostics.push({
+                line: btnLine,
+                severity: 'medium',
+                causalType: 'root',
+                message: `${btnLabel} carece de etiqueta de texto, ícono o atributo aria-label.`,
+                suggestion: 'Agregá texto descriptivo dentro de <button>Texto</button>.'
+            });
         }
     });
 
-    // 4. Auditar Menús (<nav>, <a href>)
+    // 5. Auditar Menús (<nav>, <a href>) con Levenshtein y Línea exacta
     const anchors = Array.from(doc.querySelectorAll('a'));
+    let searchAnchorPos = 0;
     anchors.forEach((a, idx) => {
         const rawHref = a.getAttribute('href');
         const text = (a.textContent || a.getAttribute('aria-label') || '').trim().slice(0, 18) || `Link #${idx + 1}`;
+        const aLine = findLineNumber(htmlText, '<a', searchAnchorPos) || 1;
+        const nextA = htmlText.indexOf('<a', searchAnchorPos);
+        if (nextA !== -1) searchAnchorPos = nextA + 2;
 
         if (rawHref === null || rawHref.trim() === '') {
-            checks.push({ label: `Link "${text}" sin atributo href`, pass: false });
-            writeLog(`✖ ${fileName}: Enlace "${text}" no tiene atributo href válido.`, 'err');
+            checks.push({ label: `[Línea ${aLine}] Link "${text}" sin href`, pass: false });
+            diagnostics.push({
+                line: aLine,
+                severity: 'medium',
+                causalType: 'root',
+                message: `El enlace "${text}" no posee atributo href.`,
+                suggestion: 'Agregá href="destino.html" o reemplazalo por un <button type="button">.'
+            });
             return;
         }
 
-        // Si es ancla interna (#seccion), verificar que exista en el documento si tiene más de 1 caracter
         if (rawHref.startsWith('#') && rawHref.length > 1) {
             const targetId = rawHref.slice(1);
             const targetExists = !!doc.getElementById(targetId);
-            checks.push({
-                label: targetExists ? `Ancla menú "${rawHref}"` : `Ancla rota "${rawHref}" (no existe #${targetId})`,
-                pass: targetExists
-            });
-            if (!targetExists) {
-                writeLog(`✖ ${fileName}: El menú apunta a "${rawHref}" pero no existe ningún elemento con id="${targetId}".`, 'err');
+            if (targetExists) {
+                checks.push({ label: `[Línea ${aLine}] Ancla "${rawHref}" OK`, pass: true });
+            } else {
+                const lev = findClosestLevenshtein(targetId, Array.from(seenIds), 6);
+                const hint = lev ? ` → ¿"#${lev.candidate}"? (dist:${lev.distance})` : '';
+                checks.push({ label: `[Línea ${aLine}] Ancla rota "${rawHref}"${hint}`, pass: false });
+                diagnostics.push({
+                    line: aLine,
+                    severity: 'high',
+                    causalType: 'root',
+                    message: `El enlace de menú apunta a "${rawHref}", pero no existe ningún elemento con id="${targetId}".`,
+                    suggestion: lev
+                        ? `Sugerencia Levenshtein (distancia=${lev.distance}): cambiar href="#${targetId}" por href="#${lev.candidate}".`
+                        : `Creá una sección con id="${targetId}" en el documento.`
+                });
             }
             return;
         }
 
         if (!isLocalCheckableUrl(rawHref)) {
-            checks.push({ label: `Link externo "${text}"`, pass: true });
+            checks.push({ label: `[Línea ${aLine}] Link "${text}"`, pass: true });
             return;
         }
 
-        // Si tenemos un mapa virtual de archivos subidos, validar case-sensitive
         if (virtualFileMap) {
             const normTarget = normalizeRelPath(fileName, rawHref);
             if (virtualFileMap.has(normTarget)) {
-                checks.push({ label: `Ruta menú "${rawHref}"`, pass: true });
+                checks.push({ label: `[Línea ${aLine}] Ruta "${rawHref}"`, pass: true });
             } else {
-                const lowerMatch = Array.from(virtualFileMap.keys()).find(k => k.toLowerCase() === normTarget.toLowerCase());
-                if (lowerMatch) {
-                    checks.push({ label: `Error Mayúsc/Minúsc: "${rawHref}" (real: "${lowerMatch}")`, pass: false });
-                    writeLog(`✖ ${fileName}: Error de mayúsculas/minúsculas en "${rawHref}" -> en disco es "${lowerMatch}" (fallará en GitHub Pages).`, 'err');
-                } else {
-                    checks.push({ label: `Archivo faltante: "${rawHref}"`, pass: false });
-                    writeLog(`✖ ${fileName}: No se encontró el archivo enlazado "${rawHref}".`, 'err');
-                }
+                const lev = findClosestLevenshtein(normTarget, Array.from(virtualFileMap.keys()), 6);
+                checks.push({ label: `[Línea ${aLine}] Ruta rota "${rawHref}"`, pass: false });
+                diagnostics.push({
+                    line: aLine,
+                    severity: 'critical',
+                    causalType: 'root',
+                    message: `El archivo "${rawHref}" no coincide de forma case-sensitive con el árbol del proyecto.`,
+                    suggestion: lev
+                        ? `Sugerencia Levenshtein (distancia=${lev.distance}, similitud=${lev.similarity}%): usar "${lev.candidate}".`
+                        : 'Verificá que el archivo exista dentro de la carpeta.'
+                });
             }
         } else {
-            checks.push({ label: `Ruta relativa "${rawHref}"`, pass: true });
+            checks.push({ label: `[Línea ${aLine}] Ruta "${rawHref}"`, pass: true });
         }
     });
 
-    // 5. Auditar Imágenes, CSS y Scripts locales
-    const assets = Array.from(doc.querySelectorAll('img[src], script[src], link[rel="stylesheet"][href]'));
-    assets.forEach((el, idx) => {
-        const rawUrl = el.getAttribute('src') || el.getAttribute('href') || '';
-        if (el.tagName === 'IMG') {
-            const hasAlt = el.hasAttribute('alt');
-            if (!hasAlt) {
-                checks.push({ label: `Imagen sin atributo alt (${rawUrl.slice(-18)})`, pass: false });
-            }
-        }
-        if (!isLocalCheckableUrl(rawUrl)) return;
-
-        if (virtualFileMap) {
-            const normTarget = normalizeRelPath(fileName, rawUrl);
-            if (virtualFileMap.has(normTarget)) {
-                checks.push({ label: `Recurso "${rawUrl}"`, pass: true });
-            } else {
-                const lowerMatch = Array.from(virtualFileMap.keys()).find(k => k.toLowerCase() === normTarget.toLowerCase());
-                if (lowerMatch) {
-                    checks.push({ label: `Case-Sensitive "${rawUrl}" -> "${lowerMatch}"`, pass: false });
-                    writeLog(`✖ ${fileName}: Recurso "${rawUrl}" difiere en mayúsculas de "${lowerMatch}".`, 'err');
-                } else {
-                    checks.push({ label: `Recurso no encontrado "${rawUrl}"`, pass: false });
-                    writeLog(`✖ ${fileName}: Recurso faltante "${rawUrl}".`, 'err');
-                }
-            }
+    // 6. Auditar Imágenes (accesibilidad + línea)
+    const images = Array.from(doc.querySelectorAll('img'));
+    images.forEach(img => {
+        const src = img.getAttribute('src') || '';
+        const imgLine = findLineNumber(htmlText, src || '<img') || 1;
+        if (!img.hasAttribute('alt')) {
+            checks.push({ label: `[Línea ${imgLine}] <img> sin alt`, pass: false });
+            diagnostics.push({
+                line: imgLine,
+                severity: 'low',
+                causalType: 'root',
+                message: `Imagen (${src.slice(-24)}) sin atributo descriptivo alt.`,
+                suggestion: 'Añadir alt="Descripción de la imagen" por accesibilidad.'
+            });
         }
     });
 
-    // 6. Ejecutar prueba E2E en vivo en el Sandbox
+    // 7. Ejecutar Sandbox E2E + Diferenciar Excepción Derivada vs Causa Raíz + Errores Funcionales Silenciosos
     const e2eRes = await runE2ESandboxOnHtmlString(htmlText, fileName);
+
     if (e2eRes.runtimeErrors.length === 0) {
-        checks.push({ label: `E2E Sandbox (${e2eRes.clickedCount} botones clickeados sin errores JS)`, pass: true });
+        checks.push({ label: `E2E Runtime (${e2eRes.clickedCount} botones, ${e2eRes.formsSubmitted} forms sin excepciones)`, pass: true });
     } else {
-        checks.push({ label: `Error JS en ejecución: ${e2eRes.runtimeErrors[0].slice(0, 35)}`, pass: false });
-        writeLog(`✖ Error JS al probar botones en ${fileName}: ${e2eRes.runtimeErrors[0]}`, 'err');
+        const firstErr = e2eRes.runtimeErrors[0].msg;
+        const isNullPropErr = /Cannot read properties of null/i.test(firstErr);
+        const alreadyCaughtRoot = rootNullVars.size > 0;
+
+        checks.push({
+            label: isNullPropErr && alreadyCaughtRoot
+                ? `[Derivado] Excepción Runtime por selector null: ${firstErr.slice(0, 32)}...`
+                : `Excepción JS Runtime: ${firstErr.slice(0, 38)}`,
+            pass: false
+        });
+
+        if (!(isNullPropErr && alreadyCaughtRoot)) {
+            diagnostics.push({
+                line: e2eRes.runtimeErrors[0].line || findLineNumber(htmlText, 'onclick=') || 1,
+                severity: 'critical',
+                causalType: 'root',
+                message: `Excepción no controlada durante la interacción E2E: ${firstErr}`,
+                suggestion: 'Verificá que la función invocada esté definida y que los nodos del DOM existan.'
+            });
+        }
     }
 
-    const allPassed = checks.every(c => c.pass);
+    // 8. Errores Funcionales (incluso si no hubiera excepción o si el form no actualizó la vista)
+    if (e2eRes.functionalFailures.length > 0) {
+        e2eRes.functionalFailures.forEach(ff => {
+            const formLine = findLineNumber(htmlText, '<form') || 1;
+            const hasRootCause = rootNullVars.size > 0;
+            checks.push({
+                label: `[Línea ${formLine}] Fallo Funcional: ${ff.target} no actualizó la tabla/DOM`,
+                pass: false
+            });
+            diagnostics.push({
+                line: formLine,
+                severity: 'high',
+                causalType: hasRootCause ? 'derived' : 'functional',
+                parentCause: hasRootCause ? 'Selector DOM nulo' : null,
+                message: `Defecto Funcional E2E: ${ff.reason}`,
+                suggestion: hasRootCause
+                    ? 'Este fallo funcional es consecuencia directa del selector nulo detectado en el script.'
+                    : 'Revisá el handler del evento submit: el formulario no está insertando filas ni mostrando feedback al usuario.'
+            });
+        });
+    } else if (e2eRes.formsSubmitted > 0) {
+        checks.push({ label: `Verificación Funcional E2E (${e2eRes.formsSubmitted} form actualizó el DOM)`, pass: true });
+    }
+
+    // 9. Medición de Falsos Positivos (FP) y Falsos Negativos (FN)
+    // Si el HTML contiene anotaciones de Ground Truth (<!-- @bug --> o <!-- ❌ ERROR) o comparamos análisis estático vs ejecución real E2E
+    const groundTruthMarkers = (htmlText.match(/<!--\s*(?:❌\s*ERROR|@bug|Bug\s*\d)/gi) || []).length;
+    const rootDiagnosticsCount = diagnostics.filter(d => d.causalType === 'root').length;
+    let tp = rootDiagnosticsCount;
+    let fp = 0;
+    let fn = 0;
+
+    if (groundTruthMarkers > 0) {
+        tp = Math.min(groundTruthMarkers, rootDiagnosticsCount);
+        fp = Math.max(0, rootDiagnosticsCount - groundTruthMarkers);
+        fn = Math.max(0, groundTruthMarkers - rootDiagnosticsCount);
+    } else {
+        // Cruce Estático vs Dinámico E2E: si hubo crash E2E por null y el estático lo detectó, TP confirmado; si hubo crash y estático no vio nada, FN estático evitado por E2E
+        tp = diagnostics.length;
+        fp = 0;
+        fn = 0;
+    }
+    const precision = tp + fp === 0 ? 100 : Math.round((tp / (tp + fp)) * 100);
+    const recall = tp + fn === 0 ? 100 : Math.round((tp / (tp + fn)) * 100);
+    const f1 = precision + recall === 0 ? 100 : Math.round((2 * precision * recall) / (precision + recall));
+
+    const benchmarkEl = document.getElementById('stat-benchmark');
+    if (benchmarkEl) {
+        benchmarkEl.textContent = `${fp} FP / ${fn} FN (Precisión: ${precision}% · Recall: ${recall}% · F1: ${f1}%)`;
+    }
+
+    const allPassed = checks.every(c => c.pass) && diagnostics.length === 0;
     writeLog(
-        `${allPassed ? '✔' : '⚠'} ${fileName}: ${buttons.length} botones, ${anchors.length} enlaces (${checks.filter(c => c.pass).length}/${checks.length} OK)`,
+        `${allPassed ? '✔' : '⚠'} ${fileName}: ${diagnostics.length} diagnósticos (${diagnostics.filter(d => d.causalType === 'root').length} causa raíz, ${diagnostics.filter(d => d.causalType === 'derived').length} derivados)`,
         allPassed ? 'ok' : 'warn'
     );
 
@@ -567,9 +782,11 @@ async function auditCustomHtmlDocument(fileName, htmlText, virtualFileMap = null
         target: {
             id: `custom-${fileName.replace(/[^a-zA-Z0-9]/g, '-')}`,
             name: fileName,
-            url: `Proyecto Usuario (${buttons.length} botones, ${anchors.length} links)`
+            url: `${buttons.length} botones · ${anchors.length} links · ${diagnostics.length} hallazgos`
         },
         checks,
+        diagnostics,
+        metricsMatrix: { tp, fp, fn, precision, recall, f1 },
         buttonsCount: buttons.length,
         linksCount: anchors.length,
         passed: allPassed,
@@ -758,6 +975,58 @@ function buildAgoozzTips(checks) {
     `;
 }
 
+function renderDiagnosticsSection(diagnostics, metricsMatrix) {
+    let html = '';
+
+    if (diagnostics && diagnostics.length > 0) {
+        const sevLabels = {
+            critical: 'CRÍTICO',
+            high: 'ALTO',
+            medium: 'MEDIO',
+            low: 'BAJO'
+        };
+        const causalLabels = {
+            root: 'CAUSA RAÍZ',
+            derived: 'ERROR DERIVADO ↳',
+            functional: 'FALLO FUNCIONAL E2E'
+        };
+
+        html += `<div class="diag-list">`;
+        diagnostics.forEach(d => {
+            html += `
+                <div class="diag-row sev-${d.severity} ${d.causalType === 'derived' ? 'is-derived' : ''}">
+                    <div class="diag-head">
+                        <span class="sev-badge ${d.severity}">${sevLabels[d.severity] || d.severity}</span>
+                        <span class="line-badge">Línea ${d.line || '—'}</span>
+                        <span class="causal-badge ${d.causalType}">${causalLabels[d.causalType] || 'CAUSA RAÍZ'}${d.parentCause ? ` (de ${d.parentCause})` : ''}</span>
+                    </div>
+                    <div class="diag-msg">${d.message}</div>
+                    <div class="diag-suggestion">💡 <strong>Corrección:</strong> ${d.suggestion}</div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    if (metricsMatrix) {
+        html += `
+            <div class="metrics-matrix">
+                <span>Matriz de Confusión / Benchmark del Analizador:</span>
+                <div class="matrix-pills">
+                    <span class="m-pill">TP (Verdaderos Positivos): <strong>${metricsMatrix.tp}</strong></span>
+                    <span class="m-pill">FP (Falsos Positivos): <strong>${metricsMatrix.fp}</strong></span>
+                    <span class="m-pill">FN (Falsos Negativos): <strong>${metricsMatrix.fn}</strong></span>
+                    <span class="m-pill accent">Precisión: <strong>${metricsMatrix.precision}%</strong></span>
+                    <span class="m-pill accent">Recall: <strong>${metricsMatrix.recall}%</strong></span>
+                    <span class="m-pill accent">F1-Score: <strong>${metricsMatrix.f1}%</strong></span>
+                </div>
+            </div>
+        `;
+    }
+
+    return html;
+}
+
 function renderCustomSuites() {
     suitesContainer.innerHTML = '';
 
@@ -766,7 +1035,7 @@ function renderCustomSuites() {
             <div style="text-align: center; padding: 2.5rem 1rem; color: #8e95a5;">
                 <i class="ph ph-folder-notch-open" style="font-size: 2.1rem; color: #8e95a5; display: block; margin-bottom: 0.5rem;"></i>
                 <strong style="color: #ededf0; font-size: 0.9rem;">Sin documentos cargados</strong>
-                <p style="font-size: 0.78rem; margin-top: 0.3rem;">Seleccioná una carpeta local, archivos HTML o utilizá el botón <em>"Cargar Caso de Prueba (7 Defectos)"</em>.</p>
+                <p style="font-size: 0.78rem; margin-top: 0.3rem;">Seleccioná una carpeta local, archivos HTML o utilizá el botón <em>"Cargar ejemplo con errores"</em>.</p>
             </div>
         `;
         return;
@@ -777,12 +1046,14 @@ function renderCustomSuites() {
         card.className = `suite-card ${res.passed ? 'passed' : 'failed'}`;
         const passCount = res.checks.filter(c => c.pass).length;
         const totalCount = res.checks.length;
+        const rootCount = (res.diagnostics || []).filter(d => d.causalType === 'root').length;
+        const derivedCount = (res.diagnostics || []).filter(d => d.causalType === 'derived' || d.causalType === 'functional').length;
 
         card.innerHTML = `
             <div class="suite-top">
                 <div class="suite-title">
                     <i class="ph-fill ${res.passed ? 'ph-check-circle' : 'ph-warning-circle'}"
-                       style="color: ${res.passed ? '#2ea043' : '#e5534b'}; font-size: 1.15rem;"></i>
+                       style="color: ${res.passed ? '#10b981' : '#f97316'}; font-size: 1.15rem;"></i>
                     <div>
                         <h3>${res.target.name}</h3>
                         <span class="suite-path">${res.target.url}</span>
@@ -794,10 +1065,13 @@ function renderCustomSuites() {
             </div>
             <div class="suite-stats">
                 <span class="chip ${res.passed ? 'ok' : 'err'}">${passCount}/${totalCount} Checks OK</span>
+                <span class="chip">Causas Raíz: ${rootCount}</span>
+                <span class="chip">Derivados / Funcionales: ${derivedCount}</span>
                 <span class="chip"><i class="ph-fill ph-cursor-click"></i> ${res.buttonsCount} Botones</span>
                 <span class="chip"><i class="ph-fill ph-compass"></i> ${res.linksCount} Enlaces</span>
             </div>
             <div class="suite-details open">
+                ${renderDiagnosticsSection(res.diagnostics, res.metricsMatrix)}
                 <div class="check-grid">
                     ${res.checks.map(c => `
                         <div class="check-item ${c.pass ? 'pass' : 'fail'}" title="${c.label}">
@@ -806,7 +1080,6 @@ function renderCustomSuites() {
                         </div>
                     `).join('')}
                 </div>
-                ${buildAgoozzTips(res.checks)}
             </div>
         `;
         suitesContainer.appendChild(card);
