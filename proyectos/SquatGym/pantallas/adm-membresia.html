@@ -1,0 +1,135 @@
+<div id="v-adm-membresia" class="view-section space-y-8 italic uppercase">
+    <h3 class="text-4xl font-black tracking-tighter">Gestión de <span class="text-orange-500">Alumnos</span></h3>
+    
+    <div id="cliente-box" class="hidden glass-card p-6 border-l-4 border-orange-500 mb-8 animate-fade-in">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700">
+                            <i class="fas fa-user text-2xl text-slate-500"></i>
+                        </div>
+                        <div>
+                            <h4 id="display-nombre" class="text-3xl font-black text-white italic tracking-tighter uppercase">---</h4>
+                            <p id="display-id" class="text-orange-500 text-xs font-bold tracking-widest">#0000</p>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('cliente-box').classList.add('hidden')" class="text-slate-500 hover:text-white transition">
+                        <i class="fas fa-times-circle text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <p class="text-[10px] text-slate-500 tracking-[0.2em] font-bold uppercase">Estado de Cuenta</p>
+                        <div id="lista-deudas" class="space-y-3">
+                            </div>
+                    </div>
+                    
+                    <div id="panel-acciones-rapidas" class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-4">
+                        <p class="text-[10px] text-slate-500 tracking-[0.2em] font-bold uppercase">Acciones Rápidas</p>
+
+                        <button onclick="cobrarPago()" class="w-full bg-green-600 hover:bg-green-500 text-white py-4 rounded-xl font-black text-sm uppercase transition shadow-lg shadow-green-600/20">
+                            Registrar Pago
+                            <button onclick="abrirModalHistorial()" class="mt-3 w-full border border-slate-600 text-slate-300 hover:bg-slate-700 text-xs py-2 rounded-xl transition font-bold tracking-widest flex items-center justify-center gap-2 uppercase">
+                                <i class="fas fa-history"></i> Ver Historial de Pagos
+                            </button>
+                        </button>
+                        
+                        <div class="pt-2 border-t border-slate-700 flex justify-between items-center">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Total a Pagar:</span>
+                            <span id="display-total-cobro" class="text-3xl font-black text-orange-500">$0</span>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+      <!-- BOTON REGISTRAR NUEVO COBRO -->
+      <button id="btn-nuevo-cobro" onclick="abrirWizardPaso1()" class="w-full bg-[#F27127] hover:bg-[#D9601D] text-white py-5 rounded-2xl font-black text-xl uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20 mb-4 flex justify-center items-center gap-3">
+          <i class="fas fa-plus-circle text-2xl"></i>
+          Registrar Nuevo Cobro
+      </button>
+
+      <div class="glass-card p-5">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+              <input id="search-socio" type="text" onkeyup="filtrarSocios()" placeholder="Buscar por nombre o DNI..."
+                     class="w-full px-5 py-3 rounded-full bg-slate-900 border border-slate-700 text-white text-xs outline-none focus:border-orange-500 transition">
+
+              <select id="filter-estado" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos los Estados</option>
+                  <option value="Acreditado">Acreditados</option>
+                  <option value="Pendiente">Pendientes</option>
+                  <option value="En mora">En Mora</option>
+              </select>
+
+              <select id="filter-clase" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todas las Clases</option>
+                  <option value="Musculación">Musculación</option>
+                  <option value="Zumba">Zumba</option>
+                  <option value="Crossfit">Crossfit</option>
+              </select>
+
+              <select id="filter-mes-pago" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="todos">Todos los Meses de Pago</option>
+                  <option value="05">Mayo 2026</option>
+                  <option value="04">Abril 2026</option>
+                  <option value="03">Marzo 2026</option>
+              </select>
+
+              <select id="filter-orden" onchange="filtrarSocios()" class="bg-slate-900 border border-slate-700 rounded-full px-4 py-3 text-xs text-white outline-none focus:border-orange-500 transition">
+                  <option value="nombre">Ordenar por Nombre</option>
+                  <option value="monto">Ordenar por Monto</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- Vista de escritorio: Tabla convencional (se oculta en móviles) -->
+      <div class="glass-card overflow-hidden hidden md:block">
+          <table class="w-full text-left">
+              <thead class="bg-slate-900 text-[10px] text-slate-500 border-b border-slate-800 uppercase tracking-widest">
+                  <tr>
+                      <th class="p-4">Socio</th>
+                      <th class="p-4">DNI</th>
+                      <th class="p-4">Clase</th>
+                      <th class="p-4">Fecha Pago</th>
+                      <th class="p-4">Vencimiento</th>
+                      <th class="p-4">Deuda</th>
+                      <th class="p-4">Estado</th>
+                      <th class="p-4 text-right">Acción</th>
+                  </tr>
+              </thead>
+              <tbody id="tabla-socios-body" class="text-xs font-bold divide-y divide-slate-800/50"></tbody>
+          </table>
+      </div>
+
+      <!-- Vista móvil: Listado de tarjetas responsivas (visible solo en móviles) -->
+      <div id="contenedor-tarjetas-socios" class="grid grid-cols-1 gap-4 md:hidden">
+          <!-- Inyectado por JS -->
+      </div>
+
+    <div id="section-notificar" class="flex justify-end mt-4">
+        <button onclick="enviarNotificacionesDeuda()" 
+                class="bg-orange-600 hover:bg-orange-500 text-white px-6 py-3 rounded-full font-black text-xs uppercase transition shadow-lg shadow-orange-600/20 flex items-center gap-2">
+            <i class="fas fa-paper-plane"></i>
+            Notificar Deudores
+        </button>
+    </div>
+</div>
+
+<div id="modal-historial-pagos" class="hidden fixed inset-0 bg-slate-900/90 z-50 flex justify-center items-center p-4 backdrop-blur-sm">
+    
+    <div class="bg-slate-900 p-6 rounded-2xl border border-slate-700 max-w-lg w-full shadow-2xl relative flex flex-col max-h-[80vh]">
+        
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h4 class="text-2xl font-black text-white italic tracking-tighter uppercase">Historial de <span class="text-orange-500">Pagos</span></h4>
+                <p id="historial-nombre-socio" class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Socio: ...</p>
+            </div>
+            <button onclick="cerrarModalHistorial()" class="text-slate-500 hover:text-white transition text-2xl">
+                &times;
+            </button>
+        </div>
+        
+        <div id="lista-historial-container" class="overflow-y-auto pr-2 space-y-3 flex-1 custom-scrollbar">
+            </div>
+
+    </div> 
+</div>

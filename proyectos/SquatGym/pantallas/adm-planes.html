@@ -1,0 +1,104 @@
+<div id="v-adm-planes" class="view-section p-10 space-y-8 italic uppercase">
+
+  <!-- Header -->
+  <div>
+    <p class="text-[10px] text-slate-500 tracking-[0.3em] font-bold uppercase">Gestión / Planes</p>
+    <h1 class="text-4xl font-black text-white mt-1">Configuración de <span class="text-orange-500">Planes y Promociones</span></h1>
+  </div>
+
+  <!-- Body: dos columnas -->
+  <div class="flex flex-col md:flex-row gap-8">
+
+    <!-- Lista de planes (full width ahora) -->
+    <div class="w-full space-y-4">
+      <button onclick="iniciarCreacionPlan()"
+        class="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg shadow-orange-500/20 flex justify-center items-center gap-2 mb-2">
+        <i class="fas fa-plus-circle"></i> Nuevo Plan
+      </button>
+      <div class="pt-2">
+        <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2">Planes Activos</h3>
+      </div>
+      <div class="space-y-4" id="lista-planes-admin">
+        <!-- Inyectado por JS -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Modal Confirmar Borrado de Plan -->
+  <div id="modal-confirmar-borrar-plan" class="modal-base">
+    <div class="glass-card p-8 w-full max-w-sm bg-[#020617] border border-red-500/30 rounded-3xl shadow-2xl text-center">
+        <div class="w-16 h-16 bg-red-500/10 border border-red-500/20 text-red-500 flex items-center justify-center rounded-full mx-auto mb-4">
+            <i class="fas fa-trash-alt text-2xl"></i>
+        </div>
+        <h3 class="text-xl font-black text-white mb-2 uppercase tracking-widest">¿Borrar Plan?</h3>
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-6 leading-relaxed" id="texto-confirmar-borrado">
+          ¿Está seguro de borrar el plan?
+        </p>
+        <div class="flex gap-3">
+            <button onclick="cerrarM()" class="btn-ui bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white w-full text-[10px] py-3 rounded-xl uppercase font-black tracking-widest border border-slate-700">Rechazar</button>
+            <button id="btn-confirmar-borrar" class="btn-ui bg-red-600 hover:bg-red-500 text-white w-full text-[10px] py-3 rounded-xl uppercase font-black tracking-widest shadow-lg shadow-red-500/20">Aceptar</button>
+        </div>
+    </div>
+  </div>
+
+  <!-- Modal Crear / Editar Plan -->
+  <div id="modal-plan-form" class="modal-base">
+    <div class="glass-card p-8 w-full max-w-lg bg-[#020617] border border-slate-700 rounded-3xl shadow-2xl">
+        <h3 class="text-sm font-black text-orange-500 uppercase tracking-widest mb-6" id="form-titulo">Editar Configuración</h3>
+        <div class="space-y-5">
+
+          <div>
+            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del Plan</label>
+            <input type="text" id="edit-nombre-plan" disabled
+              class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base ($)</label>
+            <input type="number" id="edit-precio-base" disabled
+              class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de Promoción</label>
+            <select id="edit-tipo-promo" onchange="cambiarTipoPromo()"
+              class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+              <option value="ninguna">Ninguna</option>
+              <option value="dia_especial">Día Especial</option>
+              <option value="amigos">Por Amigos</option>
+              <option value="cupon">Cupón de Descuento</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la Promoción</label>
+            <div id="contenedor-valor-promo">
+              <input type="text" id="edit-valor-promo" disabled
+                class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed"
+                placeholder="Seleccione un tipo de promoción...">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Vigencia de la Promoción</label>
+            <input type="date" id="edit-vigencia-promo" disabled
+              class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition cursor-not-allowed">
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button onclick="cerrarM()"
+              class="btn-ui bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white w-full text-[10px] py-3.5 rounded-xl uppercase font-black tracking-widest border border-slate-700 flex justify-center items-center gap-2">
+              Cancelar
+            </button>
+            <button onclick="guardarCambiosPlan()" id="btn-guardar-plan"
+              class="btn-ui bg-orange-500 hover:bg-orange-600 text-white w-full text-[10px] py-3.5 rounded-xl uppercase font-black tracking-widest transition shadow-lg shadow-orange-500/20 flex justify-center items-center gap-2">
+              <i class="fas fa-save"></i> Guardar Configuración
+            </button>
+          </div>
+
+        </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SquatGym OS</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;300;400;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="js/landing.js"></script>
+</head>
+
+<body class="flex">
+
+  <!-- FRAME PARA LA LANDING PAGE -->
+  <section id="landing-frame" class="fixed inset-0 z-[10000] bg-[#020617] overflow-y-auto w-full h-full">
+    <!-- El contenido se cargará vía JS -->
+  </section>
+  <script>
+    fetch('pantallas/landing.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('landing-frame').innerHTML = html;
+      });
+  </script>
+
+  <section id="login-frame" class="hidden fixed inset-0 z-[15000] flex items-center justify-center p-6 login-hero text-center"
+    style="background: linear-gradient(rgba(2,6,23,0.85), rgba(2,6,23,0.85)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=1200'); background-size: cover;">
+    <div class="relative glass-card p-12 w-full max-w-sm border-t-[12px] border-orange-500 shadow-2xl italic uppercase">
+      <!-- Botón Volver a la Landing -->
+      <button onclick="cerrarLogin()" class="absolute top-6 left-6 text-slate-500 hover:text-orange-500 transition-colors">
+        <i class="fas fa-arrow-left text-lg"></i>
+      </button>
+
+      <div class="mb-10 text-center">
+        <div
+          class="bg-orange-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-xl">
+          <i class="fas fa-dumbbell text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-black text-white tracking-tighter leading-none">SquatGym</h1>
+        <p class="text-[9px] font-bold text-slate-500 tracking-[0.5em] mt-1">Platinum OS</p>
+      </div>
+
+      <div class="flex gap-2 mb-6 bg-slate-900 p-1.5 rounded-full border-2 border-slate-800">
+        <button id="l-btn-staff"
+          class="flex-1 py-3.5 rounded-full font-black text-[10px] transition-all bg-[#0f172a] text-[#64748b] uppercase">Staff</button>
+        <button id="l-btn-alumno"
+          class="flex-1 py-3.5 rounded-full font-black text-[10px] transition-all bg-[#0f172a] text-[#64748b] uppercase">Alumno</button>
+      </div>
+
+      <!-- Submenu de Staff: Administrador / Secretaria / Encargado -->
+      <div id="staff-submenu" class="hidden flex-col gap-2 mb-4 pb-4 border-b border-slate-800">
+        <button id="l-btn-admin" onclick="seleccionarSubrol('admin')"
+          class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
+          <i class="fas fa-crown text-slate-500 mr-2"></i>Administrador
+        </button>
+        <button id="l-btn-secretaria" onclick="seleccionarSubrol('secretaria')"
+          class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
+          <i class="fas fa-id-badge text-slate-500 mr-2"></i>Secretaria
+        </button>
+        <button id="l-btn-encargado" onclick="seleccionarSubrol('encargado')"
+          class="w-full py-3 rounded-lg font-black text-[10px] transition-all bg-[#0f172a] text-slate-300 border-2 border-[#1e293b] uppercase font-['Outfit'] hover:border-orange-500/50">
+          <i class="fas fa-user-tie text-slate-500 mr-2"></i>Encargado
+        </button>
+      </div>
+
+      <script>
+        // Variables de selección de login
+        window._loginSubrol = null;
+
+        const _subrols = ['l-btn-admin', 'l-btn-secretaria', 'l-btn-encargado'];
+
+        function seleccionarSubrol(subrol) {
+          window._loginSubrol = subrol;
+
+          // Resaltar el botón seleccionado y apagar los demás
+          _subrols.forEach(id => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            btn.classList.remove('border-orange-500', 'text-orange-400');
+            btn.classList.add('border-[#1e293b]', 'text-slate-300');
+          });
+          const sel = document.getElementById('l-btn-' + subrol);
+          if (sel) {
+            sel.classList.remove('border-[#1e293b]', 'text-slate-300');
+            sel.classList.add('border-orange-500', 'text-orange-400');
+          }
+        }
+      </script>
+
+
+      <div id="form-normal">
+        <div class="space-y-4">
+          <input type="text" inputmode="numeric" pattern="[0-9]*"
+            oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="DNI..."
+            class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase">
+          <input type="password" placeholder="PASSWORD"
+            class="w-full p-4 rounded-full bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center">
+          <button onclick="entrarApp()"
+            class="w-full btn-ui btn-naranja py-4.5 text-md font-black shadow-2xl mt-4 uppercase">Entrar</button>
+
+          <!-- Área de errores -->
+          <div id="login-error-msg" style="display: none;" class="text-red-500 text-xs font-bold text-center mt-2">
+          </div>
+        </div>
+
+        <!-- Link Olvidé contraseña -->
+        <div class="mt-6 text-center">
+          <button onclick="toggleRecuperacionPassword()"
+            class="text-[10px] text-[#64748b] hover:text-slate-400 transition font-bold uppercase">¿Olvidaste tu
+            contraseña?</button>
+        </div>
+      </div>
+
+      <!-- Panel de recuperación de contraseña -->
+      <div id="panel-recuperacion-password"
+        class="hidden mt-2 p-5 bg-[#0f172a] border-2 border-[#1e293b] rounded-xl font-['Outfit'] shadow-xl">
+        <p class="text-[10px] text-slate-300 mb-4 font-bold uppercase text-center tracking-widest">Recuperar contraseña
+        </p>
+        <input type="text" id="dni-recuperacion" inputmode="numeric" pattern="[0-9]*"
+          oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Ingresá tu DNI"
+          class="w-full p-3.5 rounded-lg bg-slate-950 border-2 border-slate-800 font-bold focus:border-[#f97316] outline-none text-white text-xs text-center uppercase mb-4 transition-colors">
+        <button onclick="typeof recuperarPassword === 'function' && recuperarPassword()"
+          class="w-full bg-[#f97316] hover:bg-orange-500 text-white py-3 rounded-lg text-[10px] font-black uppercase mb-3 transition-colors shadow-lg shadow-orange-500/20">Recuperar</button>
+        <button onclick="toggleRecuperacionPassword()"
+          class="w-full text-[#64748b] text-[10px] font-bold py-2 hover:text-slate-300 transition uppercase tracking-wider">Volver
+          al login</button>
+
+        <!-- Mensajes vacíos para JS -->
+        <div id="recuperar-exito"
+          class="hidden mt-4 p-3 bg-green-950/50 border border-green-800 text-green-400 text-[10px] font-bold rounded-lg text-center uppercase tracking-widest">
+        </div>
+        <div id="recuperar-error"
+          class="hidden mt-4 p-3 bg-red-950/50 border border-red-800 text-red-400 text-[10px] font-bold rounded-lg text-center uppercase tracking-widest">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="sidebar-overlay" class="sidebar-overlay" onclick="cerrarSidebarMovil()"></div>
+
+  <aside id="sidebar-ui" class="hidden sidebar shadow-2xl">
+    <div class="p-10 flex items-center gap-3 mb-12 italic uppercase">
+      <div class="bg-orange-600 text-white p-2 rounded-xl font-black text-xs shadow-lg">SG</div>
+      <h2 class="font-black text-2xl tracking-tighter text-white">SquatGym</h2>
+    </div>
+
+    <nav id="nav-list-ui" class="flex-1"></nav>
+
+    <div class="p-8 text-center border-t border-slate-900">
+      <span class="text-[10px] font-black text-slate-300 uppercase italic">v35.0 Platinum Master</span>
+    </div>
+  </aside>
+
+  <div id="app-container" class="hidden main-app">
+
+    <header
+      class="h-16 border-b border-slate-800 flex justify-between items-center px-4 md:px-12 bg-slate-950/50 backdrop-blur-md sticky top-0 z-40 italic uppercase">
+      <div class="flex items-center gap-3">
+        <!-- Botón Hamburguesa móvil -->
+        <button id="btn-toggle-sidebar" onclick="abrirSidebarMovil()" class="block md:hidden text-slate-400 hover:text-white mr-1 p-2">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+        <i class="fas fa-terminal text-orange-500 text-[10px] hidden sm:inline-block"></i>
+        <h2 id="header-view-title" class="text-[10px] font-bold text-slate-500 italic">Dashboard</h2>
+      </div>
+
+      <div class="flex items-center gap-8">
+        <div class="flex items-center gap-3">
+            <span id="header-username" class="text-[10px] font-black text-orange-400 uppercase tracking-widest"></span>
+            <img id="header-profile-img" src="" class="w-8 h-8 rounded-full border border-slate-700 object-cover hidden" alt="Profile">
+        </div>
+
+        <!-- Botón y Dropdown de Notificaciones -->
+        <div id="notificaciones-header-container" class="relative hidden">
+          <button id="btn-notificaciones" class="text-slate-500 hover:text-orange-500 transition relative">
+            <i class="fa-solid fa-bell text-xl"></i>
+            <!-- Badge de cantidad -->
+            <span id="badge-notificaciones"
+              class="absolute -top-1.5 -right-1.5 min-w-[16px] h-[16px] bg-red-500 rounded-full border-2 border-slate-950 flex items-center justify-center text-[8px] font-black text-white leading-none"></span>
+          </button>
+
+          <!-- Dropdown Notificaciones -->
+          <div id="dropdown-notificaciones"
+            class="hidden absolute right-0 mt-4 w-[320px] bg-[#0f172a] border border-slate-800 rounded-2xl shadow-2xl z-[100] overflow-hidden">
+            <!-- Header -->
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+              <h3 class="text-[10px] font-black text-white uppercase tracking-widest">Notificaciones</h3>
+              <button class="text-[9px] font-bold text-orange-500 hover:text-orange-400 uppercase">Marcar como
+                leídas</button>
+            </div>
+
+            <!-- Cuerpo -->
+            <div id="lista-notificaciones" class="max-h-[350px] overflow-y-auto custom-scrollbar">
+              <!-- Inyectado por JS -->
+            </div>
+
+            <!-- Footer -->
+            <button id="btn-ver-todas-notificaciones" onclick="navV('alu-notificaciones'); renderNotificaciones();"
+              class="w-full p-3 bg-slate-900/80 hover:bg-slate-900 text-[10px] font-black text-slate-400 hover:text-white transition uppercase tracking-widest border-t border-slate-800">
+              Ver todas las notificaciones
+            </button>
+          </div>
+        </div>
+
+        <button onclick="location.reload()" class="text-slate-500 hover:text-red-500 transition">
+          <i class="fa-solid fa-power-off text-xl"></i>
+        </button>
+      </div>
+    </header>
+
+    <main id="contenedor-pantallas" class="view-scroller"></main>
+
+  </div>
+
+  <div id="modal-pago-selector" class="modal-base !items-center !justify-center">
+    <div class="bg-[#020617] w-full max-w-md rounded-[2.5rem] border border-slate-800 shadow-[0_30px_100px_rgba(0,0,0,0.8)] overflow-hidden relative">
+      
+      <!-- Glow superior -->
+      <div class="absolute -top-24 -left-24 w-64 h-64 bg-orange-500/10 blur-[80px] rounded-full"></div>
+
+      <div class="p-8 relative z-10">
+        <!-- Header con botón volver -->
+        <div class="flex justify-between items-center mb-8">
+          <button onclick="window.volverPago()" class="w-10 h-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-all">
+            <i class="fas fa-arrow-left text-xs"></i>
+          </button>
+          <div class="text-right">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em]">Checkout</p>
+            <h3 class="text-xs font-black text-white uppercase italic">Pasarela de Pago</h3>
+          </div>
+        </div>
+
+        <!-- Resumen del Pago (Mini Card) -->
+        <div class="bg-slate-950/80 border border-slate-800 rounded-3xl p-5 mb-8 shadow-inner">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800/50 pb-4">
+                <div>
+                    <p class="text-[8px] font-black text-orange-500 uppercase tracking-widest mb-1">Concepto</p>
+                    <p class="text-xs font-black text-white uppercase italic">Cuota Mensual</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Socio</p>
+                    <p id="pago-display-nombre" class="text-xs font-black text-slate-300 uppercase italic">Valentino P.</p>
+                </div>
+            </div>
+            <div class="flex justify-between items-end">
+                <div>
+                    <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Total a Abonar</p>
+                    <p id="pago-total-display" class="text-4xl font-black text-white tracking-tighter italic">$12.500</p>
+                </div>
+                <div class="bg-green-500/10 px-3 py-1.5 rounded-lg border border-green-500/20">
+                    <p class="text-[8px] font-black text-green-400 uppercase tracking-widest leading-none">✔ Final</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cupones (Rediseñado) -->
+        <div id="cupon-container" class="relative mb-8">
+            <input type="text" id="input-cupon-cobro" placeholder="Tengo un cupón de descuento"
+              class="w-full pl-4 pr-24 py-4 rounded-2xl bg-slate-950 border border-slate-800 text-white text-[10px] font-bold uppercase tracking-widest focus:outline-none focus:border-orange-500/50 transition-all placeholder:text-slate-600">
+            <button id="btn-aplicar-cupon" onclick="aplicarCuponCobro()"
+              class="absolute right-2 top-2 bottom-2 bg-slate-800 hover:bg-orange-500 text-white px-5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all">Aplicar</button>
+            <p id="msg-cupon-cobro" class="hidden absolute -bottom-5 left-1 text-[8px] font-black text-green-400 uppercase tracking-widest animate-fade-in">
+              <i class="fas fa-check-circle mr-1"></i>Cupón aplicado (-<span id="valor-cupon-aplicado">0</span>%)
+            </p>
+        </div>
+
+        <!-- Opciones de Pago -->
+        <div id="pago-opciones" class="space-y-3 pt-2">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-4 ml-1">Seleccioná un método</p>
+            
+            <!-- Botón Mercado Pago -->
+            <button onclick="mostrarPago('qr')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-[#009EE3]/50 hover:bg-[#009EE3]/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-[#009EE3]/10 flex items-center justify-center text-[#009EE3] group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-qrcode text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Mercado Pago</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Escaneá el código QR</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-[#009EE3] transition-colors"></i>
+            </button>
+
+            <!-- Botón Transferencia -->
+            <button onclick="mostrarPago('transferencia')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-university text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Transferencia CBU</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Banca Online / Alias</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-blue-500 transition-colors"></i>
+            </button>
+
+            <!-- Botón Tarjeta -->
+            <button onclick="mostrarPago('tarjeta')" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-credit-card text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Tarjeta Débito/Crédito</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Visa, Mastercard, AMEX</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-purple-500 transition-colors"></i>
+            </button>
+
+            <!-- Botón Efectivo -->
+            <button onclick="mostrarPago('efectivo')" id="btn-efectivo" class="group w-full flex items-center gap-4 p-4 rounded-2xl bg-slate-950 border border-slate-800 hover:border-green-500/50 hover:bg-green-500/5 transition-all duration-300">
+                <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-money-bill-wave text-xl"></i>
+                </div>
+                <div class="text-left flex-1">
+                    <p class="text-[10px] font-black text-white uppercase">Efectivo en Caja</p>
+                    <p class="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">Pago presencial en sede</p>
+                </div>
+                <i class="fas fa-chevron-right text-slate-700 text-[10px] group-hover:text-green-500 transition-colors"></i>
+            </button>
+        </div>
+
+        <!-- Contenedor dinámico (Formularios de cada método) -->
+        <div id="pago-contenido" class="hidden mt-6 animate-in fade-in slide-in-from-bottom-5 duration-300"></div>
+
+        <p class="text-[7px] text-slate-600 text-center mt-10 uppercase tracking-[0.2em]">Pagos protegidos por SquatGym Secure Layer™</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-mp-qr" class="modal-base">
+    <div
+      class="glass-card p-10 w-full max-w-sm bg-white text-slate-950 text-center border-t-[15px] border-[#009EE3] shadow-2xl italic uppercase font-black italic">
+      <h4 class="text-2xl italic uppercase mb-8 text-[#009EE3]">Escanear QR</h4>
+      <div
+        class="bg-slate-50 p-8 rounded-3xl mb-8 border-4 border-slate-100 flex items-center justify-center shadow-inner italic italic">
+        <i class="fas fa-qrcode text-[180px] italic"></i>
+      </div>
+      <button onclick="pagoCorrecto()"
+        class="btn-ui bg-[#009EE3] text-white w-full py-4 italic uppercase font-black italic italic">Confirmar
+        Pago</button>
+    </div>
+  </div>
+
+  <div id="modal-cobro-kiosco" class="modal-base">
+    <div class="glass-card p-10 w-full max-w-md text-center">
+      <p class="text-sm mb-2">Total a Pagar:</p>
+      <p id="total-caja" class="text-3xl font-black text-orange-500 mb-6">$0</p>
+
+      <select id="metodo-pago" onchange="cambiarMetodoPago()"
+        class="w-full p-3 mb-6 rounded bg-slate-900 text-white text-sm">
+        <option value="efectivo">Efectivo</option>
+        <option value="qr">QR (Mercado Pago)</option>
+        <option value="transferencia">Transferencia</option>
+        <option value="tarjeta">Tarjeta</option>
+      </select>
+
+      <div id="bloque-efectivo">
+        <p class="text-xs mb-2">Efectivo recibido</p>
+        <input id="efectivo-input" type="number" class="w-full p-3 rounded bg-slate-900 text-white text-center mb-3"
+          placeholder="$0" oninput="calcularVuelto()">
+        <p class="text-sm mb-4">Vuelto: <span id="vuelto" class="text-green-400">$0</span></p>
+      </div>
+
+      <div id="bloque-qr" class="hidden">
+        <p class="text-xs mb-3">Mostrar QR al cliente</p>
+        <div class="bg-white p-4 rounded mb-4">
+          <i class="fas fa-qrcode text-[120px] text-black"></i>
+        </div>
+      </div>
+
+      <div id="bloque-transferencia" class="hidden text-[10px] text-left space-y-2">
+        <p>CBU: 0000003100001234567890</p>
+        <p>Alias: squatgym.mp</p>
+        <p>Titular: SquatGym SA</p>
+        <p class="text-orange-400">Esperando comprobante...</p>
+      </div>
+
+      <div id="bloque-tarjeta" class="hidden">
+        <div class="text-left">
+          <p class="text-xs">Nombre del titular</p>
+          <input id="input-nombre" placeholder="Nombre y Apellido"
+            class="w-60 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+        </div>
+
+        <div class="text-left">
+          <p class="text-xs">Número de tarjeta</p>
+          <input id="input-numero" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="16"
+            class="w-40 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+        </div>
+
+        <div class="flex justify-start gap-4 mt-4 text-left">
+          <div>
+            <p class="text-xs">Código de seguridad</p>
+            <input type="tel" id="input-codigo" placeholder="XXX" maxlength="3"
+              class="w-10 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+          </div>
+
+          <div>
+            <p class="text-xs">Fecha de expiración</p>
+            <input id="input-fecha" maxlength="5" placeholder="MM/AA"
+              class="w-14 mt-1 p-2 rounded bg-slate-800 text-white text-xs">
+          </div>
+        </div>
+
+        <button id="btn-guardar" onclick="guardarDatosTarjeta()"
+          class="w-30 mt-6 p-2 rounded text-gray-500 transition-colors duration-300">Guardar datos</button>
+      </div>
+
+      <button onclick="confirmarCobro()" class="btn-ui btn-naranja w-full mt-6">Confirmar Cobro</button>
+      <button onclick="cerrarM()" class="text-slate-400 text-sm mt-4">Cancelar</button>
+    </div>
+  </div>
+
+  <div id="modal-retiro-cliente" class="modal-base italic uppercase font-black italic italic italic">
+    <div
+      class="glass-card p-12 rounded-[3rem] w-full max-w-sm text-center bg-white text-slate-950 border-b-[20px] border-orange-600 shadow-2xl italic uppercase italic">
+      <h4 class="text-2xl uppercase mb-2 italic text-orange-600 italic italic italic">Orden Confirmada</h4>
+      <div id="cod-retiro-cliente"
+        class="bg-slate-100 p-6 rounded-[1.5rem] border-4 border-slate-200 mb-8 text-5xl tracking-tighter italic text-slate-950 italic italic italic italic italic">
+        #OR-0000</div>
+      <button onclick="cerrarM()"
+        class="w-full btn-ui btn-naranja py-5 rounded-full border-none text-white italic text-lg uppercase shadow-xl mt-6 italic italic uppercase italic">Listo</button>
+    </div>
+  </div>
+
+  <div id="modal-cierre-turno-kiosco" class="modal-base">
+    <div class="glass-card p-8 w-full max-w-3xl bg-[#020617] border border-slate-800 rounded-3xl shadow-2xl text-white">
+      <div class="flex items-start justify-between gap-4 mb-6">
+        <div>
+          <p class="text-[9px] uppercase tracking-[0.35em] text-orange-500 font-black">Cierre de Turno</p>
+          <h3 class="text-3xl font-black tracking-widest">Resumen de ventas</h3>
+        </div>
+        <button onclick="kioscoCerrarCierreTurno()" class="text-slate-400 hover:text-white text-2xl">✕</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
+          <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500">Ventas registradas</p>
+          <p id="kiosco-cierre-ventas" class="text-4xl font-black text-white mt-3">0</p>
+        </div>
+        <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
+          <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500">Total recaudado</p>
+          <p id="kiosco-cierre-recaudado" class="text-4xl font-black text-green-400 mt-3">$0</p>
+        </div>
+        <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4">
+          <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500">Ticket promedio</p>
+          <p id="kiosco-cierre-ticket-prom" class="text-4xl font-black text-white mt-3">$0</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 mb-6">
+        <p class="text-[9px] uppercase tracking-[0.35em] text-slate-500 font-black">Desglose por método</p>
+        <div id="kiosco-cierre-breakdown" class="space-y-3"></div>
+      </div>
+
+      <div class="rounded-3xl border border-slate-800 bg-slate-950/80 p-4 max-h-[320px] overflow-y-auto">
+        <div class="mb-3 flex justify-between text-[10px] uppercase tracking-[0.35em] text-slate-400 font-black">
+          <span>Ticket</span>
+          <span>Método</span>
+          <span>Total</span>
+        </div>
+        <div id="kiosco-cierre-table" class="space-y-3"></div>
+      </div>
+
+      <div class="mt-6 flex flex-col gap-3 md:flex-row">
+        <button onclick="kioscoCerrarCierreTurno()"
+          class="btn-ui bg-slate-700 w-full md:w-1/2 text-xs rounded-full uppercase font-black">Seguir
+          trabajando</button>
+        <button onclick="kioscoConfirmarCierreTurno()"
+          class="btn-ui btn-naranja w-full md:w-1/2 text-xs rounded-full uppercase font-black">Confirmar Cierre</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-informe-final" class="modal-base italic uppercase font-black italic italic italic italic">
+    <div
+      class="glass-card p-12 w-full max-w-5xl bg-[#020617] border-2 border-slate-800 shadow-[0_0_100px_rgba(0,0,0,1)] overflow-y-auto max-h-[90vh] italic uppercase uppercase italic italic italic italic">
+      <div
+        class="flex justify-between items-start mb-12 border-b border-white/10 pb-10 uppercase italic italic italic italic">
+        <div>
+          <h4
+            class="text-5xl font-black text-white tracking-tighter uppercase italic italic italic italic italic italic italic">
+            Informe <br><span class="text-orange-500 italic italic italic italic">Auditoría</span></h4>
+          <p class="text-[9px] font-bold text-slate-500 mt-4 tracking-[0.5em] italic italic italic italic">PLATINUM
+            MASTER FINANCIAL SYSTEM</p>
+        </div>
+
+        <div class="text-right uppercase italic italic italic">
+          <div class="flex gap-2 justify-end mb-6 uppercase italic italic italic italic italic">
+            <button onclick="cerrarM()"
+              class="bg-slate-800 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic uppercase italic italic italic italic">Cerrar</button>
+            <button
+              class="bg-red-600 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic italic italic">PDF</button>
+            <button
+              class="bg-green-600 text-white px-6 py-2.5 rounded-full font-black text-[9px] uppercase italic italic italic">EXCEL</button>
+          </div>
+          <p class="text-[10px] text-slate-500 mt-4 font-black">09/04/2026</p>
+        </div>
+      </div>
+
+      <div id="reporte-content-pos" class="space-y-16 italic uppercase italic italic"></div>
+
+      <div class="mt-20 pt-10 border-t-4 border-white italic uppercase italic italic">
+        <div
+          class="flex justify-between items-center mb-12 uppercase italic italic italic uppercase italic italic italic italic">
+          <span class="text-xl font-black text-slate-500 uppercase italic italic italic italic italic">TOTAL GENERAL
+            RECAUDADO</span>
+          <span id="reporte-total-massive"
+            class="text-7xl font-black text-white tracking-tighter italic italic italic italic italic italic italic italic italic">$393.500</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-informe" class="modal-base">
+    <div class="bg-slate-900 rounded-xl w-[900px] max-h-[90vh] border border-slate-700 flex flex-col overflow-hidden">
+      <div class="sticky top-0 bg-slate-900 z-10 p-4 border-b border-slate-700 flex justify-between items-center">
+        <h3 id="modal-informe-titulo" class="text-lg font-black text-white">Informe</h3>
+
+        <div class="flex gap-2 items-center">
+          <button class="btn-ui bg-red-600 text-xs px-3 py-1">PDF</button>
+          <button class="btn-ui bg-green-600 text-xs px-3 py-1">Excel</button>
+          <button onclick="cerrarM()" class="text-slate-400 hover:text-white text-lg font-black ml-2">✕</button>
+        </div>
+      </div>
+
+      <div class="p-6 overflow-y-auto space-y-8" style="max-height: 70vh;">
+        <div id="reporte-tablas"></div>
+      </div>
+
+      <div class="p-4 border-t border-slate-700">
+        <button onclick="cerrarM()" class="btn-ui bg-slate-700 w-full text-xs">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-recibo" class="modal-base">
+    <div class="bg-slate-900 rounded-2xl w-full max-w-md border border-slate-700 overflow-hidden shadow-2xl">
+      <div class="bg-orange-500 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-receipt text-white text-lg"></i>
+          <span class="font-black text-white text-sm uppercase tracking-widest">Recibo Electrónico</span>
+        </div>
+        <button onclick="cerrarM()" class="text-white/70 hover:text-white font-black text-lg">✕</button>
+      </div>
+
+      <div class="p-6 space-y-4" id="recibo-contenido"></div>
+
+      <div class="px-6 pb-6 flex gap-3">
+        <button onclick="cerrarM()" class="btn-ui bg-slate-700 flex-1 text-xs">Cerrar</button>
+        <button onclick="imprimirRecibo()" class="btn-ui btn-naranja flex-1 text-xs">
+          <i class="fas fa-print mr-1"></i>Imprimir
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-pago-proveedor" class="modal-base italic uppercase">
+    <div class="glass-card p-8 w-full max-w-md text-center space-y-4">
+
+      <h3 class="text-xl font-black text-white">Pago a Proveedor</h3>
+
+      <div class="bg-slate-900 rounded-2xl p-5 text-left space-y-3 border border-slate-700">
+        <p class="text-xs text-slate-400">
+          Producto:
+          <span id="prov-pago-nombre" class="text-white font-black"></span>
+        </p>
+
+        <p class="text-xs text-slate-400">
+          Proveedor:
+          <span id="prov-pago-proveedor" class="text-white font-black"></span>
+        </p>
+
+        <p class="text-xs text-slate-400">
+          Monto:
+          <span id="prov-pago-monto" class="text-orange-400 font-black"></span>
+        </p>
+      </div>
+
+      <select id="prov-metodo" onchange="actualizarCamposPagoProveedor()" class="w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs">
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+        <option value="QR">QR</option>
+        <option value="Tarjeta">Tarjeta</option>
+      </select>
+
+      <!-- Detalles para Transferencia -->
+      <div id="prov-detalles-transf" class="hidden text-left space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Detalles de Transferencia Emitida</p>
+        
+        <!-- Cuenta Origen SquatGym -->
+        <div class="bg-[#020617] p-3 rounded-lg border border-slate-800 text-[10px] text-slate-300 font-mono space-y-1">
+          <p class="text-orange-400 font-bold uppercase tracking-widest text-[8px]">Cuenta Origen (SquatGym)</p>
+          <p>BANCO GALICIA C/C</p>
+          <p>CBU: <span class="text-white font-bold select-all">0170099920000001234567</span></p>
+        </div>
+
+        <!-- Cuenta Destino del Proveedor -->
+        <div class="bg-[#020617] p-3 rounded-lg border border-slate-800 text-[10px] text-slate-300 font-mono space-y-1">
+          <p class="text-blue-400 font-bold uppercase tracking-widest text-[8px]">Cuenta Destino (Proveedor)</p>
+          <p>Titular: <span id="prov-titular-dest" class="text-white font-bold"></span></p>
+          <p>CBU: <span id="prov-cbu-dest" class="text-white font-bold select-all"></span></p>
+          <p>Alias: <span id="prov-alias-dest" class="text-white font-bold select-all"></span></p>
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-[8px] font-bold text-slate-400 uppercase tracking-wide">Número de Comprobante / Operación</label>
+          <input type="text" id="prov-transf-comp" placeholder="Ej: 12345678" class="w-full bg-[#020617] border border-slate-700 rounded-lg px-3 py-2 text-white text-[11px] focus:outline-none focus:border-blue-500 transition-colors">
+        </div>
+      </div>
+
+      <!-- Detalles para QR -->
+      <div id="prov-detalles-qr" class="hidden text-center space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+        <h4 class="text-xs font-black text-[#009EE3] tracking-wide">MERCADO PAGO QR PROVEEDOR</h4>
+        <div class="w-32 h-32 bg-white p-2 rounded-xl flex items-center justify-center shadow-inner mx-auto">
+          <i class="fas fa-qrcode text-6xl text-slate-900"></i>
+        </div>
+        <p class="text-[9px] text-slate-400">Escanee el código QR del proveedor desde la app de la administración para registrar el pago.</p>
+      </div>
+
+      <!-- Detalles para Tarjeta -->
+      <div id="prov-detalles-tarjeta" class="hidden text-left space-y-3 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Tarjeta Corporativa SquatGym</p>
+        
+        <!-- Tarjeta física visual premium de SquatGym -->
+        <div class="relative bg-gradient-to-br from-orange-600 via-orange-500 to-amber-700 p-5 rounded-2xl shadow-xl border border-orange-400/30 text-white font-mono space-y-4">
+          <div class="flex justify-between items-start">
+            <span class="text-[9px] font-black tracking-widest uppercase italic">SQUATGYM CORP CARD</span>
+            <i class="fa-brands fa-cc-visa text-2xl"></i>
+          </div>
+          <div class="text-base tracking-[0.25em] font-black text-center py-1">
+            **** **** **** 8888
+          </div>
+          <div class="flex justify-between text-[8px] font-bold">
+            <div>
+              <p class="text-white/60 text-[6px]">TITULAR</p>
+              <p class="uppercase">SQUATGYM SA</p>
+            </div>
+            <div class="text-right">
+              <p class="text-white/60 text-[6px]">VENCE</p>
+              <p>12/30</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <label class="block text-[8px] font-bold text-slate-400 uppercase tracking-wide">CVV de Autorización Corporativa</label>
+          <input type="password" id="prov-tarjeta-cvv" placeholder="***" class="w-full bg-[#020617] border border-slate-700 rounded-lg px-3 py-2 text-white text-[11px] text-center focus:outline-none focus:border-orange-500 transition-colors">
+        </div>
+      </div>
+
+      <button onclick="confirmarPagoProveedor()" class="btn-ui btn-naranja w-full">
+        Confirmar Pago
+      </button>
+
+      <button onclick="cerrarM()" class="text-slate-400 text-xs">
+        Cancelar
+      </button>
+
+    </div>
+  </div>
+
+  <!-- POP-UP DE ESTADO DE CUENTA ALUMNO (NOTIFICACIÓN SUPERIOR) -->
+  <div id="modal-estado-cuenta-alumno" class="modal-base !bg-transparent !backdrop-blur-none !items-start !pt-10 !z-[2000]">
+    <div class="bg-[#0f172a]/95 backdrop-blur-xl border border-slate-700/50 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] p-6 text-center relative overflow-hidden w-full max-w-md animate-in fade-in slide-in-from-top-10 duration-500 mx-auto">
+      <!-- Glow effect -->
+      <div class="absolute -top-10 -left-10 w-32 h-32 bg-orange-500/10 blur-3xl rounded-full"></div>
+      
+      <div class="flex items-center gap-5 text-left relative z-10">
+        <div id="status-icon-container"
+          class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0 shadow-lg">
+          <i id="status-icon" class="fas fa-check-circle"></i>
+        </div>
+
+        <div class="flex-1">
+          <h2 id="status-title" class="text-lg font-black text-white uppercase tracking-tighter italic">¡Todo en orden!</h2>
+          <p id="status-desc" class="text-slate-400 text-[10px] leading-tight normal-case font-medium">Tu cuenta se encuentra al día. ¡Sigue entrenando!</p>
+        </div>
+
+        <button onclick="cerrarM()" class="text-slate-500 hover:text-white transition p-2">
+            <i class="fas fa-times text-sm"></i>
+        </button>
+      </div>
+
+      <div id="status-extra-info" class="mt-4 bg-slate-900/50 rounded-xl p-3 border border-slate-800 hidden relative z-10">
+        <div class="flex justify-between items-center">
+          <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">Monto Pendiente</span>
+          <span id="status-monto" class="text-sm font-black text-white">$0</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2 mt-4 relative z-10">
+        <button id="status-btn-primary" onclick="cerrarM()"
+          class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-[9px] font-black uppercase italic rounded-xl transition-all border border-slate-700">
+          Entendido
+        </button>
+        <button id="status-btn-secondary" onclick="cerrarM(); navV('alu-pago');"
+          class="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white text-[9px] font-black uppercase italic rounded-xl transition-all shadow-lg shadow-orange-500/20 hidden">
+          Ir a pagar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PERFIL SOCIO (LECTURA STAFF) -->
+  <div id="modal-perfil-socio" class="modal-base">
+    <div
+      class="bg-[#020617] border-t-4 border-t-orange-500 border border-slate-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+
+      <!-- Botón Cerrar -->
+      <button onclick="cerrarM()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+
+      <div class="p-6 overflow-y-auto custom-scrollbar">
+        <!-- HEADER -->
+        <div class="flex items-center gap-4 mb-6">
+          <div
+            class="w-16 h-16 rounded-full bg-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+            <span id="perfil-iniciales">--</span>
+          </div>
+          <div>
+            <h3 id="perfil-nombre" class="text-2xl font-black text-white tracking-tight uppercase italic">Cargando...
+            </h3>
+            <div id="perfil-estado-badge"
+              class="mt-1 inline-block px-3 py-1 bg-slate-800 text-slate-300 text-[10px] font-black rounded-full uppercase tracking-widest border border-slate-700">
+              Cargando
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 1: DATOS -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">DNI</p>
+            <p id="perfil-dni" class="text-xs font-black text-white">--</p>
+          </div>
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Clase</p>
+            <p id="perfil-clase" class="text-xs font-black text-white">--</p>
+          </div>
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Cuenta</p>
+            <p id="perfil-estado-cuenta" class="text-xs font-black text-white">--</p>
+          </div>
+          <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Alta</p>
+            <p id="perfil-alta" class="text-xs font-black text-white">--</p>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: FINANZAS -->
+        <div
+          class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-orange-500/5 p-4 rounded-xl border border-orange-500/20 mb-6 gap-4">
+          <div>
+            <p id="perfil-titulo-monto" class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">
+              Adeudado Actual</p>
+            <div class="flex items-baseline gap-2">
+              <p id="perfil-monto" class="text-3xl font-black text-white">$0</p>
+              <p id="perfil-mora" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Al día</p>
+            </div>
+          </div>
+          <div id="perfil-restriccion-badge"
+            class="px-4 py-2 bg-green-500/20 text-green-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-green-500/30 text-center w-full sm:w-auto">
+            Acceso Permitido
+          </div>
+        </div>
+
+        <!-- SECCIÓN 4: INDICADORES RÁPIDOS -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="text-center">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Pagado</p>
+            <p id="perfil-total-pagado" class="text-sm font-black text-orange-400">--</p>
+          </div>
+          <div class="text-center border-x border-slate-800">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Pagos</p>
+            <p id="perfil-cantidad-pagos" class="text-sm font-black text-white">--</p>
+          </div>
+          <div class="text-center">
+            <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">Método Fav.</p>
+            <p id="perfil-metodo-fav" class="text-sm font-black text-white">--</p>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: HISTORIAL -->
+        <div>
+          <p
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 border-b border-slate-800 pb-2">
+            Historial de Pagos</p>
+          <div class="bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
+            <table class="w-full text-left">
+              <thead class="bg-slate-800/50 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <tr>
+                  <th class="p-3">Fecha</th>
+                  <th class="p-3">Concepto</th>
+                  <th class="p-3">Método</th>
+                  <th class="p-3 text-right">Monto</th>
+                  <th class="p-3 text-center">Estado</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-historial" class="divide-y divide-slate-800 text-[10px] font-black text-white">
+                <!-- Inyectado desde JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="p-4 border-t border-slate-800 bg-slate-900/30 flex justify-between items-center">
+        <p class="text-[9px] font-black text-slate-500 uppercase tracking-widest italic">Perfil de solo lectura —
+          Administrador</p>
+        <button onclick="cerrarM()"
+          class="px-6 py-2 bg-slate-800 text-slate-300 hover:bg-slate-700 text-[10px] font-black uppercase italic rounded-lg transition border border-slate-700">
+          Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIGURACIÓN DE PLANES Y PROMOS -->
+  <div id="modal-precios" class="modal-base">
+    <div
+      class="bg-[#020617] border border-slate-800 rounded-2xl w-full max-w-5xl overflow-hidden shadow-2xl relative flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="flex justify-between items-center p-6 border-b border-slate-800 bg-slate-900/50">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-tags text-orange-500 text-2xl"></i>
+          <h2 class="text-xl font-black text-white uppercase tracking-widest">Planes y Promociones</h2>
+        </div>
+        <button onclick="cerrarM()" class="text-slate-500 hover:text-white transition">
+          <i class="fas fa-times text-2xl"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="flex flex-1 overflow-hidden flex-col md:flex-row">
+        <!-- Izquierda: Lista -->
+        <div class="w-full md:w-1/2 border-r border-slate-800 p-6 overflow-y-auto" id="lista-planes-admin">
+          <!-- Inyectado por JS -->
+        </div>
+
+        <!-- Derecha: Formulario -->
+        <div class="w-full md:w-1/2 p-6 bg-slate-900/20 overflow-y-auto">
+          <h3 class="text-sm font-black text-orange-500 uppercase tracking-widest mb-6">Editar Configuración</h3>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Nombre del
+                Plan</label>
+              <input type="text" id="edit-nombre-plan" disabled
+                class="w-full bg-slate-900 border border-slate-800 text-slate-400 p-3 rounded-xl font-black uppercase cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Precio Base
+                ($)</label>
+              <input type="number" id="edit-precio-base"
+                class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition">
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Tipo de
+                Promoción</label>
+              <select id="edit-tipo-promo" onchange="cambiarTipoPromo()"
+                class="w-full bg-slate-900 border border-slate-700 text-white p-3 rounded-xl font-black uppercase focus:outline-none focus:border-orange-500 transition appearance-none">
+                <option value="ninguna">Ninguna</option>
+                <option value="dia_especial">Día Especial</option>
+                <option value="amigos">Por Amigos</option>
+                <option value="cupon">Cupón de Descuento</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Detalle de la
+                Promoción</label>
+              <div id="contenedor-valor-promo">
+                <input type="text" id="edit-valor-promo" disabled
+                  class="w-full bg-slate-900 border border-slate-800 text-slate-500 p-3 rounded-xl font-black uppercase cursor-not-allowed"
+                  placeholder="Seleccione un tipo de promoción...">
+              </div>
+            </div>
+            <div class="pt-4">
+              <button
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-xl font-black uppercase tracking-widest transition shadow-lg flex justify-center items-center gap-2">
+                <i class="fas fa-save"></i> Guardar Configuración
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard Step 1: Detalles del Cobro -->
+  <div id="modal-wizard-1" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-xl rounded-3xl border border-slate-700 shadow-2xl flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div>
+          <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 1 de 2</p>
+          <h3 class="text-xl font-black text-white">Detalles del Cobro</h3>
+        </div>
+        <button onclick="cerrarModalWizard('modal-wizard-1')" class="text-slate-500 hover:text-white transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-8 overflow-y-auto flex-1">
+        
+        <!-- Datos del Socio -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fas fa-user text-orange-500"></i> Datos del Socio
+          </h4>
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">DNI</label>
+              <input type="text" id="wiz-dni" placeholder="Ingrese DNI..." 
+                class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Nombre y Apellido</label>
+              <input type="text" id="wiz-nombre" placeholder="Nombre completo" readonly
+                class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-slate-300 focus:outline-none focus:border-orange-500 transition-colors read-only:bg-slate-900 read-only:text-slate-500 read-only:cursor-not-allowed">
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">Fecha de Pago</label>
+              <input type="date" id="wiz-fecha" 
+                class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors">
+            </div>
+          </div>
+          <div id="wiz-msg-socio" class="mt-2 text-xs font-medium hidden"></div>
+        </div>
+
+        <!-- Actividades -->
+        <div class="mb-8">
+          <h4 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+            <i class="fas fa-dumbbell text-orange-500"></i> Actividades a Abonar
+          </h4>
+          <div class="space-y-3">
+            
+            <!-- Checkbox 1 -->
+            <label class="relative flex items-center cursor-pointer group">
+              <input type="checkbox" class="peer sr-only wiz-act-checkbox" value="Musculación" data-price="25000">
+              <div class="w-full flex items-center justify-between bg-[#020617] border border-slate-700 rounded-xl p-4 transition-all hover:border-slate-500 peer-checked:border-orange-500 peer-checked:bg-orange-500/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:border-emerald-500 peer-disabled:bg-emerald-500/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-md border-2 border-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fas fa-check text-orange-500 text-xs opacity-0 transform scale-50 transition-all wiz-check-icon"></i>
+                  </div>
+                  <span class="font-bold text-white">Musculación</span>
+                </div>
+                <div class="flex items-center gap-3 right-side-container">
+                  <span class="hidden text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded badge-pagado">YA ABONADO</span>
+                  <span class="font-black text-slate-300 price-display">$25.000</span>
+                </div>
+              </div>
+            </label>
+
+            <!-- Checkbox 2 -->
+            <label class="relative flex items-center cursor-pointer group">
+              <input type="checkbox" class="peer sr-only wiz-act-checkbox" value="Zumba" data-price="31500">
+              <div class="w-full flex items-center justify-between bg-[#020617] border border-slate-700 rounded-xl p-4 transition-all hover:border-slate-500 peer-checked:border-orange-500 peer-checked:bg-orange-500/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:border-emerald-500 peer-disabled:bg-emerald-500/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-md border-2 border-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fas fa-check text-orange-500 text-xs opacity-0 transform scale-50 transition-all wiz-check-icon"></i>
+                  </div>
+                  <span class="font-bold text-white">Zumba</span>
+                </div>
+                <div class="flex items-center gap-3 right-side-container">
+                  <span class="hidden text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded badge-pagado">YA ABONADO</span>
+                  <span class="font-black text-slate-300 price-display">$31.500</span>
+                </div>
+              </div>
+            </label>
+
+            <!-- Checkbox 3 -->
+            <label class="relative flex items-center cursor-pointer group">
+              <input type="checkbox" class="peer sr-only wiz-act-checkbox" value="Crossfit" data-price="40000">
+              <div class="w-full flex items-center justify-between bg-[#020617] border border-slate-700 rounded-xl p-4 transition-all hover:border-slate-500 peer-checked:border-orange-500 peer-checked:bg-orange-500/10 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:border-emerald-500 peer-disabled:bg-emerald-500/10">
+                <div class="flex items-center gap-3">
+                  <div class="w-6 h-6 rounded-md border-2 border-slate-600 flex items-center justify-center transition-colors">
+                    <i class="fas fa-check text-orange-500 text-xs opacity-0 transform scale-50 transition-all wiz-check-icon"></i>
+                  </div>
+                  <span class="font-bold text-white">Crossfit</span>
+                </div>
+                <div class="flex items-center gap-3 right-side-container">
+                  <span class="hidden text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-1 rounded badge-pagado">YA ABONADO</span>
+                  <span class="font-black text-slate-300 price-display">$40.000</span>
+                </div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Opciones de Prorrateo -->
+        <div class="mb-4">
+          <label class="relative flex items-center cursor-pointer group">
+            <input type="checkbox" id="wiz-prorrateo" class="peer sr-only">
+            <div class="w-full flex items-center justify-between bg-orange-500/5 border border-orange-500/20 rounded-xl p-4 transition-all peer-checked:border-orange-500 peer-checked:bg-orange-500/20">
+              <div class="flex items-center gap-3">
+                <div class="w-5 h-5 rounded border-2 border-orange-500/50 flex items-center justify-center transition-colors bg-[#020617]">
+                  <i class="fas fa-check text-orange-500 text-[10px] opacity-0 transform scale-50 transition-all wiz-check-icon-pro"></i>
+                </div>
+                <div>
+                  <span class="font-bold text-orange-400 text-sm block">ES PRIMER MES (CALCULAR PRORRATEO)</span>
+                  <span class="text-[10px] text-slate-400">Aplica 50% de descuento a las actividades nuevas.</span>
+                </div>
+              </div>
+            </div>
+          </label>
+          <style>
+            .peer:checked ~ div .wiz-check-icon,
+            .peer:checked ~ div .wiz-check-icon-pro {
+              opacity: 1;
+              transform: scale(1);
+            }
+          </style>
+        </div>
+
+      </div>
+
+      <!-- Footer / Resumen -->
+      <div class="p-6 border-t border-slate-800 bg-[#020617] flex justify-between items-center rounded-b-3xl">
+        <div>
+          <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Subtotal a Cobrar</p>
+          <div class="flex items-baseline gap-3">
+            <p id="wiz-subtotal" class="text-3xl font-black text-white">$0</p>
+            <p id="wiz-detalle-subtotal" class="text-[10px] text-slate-400 font-medium"></p>
+          </div>
+        </div>
+        <button id="btn-continuar-paso2" class="bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-orange-500/20" disabled>
+          Continuar <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard Step 2: Medio de Pago -->
+  <div id="modal-wizard-2" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-lg rounded-3xl border border-slate-700 shadow-2xl flex flex-col">
+      <!-- Header -->
+      <div class="px-8 py-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div class="flex items-center gap-4">
+          <button onclick="volverPaso1Wizard()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition-colors">
+            <i class="fas fa-arrow-left text-xs"></i>
+          </button>
+          <div>
+            <p class="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1">Paso 2 de 2</p>
+            <h3 class="text-xl font-black text-white">Medio de Pago</h3>
+          </div>
+        </div>
+        <button onclick="cerrarModalWizard('modal-wizard-2')" class="text-slate-500 hover:text-white transition-colors">
+          <i class="fas fa-times text-xl"></i>
+        </button>
+      </div>
+
+      <div class="p-8">
+        
+        <div class="flex justify-between items-center bg-[#020617] p-5 rounded-2xl border border-slate-800 mb-6">
+          <div>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total a Abonar</p>
+            <div class="flex items-baseline gap-2">
+              <p id="wiz2-total" class="text-3xl font-black text-white">$0</p>
+              <p id="wiz2-total-tachado" class="text-sm font-bold text-slate-500 line-through hidden">$0</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Socio</p>
+            <p id="wiz2-socio" class="text-sm font-bold text-slate-300">--</p>
+          </div>
+        </div>
+
+        <!-- Cupón de Descuento -->
+        <div class="mb-6 bg-slate-900/50 p-4 rounded-2xl border border-slate-800">
+          <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Código de Descuento</label>
+          <div class="flex gap-2 relative">
+            <input type="text" id="wiz-cupon" placeholder="Ej: CROSS20" 
+              class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-orange-500 transition-colors uppercase">
+            <button onclick="aplicarCuponWizard()" class="bg-slate-800 hover:bg-orange-500 text-white px-6 rounded-xl font-bold uppercase transition-colors text-[10px] tracking-widest whitespace-nowrap border border-slate-700 hover:border-orange-500">
+              Aplicar
+            </button>
+          </div>
+          <p id="wiz-msg-cupon" class="text-[10px] font-bold mt-2 hidden"></p>
+        </div>
+
+        <h4 class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">Seleccionar Método</h4>
+        <div class="grid grid-cols-2 gap-3">
+          <button onclick="procesarPagoWizard('Efectivo')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-green-500 hover:bg-green-500/5 transition-all group">
+            <i class="fas fa-money-bill-wave text-2xl text-slate-500 group-hover:text-green-500 transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">Efectivo</span>
+          </button>
+          <button onclick="procesarPagoWizard('QR')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-[#009EE3] hover:bg-[#009EE3]/5 transition-all group">
+            <i class="fas fa-qrcode text-2xl text-slate-500 group-hover:text-[#009EE3] transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">QR / App</span>
+          </button>
+          <button onclick="procesarPagoWizard('Transferencia')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-blue-500 hover:bg-blue-500/5 transition-all group">
+            <i class="fas fa-university text-2xl text-slate-500 group-hover:text-blue-500 transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">Transferencia</span>
+          </button>
+          <button onclick="procesarPagoWizard('Tarjeta')" class="flex flex-col items-center justify-center gap-3 p-5 rounded-2xl bg-[#020617] border border-slate-800 hover:border-purple-500 hover:bg-purple-500/5 transition-all group">
+            <i class="fas fa-credit-card text-2xl text-slate-500 group-hover:text-purple-500 transition-colors"></i>
+            <span class="text-xs font-bold text-white uppercase">Tarjeta</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <!-- SUBPASOS (INTERMEDIOS DE PAGO) -->
+  <!-- Modal QR -->
+  <div id="modal-wizard-qr" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-sm rounded-3xl border border-slate-700 shadow-2xl flex flex-col p-8 items-center relative">
+      <button onclick="volverDesdeSubpaso('modal-wizard-qr')" class="absolute top-6 left-6 text-slate-500 hover:text-white text-xs font-bold transition-colors">
+        <i class="fas fa-arrow-left mr-1"></i> VOLVER
+      </button>
+      <div class="mt-8 mb-6 flex flex-col items-center">
+        <h3 class="text-xl font-black text-[#009EE3] mb-6 tracking-wide">MERCADO PAGO QR</h3>
+        <div class="w-48 h-48 bg-white p-2 rounded-xl flex items-center justify-center shadow-inner">
+          <i class="fas fa-qrcode text-8xl text-slate-900"></i>
+        </div>
+        <p class="text-[10px] text-slate-400 mt-4 text-center">Pídele al socio que escanee el código con su app.</p>
+      </div>
+      <button onclick="finalizarSubpaso('QR', 'modal-wizard-qr')" class="w-full bg-[#009EE3] hover:bg-blue-500 text-white py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-[#009EE3]/20">
+        Simular Escaneo Exitoso
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Transferencia -->
+  <div id="modal-wizard-transf" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-md rounded-3xl border border-slate-700 shadow-2xl flex flex-col p-8 relative">
+      <button onclick="volverDesdeSubpaso('modal-wizard-transf')" class="absolute top-6 left-6 text-slate-500 hover:text-white text-xs font-bold transition-colors">
+        <i class="fas fa-arrow-left mr-1"></i> VOLVER
+      </button>
+      <div class="mt-8 mb-6 flex flex-col">
+        <h3 class="text-xl font-black text-blue-400 mb-6 tracking-wide text-center">TRANSFERENCIA BANCARIA</h3>
+        
+        <div class="bg-[#020617] p-5 rounded-2xl border border-slate-800 mb-6 space-y-2">
+          <p class="text-xs text-slate-400"><strong class="text-slate-300">CBU:</strong> 0000003100001234567890</p>
+          <p class="text-xs text-slate-400"><strong class="text-slate-300">ALIAS:</strong> SQUAT.GYM</p>
+          <p class="text-xs text-slate-400"><strong class="text-slate-300">TITULAR:</strong> SQUATGYM SA</p>
+        </div>
+
+        <div class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">CBU o Alias de origen</label>
+            <input type="text" id="transf-cbu" placeholder="Ej: perez.banco" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">N° de comprobante</label>
+            <input type="text" id="transf-comp" placeholder="Ej: 12345678" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors">
+          </div>
+        </div>
+      </div>
+      <button onclick="finalizarSubpaso('Transferencia', 'modal-wizard-transf')" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-blue-500/20">
+        Confirmar Transferencia
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal Tarjeta -->
+  <div id="modal-wizard-tarjeta" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-[#0f172a] w-full max-w-md rounded-3xl border border-slate-700 shadow-2xl flex flex-col p-8 relative">
+      <button onclick="volverDesdeSubpaso('modal-wizard-tarjeta')" class="absolute top-6 left-6 text-slate-500 hover:text-white text-xs font-bold transition-colors">
+        <i class="fas fa-arrow-left mr-1"></i> VOLVER
+      </button>
+      <div class="mt-8 mb-6 flex flex-col">
+        <h3 class="text-xl font-black text-purple-400 mb-6 tracking-wide text-center">PAGO CON TARJETA</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Nombre del titular</label>
+            <input type="text" id="tarjeta-nombre" placeholder="TAL CUAL APARECE EN LA TARJETA" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors uppercase">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Número de Tarjeta</label>
+            <input type="text" id="tarjeta-num" placeholder="XXXX XXXX XXXX XXXX" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors tracking-widest">
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">Vencimiento</label>
+              <input type="text" id="tarjeta-venc" placeholder="MM/AA" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors text-center tracking-widest">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 mb-2 uppercase tracking-wide">CVV</label>
+              <input type="password" id="tarjeta-cvv" placeholder="***" maxlength="4" class="w-full bg-[#020617] border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors text-center tracking-widest">
+            </div>
+          </div>
+        </div>
+      </div>
+      <button onclick="finalizarSubpaso('Tarjeta', 'modal-wizard-tarjeta')" class="w-full bg-purple-500 hover:bg-purple-600 text-white py-4 rounded-xl font-bold uppercase tracking-wide transition-all shadow-lg shadow-purple-500/20">
+        Procesar con Posnet
+      </button>
+    </div>
+  </div>
+
+  <!-- Wizard Step: Procesando Cobro -->
+  <div id="modal-wizard-procesando" class="fixed inset-0 z-[17000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md">
+    <div class="text-center space-y-6 max-w-xs w-full animate-in fade-in zoom-in-95 duration-300">
+      <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+        <!-- Spinner premium con gradiente SquatGym -->
+        <div class="absolute inset-0 rounded-full border-4 border-slate-800"></div>
+        <div class="absolute inset-0 rounded-full border-4 border-t-orange-500 border-r-orange-500/50 animate-spin"></div>
+        <i class="fas fa-shield-alt text-2xl text-orange-500"></i>
+      </div>
+      <div>
+        <h4 class="text-lg font-black text-white italic uppercase tracking-wider">Procesando Pago</h4>
+        <p class="text-[10px] text-slate-400 font-bold mt-1">⏳ Conectando con pasarela segura de SquatGym...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wizard Step 3: Recibo Electrónico -->
+  <div id="modal-wizard-3" class="fixed inset-0 z-[16000] hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
+    <div class="bg-slate-100 w-full max-w-sm rounded-lg shadow-2xl overflow-hidden flex flex-col text-slate-900 font-mono text-sm relative">
+      
+      <!-- Decoración ticket (borde dentado superior e inferior) -->
+      <div class="h-2 w-full bg-[radial-gradient(circle,transparent_4px,#f1f5f9_4px)] bg-[length:12px_10px] absolute top-[-5px] left-0"></div>
+      
+      <div class="p-8 pb-4 text-center border-b border-dashed border-slate-300 mt-2">
+        <h2 class="text-2xl font-black tracking-tighter uppercase mb-1">SquatGym SA</h2>
+        <p class="text-xs text-slate-500">Av. Siempre Viva 123</p>
+        <p class="text-xs text-slate-500">CUIT: 30-12345678-9</p>
+        
+        <div class="mt-6 inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full border border-emerald-300">
+          <i class="fas fa-check-circle"></i>
+          <span class="font-bold text-xs uppercase">Pago Acreditado</span>
+        </div>
+      </div>
+
+      <div class="p-8 space-y-4">
+        <div class="flex justify-between">
+          <span class="text-slate-500">Fecha:</span>
+          <span class="font-bold" id="wiz-rec-fecha">--/--/----</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Comprobante:</span>
+          <span class="font-bold" id="wiz-rec-comp">#000000</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Socio:</span>
+          <span class="font-bold text-right" id="wiz-rec-socio">--</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Método:</span>
+          <span class="font-bold" id="wiz-rec-metodo">--</span>
+        </div>
+
+        <div class="pt-4 border-t border-dashed border-slate-300">
+          <p class="text-slate-500 mb-2">Concepto:</p>
+          <div id="wiz-rec-conceptos" class="space-y-1 font-bold text-xs">
+            <!-- Inyectado por JS -->
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-dashed border-slate-300 flex justify-between items-end">
+          <span class="text-lg font-bold uppercase">Total</span>
+          <span class="text-2xl font-black" id="wiz-rec-total">$0</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-200 p-6 flex gap-3 mt-4">
+        <button onclick="finalizarCobroWizard()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-3 rounded font-bold uppercase transition-colors text-xs">
+          Cerrar
+        </button>
+        <button onclick="descargarPdfReciboWizard(lastTx)" class="flex-1 bg-white hover:bg-slate-50 text-slate-900 border border-slate-300 py-3 rounded font-bold uppercase transition-colors text-xs flex items-center justify-center gap-2">
+          <i class="fas fa-print"></i> Imprimir
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/pagos.js"></script>
+  <script src="js/kiosco.js"></script>
+  <script src="js/socios.js"></script>
+  <script src="js/inventario.js"></script>
+  <script src="js/informes.js"></script>
+  <script src="js/wizard.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
